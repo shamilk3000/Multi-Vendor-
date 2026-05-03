@@ -12,7 +12,6 @@ function ShopPage() {
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<ProductFilters | null>(null);
 
-      console.log(filters)
   const location = useLocation();
   const mobileInputRef = useRef<HTMLInputElement>(null);
   const desktopInputRef = useRef<HTMLInputElement>(null);
