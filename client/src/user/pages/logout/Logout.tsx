@@ -1,0 +1,10 @@
+
+const Logout = () => {
+  return (
+    
+      <><h2>Logout</h2><p>You have been logged out</p></>
+    
+  );
+};
+
+export default Logout;

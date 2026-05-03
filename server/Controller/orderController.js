@@ -1,0 +1,103 @@
+const orderService = require("../Service/orderService");
+const cartService = require("../Service/cartService");
+const paymentService = require("../Service/paymentService");
+
+const createOrder = async (req, res) => {
+  try {
+    const user = req.user;
+    const shippingAddress = req.body.shippingAddress;
+    const paymentMethod = req.query.paymentMethod;
+    const cart = cartService.getUserCart(user);
+    const order = await orderService.createOrder(user, cart, shippingAddress);
+    const payment = await paymentService.createPaymentOrder(user, order);
+    const response = {};
+    if (paymentMethod === "RAZORPAY") {
+      const paymentLink = await paymentService.createPaymentLink(user, order);
+      response.paymentLinkUrl = paymentLink.short_url;
+      payment.paymentLinkId = paymentLink.id;
+      await payment.save();
+    }
+    response.order = order;
+    response.payment = payment;
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error("createOrder Controller Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getOrderById = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const order = await orderService.getOrderById(orderId);
+    return res.status(200).json(order);
+  } catch (error) {
+    console.error("getOrderById Controller Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const allOrdersOfSeller = async (req, res) => {
+  try {
+    const sellerId = req?.params?.sellerId || req?.seller?._id;
+    const orders = await orderService.allOrdersOfSeller(sellerId);
+    return res.status(200).json(orders);
+  } catch (error) {
+    console.error("allOrdersOfSeller Controller Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const allOrdersOfUser = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const orders = await orderService.allOrdersOfUser(userId);
+    return res.status(200).json(orders);
+  } catch (error) {
+    console.error("allOrdersOfUser Controller Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const updateOrderStatus = async (req, res) => {
+  try {
+    const { orderId, status } = req.params;
+    const updatedOrder = await orderService.updateOrderStatus(orderId, status);
+    return res.status(200).json(updatedOrder);
+  } catch (error) {
+    console.error("updateOrderStatus Controller Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const cancelOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const updatedOrder = await orderService.cancelOrder(orderId);
+    return res.status(200).json(updatedOrder);
+  } catch (error) {
+    console.error("cancelOrder Controller Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getOderItemById = async (req, res) => {
+  try {
+    const { itemId } = req.params;
+    const orderItem = await orderService.getOderItemById(itemId);
+    return res.status(200).json(orderItem);
+  } catch (error) {
+    console.error("getOderItemById Controller Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = {
+  createOrder,
+  getOrderById,
+  allOrdersOfSeller,
+  allOrdersOfUser,
+  updateOrderStatus,
+  cancelOrder,
+  getOderItemById,
+};
