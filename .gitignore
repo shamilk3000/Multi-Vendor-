@@ -1,0 +1,25 @@
+# env
+.env
+client/.env
+server/.env
+
+# node
+node_modules
+
+# build
+dist
+build
+
+# uploads (ignore files but keep folder)
+server/public/uploads/*
+!server/public/uploads/.gitkeep
+
+# logs
+logs
+*.log
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
