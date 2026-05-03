@@ -4,7 +4,7 @@ import Pagination from "@mui/material/Pagination";
 import PaginationItem from "@mui/material/PaginationItem";
 import { FaSearch } from "react-icons/fa";
 import type { Product } from "@/types/product";
-import { useProducts } from "../../../hooks/user/product/useProducts";
+import { useProductsForUser } from "../../../hooks/user/product/useProducts";
 import ProductSkeletonGrid from "@/user/components/skeletons/productList";
 
 
@@ -109,7 +109,10 @@ const ProductCardsWithPagination: React.FC<{
   sellerId?: string;
   shopName?: string;
 }> = ({ hideSearch, search, sellerId,shopName }) => {
-  const { data: products = [], isLoading } = useProducts(sellerId,shopName);
+ const { data: products = [], isLoading } = useProductsForUser(
+  sellerId ?? "",
+  shopName ?? ""
+);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -160,7 +163,7 @@ if (isLoading) {
 
   {/* ✅ EMPTY STATE */}
   {!isLoading && filteredProducts.length === 0 ? (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
+    <div className=" min-h-[calc(100vh-400px)] flex flex-col items-center justify-center py-20 text-center">
       <h2 className="text-xl font-semibold text-gray-700">
         No products found 😕
       </h2>

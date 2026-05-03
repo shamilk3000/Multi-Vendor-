@@ -24,7 +24,7 @@ router.delete("/:sellerId/:shopName/delete-address/:id", userAuth, userControlle
 
 router.get("/:sellerId/:shopName/search-products/:search", userAuth, productController.searchProducts);
 router.get("/:sellerId/:shopName/get-all-products-for-customer", productController.getAllProductsForCustomer);          //using
-router.get("/:sellerId/:shopName/get-all-categories-of-seller", userAuth, productController.getAllCategoriesOfSeller);
+router.get("/:sellerId/get-all-categories-of-seller", productController.getAllCategoriesOfSellerForUser);       //using
 
 router.get("/:sellerId/:shopName/get-user-cart", userAuth, cartController.getUserCart);
 router.post("/:sellerId/:shopName/add-cart-item", userAuth, cartController.addCartItem);

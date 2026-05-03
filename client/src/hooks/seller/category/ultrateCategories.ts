@@ -13,9 +13,11 @@ const useInvalidateCategories = () => {
   return () => {
     queryClient.invalidateQueries({
       queryKey: ["categories"],
+   refetchType: "all",
     });
     queryClient.invalidateQueries({
       queryKey: ["products"],
+   refetchType: "all",
     });
   };
 };

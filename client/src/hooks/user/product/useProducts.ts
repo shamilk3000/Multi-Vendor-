@@ -2,13 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getProductsForUser } from "../../../api/user/product";
 
 
-export const useProducts = (sellerId?: string, shopName?: string) => {
+export const useProductsForUser = (sellerId: string, shopName: string) => { 
   return useQuery({
-    queryKey: ["products", sellerId, shopName],
-    queryFn: () => {
-      if (!sellerId || !shopName) return Promise.resolve([]);
-      return getProductsForUser({ sellerId, shopName });
-    },
+    queryKey: ["products"],
+    queryFn: () => getProductsForUser({ sellerId, shopName }),
+  refetchInterval: 5000,
+  staleTime: 0,
     enabled: !!sellerId && !!shopName,
   });
 };

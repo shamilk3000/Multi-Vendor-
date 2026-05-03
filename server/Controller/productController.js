@@ -185,6 +185,19 @@ const getAllCategoriesOfSeller = async (req, res) => {
   }
 };
 
+
+const getAllCategoriesOfSellerForUser = async (req, res) => {
+  try {
+    const sellerId = req?.user?.sellerId || req.params.sellerId;
+    console.log(sellerId);
+    const categories = await productService.getAllCategoriesOfSellerForUser(sellerId);
+    return res.status(200).json(categories);
+  } catch (error) {
+    console.error("getAllCategoriesOfSeller Controller Error:", error);
+    return res.status(400).json({ message: error.message });
+  }
+};
+
 const deleteCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
@@ -233,6 +246,7 @@ module.exports = {
   createCategory,
   updateCategory,
   getCategoryById,
+  getAllCategoriesOfSellerForUser,
   // getAllParentCategories,
   getAllCategoriesOfSeller,
   deleteCategory,

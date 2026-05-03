@@ -62,7 +62,7 @@ function ShopPage() {
               />
             </div>
 
-            <FilterButton />
+            <FilterButton  sellerId={sellerId!} />
           </div>
         </div>
 
@@ -89,7 +89,7 @@ function ShopPage() {
             />
           </div>
 
-          <FilterButton />
+          <FilterButton  sellerId={sellerId!} />
         </div>
       </div>
 

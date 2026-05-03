@@ -5,6 +5,8 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { SlidersHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import type { Category } from "@/types/category";
+import { useCategoriesForUser } from "../../../hooks/user/category/useCategories";
 
 /* ================= TYPES ================= */
 
@@ -24,13 +26,17 @@ export interface ProductFilters {
   sort?: ProductSort;
 }
 
+type ProductListProps = {
+  sellerId: string;
+};
+
 /* ================= DATA ================= */
 
-const CATEGORIES: Record<string, string[]> = {
-  Electronics: ["Mobiles", "Laptops", "Accessories"],
-  Fashion: ["Men", "Women", "Kids"],
-  Grocery: ["Fruits", "Vegetables", "Snacks"],
-};
+// const CATEGORIES: Record<string, string[]> = {
+//   Electronics: ["Mobiles", "Laptops", "Accessories"],
+//   Fashion: ["Men", "Women", "Kids"],
+//   Grocery: ["Fruits", "Vegetables", "Snacks"],
+// };
 
 const INITIAL_FILTERS: ProductFilters = {
   search: "",
@@ -40,7 +46,9 @@ const INITIAL_FILTERS: ProductFilters = {
 
 /* ================= MAIN ================= */
 
-const FilterButton: React.FC = () => {
+const FilterButton: React.FC<ProductListProps> = ({ sellerId }) => {
+  const { data: categories = [], isLoading } = useCategoriesForUser(sellerId);
+   
   const [open, setOpen] = useState<boolean>(false);
   const [filters, setFilters] = useState<ProductFilters>(INITIAL_FILTERS);
 
@@ -50,15 +58,19 @@ const FilterButton: React.FC = () => {
   const updateURL = (updated: ProductFilters) => {
     const params = new URLSearchParams();
 
-    if (updated.category) params.set("category", updated.category);
-    if (updated.subCategory) params.set("subCategory", updated.subCategory);
+    // if (updated.category) params.set("category", updated.category);
+    // if (updated.subCategory) params.set("subCategory", updated.subCategory);
 
-    if (updated.sort) params.set("sort", updated.sort);
+    // if (updated.sort) params.set("sort", updated.sort);
 
-    params.set("priceMin", String(updated.price[0]));
-    params.set("priceMax", String(updated.price[1]));
+    // params.set("priceMin", String(updated.price[0]));
+    // params.set("priceMax", String(updated.price[1]));
+    // navigate(`/products?${params.toString()}`);
 
-    navigate(`/products?${params.toString()}`);
+
+
+
+    console.log("filter:", updated);
   };
 
   /* ================= HANDLERS ================= */
@@ -108,54 +120,54 @@ const FilterButton: React.FC = () => {
           >
             <h4 className="font-semibold mb-2">Category</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {Object.keys(CATEGORIES).map((cat) => (
-                <Badge
-                  key={cat}
-                  variant={filters.category === cat ? "default" : "outline"}
-                  onClick={() =>
-                    setFilters((prev) => {
-                      const updated = {
-                        ...prev,
-                        category: prev.category === cat ? undefined : cat,
-                        subCategory: undefined,
-                      };
-                      updateURL(updated);
-                      return updated;
-                    })
-                  }
-                  className="cursor-pointer"
-                >
-                  {cat}
-                </Badge>
-              ))}
+              {categories.map((cat:Category  ) => (
+  <Badge
+    key={cat._id}
+    variant={filters.category === cat.name ? "default" : "outline"}
+    onClick={() =>
+      setFilters((prev) => {
+        const updated = {
+          ...prev,
+          category: prev.category === cat.name ? undefined : cat.name,
+          subCategory: undefined,
+        };
+        updateURL(updated);
+        return updated;
+      })
+    }
+    className="cursor-pointer"
+  >
+    {cat.name}
+  </Badge>
+))}
             </div>
 
             {filters.category && (
               <>
                 <h4 className="font-semibold mb-2">Sub category</h4>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {CATEGORIES[filters.category].map((sub) => (
-                    <Badge
-                      key={sub}
-                      variant={
-                        filters.subCategory === sub ? "default" : "outline"
-                      }
-                      onClick={() =>
-                        setFilters((prev) => {
-                          const updated = {
-                            ...prev,
-                            subCategory:
-                              prev.subCategory === sub ? undefined : sub,
-                          };
-                          updateURL(updated);
-                          return updated;
-                        })
-                      }
-                      className="cursor-pointer"
-                    >
-                      {sub}
-                    </Badge>
-                  ))}
+                  {categories
+  .find((c:Category  ) => c.name === filters.category)
+  ?.children?.map((sub: any) => (
+    <Badge
+      key={sub._id}
+      variant={filters.subCategory === sub.name ? "default" : "outline"}
+      onClick={() =>
+        setFilters((prev) => {
+          const updated = {
+            ...prev,
+            subCategory:
+              prev.subCategory === sub.name ? undefined : sub.name,
+          };
+          updateURL(updated);
+          return updated;
+        })
+      }
+      className="cursor-pointer"
+    >
+      {sub.name}
+    </Badge>
+  ))}
                 </div>
               </>
             )}

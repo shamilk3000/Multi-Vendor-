@@ -65,7 +65,6 @@ const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
       const invoice = event.data.object;
 
       const subscriptionId = invoice.parent.subscription_details.subscription;
-        // console.log(invoice.parent.subscription_details.metadata); //metadata
 
       
       const periodEnd = invoice.lines.data[0].period.end;

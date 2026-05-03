@@ -11,8 +11,10 @@ const useInvalidateProducts = () => {
   const queryClient = useQueryClient();
 
   return () => {
-    queryClient.invalidateQueries({ queryKey: ["products"] });
-    queryClient.invalidateQueries({ queryKey: ["categories"] });
+    queryClient.invalidateQueries({ queryKey: ["products"],
+  exact: false, });
+    queryClient.invalidateQueries({ queryKey: ["categories"],
+  exact: false, });
   };
 };
 

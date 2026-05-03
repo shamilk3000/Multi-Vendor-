@@ -100,7 +100,7 @@ const ProductGrid: React.FC<{
 };
 
 // MAIN
-import { useProducts } from "../../../../hooks/user/product/useProducts";
+import { useProductsForUser } from "../../../../hooks/user/product/useProducts";
 import ProductSkeletonGrid from "@/user/components/skeletons/productList";
 
 const ProductCardsWithPagination: React.FC<{
@@ -109,7 +109,10 @@ const ProductCardsWithPagination: React.FC<{
   hideSearch?: boolean;
   search?: string;
 }> = ({ hideSearch, sellerId, shopName }) => {
-  const { data: products = [], isLoading } = useProducts(sellerId, shopName);
+const { data: products = [], isLoading } = useProductsForUser(
+  sellerId ?? "",
+  shopName ?? ""
+);
   const location = useLocation();
   const navigate = useNavigate();
   const [openSearch, setOpenSearch] = useState(false);

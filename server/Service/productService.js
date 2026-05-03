@@ -473,6 +473,77 @@ const getAllCategoriesOfSeller = async (sellerId, onlyActive) => {
   }
 };
 
+const getAllCategoriesOfSellerForUser = async (sellerId) => {
+  try {
+    if (!sellerId) {
+      throw new Error("Seller ID not found");
+    }
+
+    let filter = {
+  sellerId,
+  isActive: true,
+  // stock: { $gt: 0 }   
+};
+
+    const categories = await Category.find(filter);
+   
+
+    const parents = categories.filter(c => c.parentCategory === null);
+    const children = categories.filter(c => c.parentCategory !== null);
+
+    // 🔥 GET PRODUCT COUNT PER CATEGORY
+    const productCounts = await Product.aggregate([
+      {
+        $match: {
+          subCategory: { $ne: null },
+        },
+      },
+      {
+        $group: {
+          _id: "$subCategory",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // 🔥 Convert to map for fast lookup
+    const productCountMap = {};
+    productCounts.forEach(p => {
+      productCountMap[p._id.toString()] = p.count;
+    });
+
+    // 🔥 BUILD TREE WITH COUNTS
+    const categoryTree = parents.map(parent => {
+      const childList = children
+        .filter(
+          child =>
+            child.parentCategory?.toString() === parent._id.toString()
+        )
+        .map(child => ({
+          ...child._doc,
+          productCount: productCountMap[child._id.toString()] || 0,
+        }));
+
+      // 🔥 total products in parent
+      // const totalProducts = childList.reduce(
+      //   (sum, child) => sum + child.productCount,
+      //   0
+      // );
+
+      return {
+        ...parent._doc,
+        children: childList,
+        // childrenCount: childList.length,
+        // totalProductCount: totalProducts,
+      };
+    });
+    return categoryTree;
+  } catch (error) {
+    console.error("Error getting all categories:", error);
+    throw new Error(`Unable to get all categories: ${error.message}`);
+  }
+};
+
 const deleteCategory = async (categoryId) => {
   try {
     const category = await Category.findById(categoryId);
@@ -644,6 +715,7 @@ module.exports = {
   getAllProducts,
   getAllProductsForCustomer,
   createCategory,
+  getAllCategoriesOfSellerForUser,
   // getAllParentCategories,
   updateCategory,
   getCategoryById,
