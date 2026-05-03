@@ -40,7 +40,7 @@ const ProductGrid: React.FC<{
     paginatedProducts.forEach((product, idx) => {
       if (!product.image || product.image.length <= 1) return;
 
-      const delay = idx * 2000;
+      const delay = idx * 2500;
 
       const timeout = window.setTimeout(() => {
         intervalsRef.current[product._id] = window.setInterval(() => {

@@ -36,7 +36,7 @@ const INITIAL_FILTERS: ProductFilters = {
 };
 
 const SellerFilterButton: React.FC<Props> = ({ onApply }) => {
-  const { data: categories = [] } = useCategories(false);
+  const { data: categories = [] } = useCategories({ onlyActive: false });
   const [open, setOpen] = useState(false);
   const [filters, setFilters] = useState<ProductFilters>(INITIAL_FILTERS);
 

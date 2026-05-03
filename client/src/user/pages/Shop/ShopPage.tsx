@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import ProductCards from "./ProductCards";
-import FilterButton from "../filter/FilterButton";
+import FilterButton, { type ProductFilters } from "./FilterButton";
 import Footer from "../footer/Footer";
 import Navbar from "../navbar/Navbar";
 import { FaStore, FaSearch } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
-import { useParams } from "react-router-dom";
-// import { useProducts } from "../../../hooks/user/product/useProducts";
-import type { Product } from "@/types/product";
+import { useLocation, useParams } from "react-router-dom";
 
 function ShopPage() {
   const { sellerId, shopName } = useParams();
-  // const { data: products = [], isLoading } = useProducts(sellerId,shopName);
+
   const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState<ProductFilters | null>(null);
+
+      console.log(filters)
   const location = useLocation();
   const mobileInputRef = useRef<HTMLInputElement>(null);
   const desktopInputRef = useRef<HTMLInputElement>(null);
@@ -24,11 +24,8 @@ function ShopPage() {
       const isMobile = window.innerWidth < 768;
 
       const id = setTimeout(() => {
-        if (isMobile) {
-          mobileInputRef.current?.focus();
-        } else {
-          desktopInputRef.current?.focus();
-        }
+        if (isMobile) mobileInputRef.current?.focus();
+        else desktopInputRef.current?.focus();
       }, 150);
 
       return () => clearTimeout(id);
@@ -39,18 +36,17 @@ function ShopPage() {
     <div>
       <Navbar shopName={shopName!} />
 
+      {/* HEADER */}
       <div className="relative flex items-center my-2 md:my-4">
-        {/* ✅ MOBILE: all in one row */}
+        {/* MOBILE */}
         <div className="flex w-full items-center justify-between md:hidden px-2">
-          {/* LEFT: Heading */}
-          <h1 className="flex items-center gap-2 text-lg font-bold text-black font-[Playfair Display]">
+          <h1 className="flex items-center gap-2 text-lg font-bold text-black">
             <FaStore />
             SHOP
           </h1>
 
-          {/* RIGHT: Search + Filter */}
           <div className="flex items-center gap-2">
-            <div className=" hover:border-black flex items-center bg-white border border-gray-400 rounded-lg px-3 py-2 w-50">
+            <div className="flex items-center bg-white border border-gray-400 rounded-lg px-3 py-2 w-50">
               <FaSearch className="text-black mr-2 text-sm" />
               <input
                 ref={mobileInputRef}
@@ -62,22 +58,19 @@ function ShopPage() {
               />
             </div>
 
-            <FilterButton  sellerId={sellerId!} />
+            {/* 🔥 MOVED FILTER BUTTON HERE */}
+            <FilterButton sellerId={sellerId!} onApply={setFilters} />
           </div>
         </div>
 
-        {/* ✅ DESKTOP: YOUR ORIGINAL CODE (UNCHANGED) */}
-        <h1
-          className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-3 
-    text-2xl md:text-3xl font-bold tracking-wide text-black 
-    transition-all duration-300 hover:tracking-widest font-[Playfair Display]"
-        >
-          <FaStore className="text-2xl md:text-3xl" />
+        {/* DESKTOP */}
+        <h1 className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-3 text-2xl font-bold text-black">
+          <FaStore />
           SHOP
         </h1>
 
         <div className="hidden md:flex ml-auto items-center gap-3 p-4">
-          <div className=" hover:border-black flex items-center bg-white border border-gray-400 rounded-xl px-4 py-2">
+          <div className="flex items-center bg-white border border-gray-400 rounded-xl px-4 py-2">
             <FaSearch className="text-black mr-2" />
             <input
               ref={desktopInputRef}
@@ -89,16 +82,18 @@ function ShopPage() {
             />
           </div>
 
-          <FilterButton  sellerId={sellerId!} />
+          {/* 🔥 MOVED FILTER BUTTON HERE */}
+          <FilterButton sellerId={sellerId!} onApply={setFilters} />
         </div>
       </div>
 
-      {/* ✅ PASS SEARCH */}
+      {/* PRODUCTS */}
       <ProductCards
         hideSearch={true}
         search={search}
         sellerId={sellerId}
         shopName={shopName}
+        filters={filters}
       />
 
       <Footer />
