@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import { useParams } from "react-router-dom";
 // import Categories from './Categories/Categories'
 import Banner from "./Banner/Banner";
@@ -9,19 +9,17 @@ import Navbar from "../navbar/Navbar";
 function Home() {
     const { sellerId, shopName } = useParams();
 
-  console.log("Seller ID:", sellerId);
-  console.log("Shop Name:", shopName);
   return (
     <div>
       <section>
-        <Navbar />
-        <Banner />
+        <Navbar shopName={shopName!}/>
+        <Banner shopName={shopName!}/>
       </section>
       {/* <section>
         <Categories/>
       </section> */}
       <section>
-        <ProductList  sellerId={sellerId!}  />
+        <ProductList  sellerId={sellerId!}  shopName={shopName!}/>
       </section>
       <section>
         <Footer />

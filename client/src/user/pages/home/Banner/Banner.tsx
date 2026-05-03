@@ -3,14 +3,17 @@ import Lottie from "lottie-react";
 import seoAnimation1 from "../../../../assets/Banner-1.json";
 import seoAnimation2 from "../../../../assets/Banner-2.json";
 import seoAnimation3 from "../../../../assets/Banner-3.json";
+type ProductListProps = {
+  shopName: string;
+};
 
-function Banner() {
+function Banner({ shopName }: ProductListProps) {
   return (
     <div>
       <div>
         <div className="text-center text-white bg-black px-6 md:px-10">
           <h1 className="font-bold text-3xl md:text-4xl pb-3">
-            Welcome to Dummy Product Shop
+            {`Welcome to ${shopName}`}
           </h1>
           {/* <h2 className="text-2xl md:text-3xl">My Products</h2> */}
         </div>

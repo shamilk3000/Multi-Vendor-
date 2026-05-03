@@ -76,7 +76,7 @@ const nav = useNavigate();
           <Route path="/checkout" element={<Checkout />} />         
           <Route path="/cart" element={<Cart />} />         
           <Route path="/:sellerId/:shopName" element={<Home />} />         
-          <Route path="/shop" element={<ShopPage />} />         
+          <Route path="/:sellerId/:shopName/shop" element={<ShopPage />} />         
       
 
 

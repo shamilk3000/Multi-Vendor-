@@ -263,7 +263,7 @@ const getAllProductsForCustomer = async (sellerId) => {
   isActive: true,
   seller: sellerId,
   stock: { $gt: 0 }, // 👈 this line
-});
+}).populate("category").populate("subCategory");
     //   .sort(sortQuery)
     //   .skip((req.page - 1) * size)
     //   .limit(size);
@@ -276,12 +276,12 @@ const getAllProductsForCustomer = async (sellerId) => {
 
     // const totalPages = Math.ceil(totalElements / size);
 
-    const result = {
-      content: products,
-      totalPages,
-      totalElements,
-    };
-    return result;
+    // const result = {
+      // content: products,
+      // totalPages,
+      // totalElements,
+    // };
+    return products;
   } catch (error) {
     console.error("Error getting all products for customer:", error);
     throw new Error(

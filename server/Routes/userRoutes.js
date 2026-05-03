@@ -23,7 +23,7 @@ router.put("/:sellerId/:shopName/update-address/:id", userAuth, userController.u
 router.delete("/:sellerId/:shopName/delete-address/:id", userAuth, userController.deleteAddress);
 
 router.get("/:sellerId/:shopName/search-products/:search", userAuth, productController.searchProducts);
-router.get("/:sellerId/:shopName/get-all-products-for-customer", userAuth, productController.getAllProductsForCustomer);
+router.get("/:sellerId/:shopName/get-all-products-for-customer", productController.getAllProductsForCustomer);          //using
 router.get("/:sellerId/:shopName/get-all-categories-of-seller", userAuth, productController.getAllCategoriesOfSeller);
 
 router.get("/:sellerId/:shopName/get-user-cart", userAuth, cartController.getUserCart);

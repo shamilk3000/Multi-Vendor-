@@ -1,8 +1,11 @@
 import { FaHome, FaShoppingCart, FaUser, FaStore } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+type ProductListProps = {
+  shopName: string;
+};
 
-const Navbar = () => {
+const Navbar = ({ shopName }: ProductListProps) => {
   const navigate = useNavigate();
   const cartItemCount = 3; // Example cart count
 
@@ -17,7 +20,7 @@ const Navbar = () => {
             transition={{ type: "spring", stiffness: 300 }}
             className="text-2xl font-bold cursor-pointer"
           >
-            MyShop
+            {shopName}
           </motion.div>
 
           {/* Menu Items */}

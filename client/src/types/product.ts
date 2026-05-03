@@ -13,7 +13,7 @@ export interface Product {
   image: string[];
   mrpPrice: number;
   sellingPrice: number;
-  discountPercentage?: number;
+  discountPercentage: number;
   category : ICategory;
   subCategory : ICategory;
   seller: string;
