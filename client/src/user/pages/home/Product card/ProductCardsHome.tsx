@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Pagination from "@mui/material/Pagination";
 import PaginationItem from "@mui/material/PaginationItem";
@@ -17,35 +17,55 @@ const ProductGrid: React.FC<{
   const [pausedIds, setPausedIds] = useState<string[]>([]);
   const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
 
-  useEffect(() => {
-    const intervals = data.map((product, idx) => {
-      const delay = idx * 600;
-      return setTimeout(() => {
-        const interval = setInterval(() => {
-          setImageIndex((prev) => {
-            if (pausedIds.includes(product._id)) return prev;
+  const intervalsRef = useRef<Record<string, ReturnType<typeof setInterval>>>(
+    {},
+  );
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const pausedRef = useRef<string[]>([]);
 
-            const currentIndex = prev[product._id] ?? 0;
-            const nextIndex = (currentIndex + 1) % product.image.length;
+  // ================== KEEP PAUSED IDS ==================
+  // ✅ keep pausedIds in ref
+  useEffect(() => {
+    pausedRef.current = pausedIds;
+  }, [pausedIds]);
+
+  useEffect(() => {
+    // cleanup old timers
+    Object.values(intervalsRef.current).forEach(clearInterval);
+    timeoutsRef.current.forEach(clearTimeout);
+
+    intervalsRef.current = {};
+    timeoutsRef.current = [];
+
+    paginatedProducts.forEach((product, idx) => {
+      if (!product.image || product.image.length <= 1) return;
+
+      const delay = idx * 2000;
+
+      const timeout = window.setTimeout(() => {
+        intervalsRef.current[product._id] = window.setInterval(() => {
+          setImageIndex((prev) => {
+            if (pausedRef.current.includes(product._id)) return prev;
+
+            const current = prev[product._id] ?? 0;
 
             return {
               ...prev,
-              [product._id]: nextIndex,
+              [product._id]: (current + 1) % product.image.length,
             };
           });
-        }, 4000);
-        (product as any).intervalId = interval;
+        }, 2000);
       }, delay);
+
+      timeoutsRef.current.push(timeout);
     });
 
     return () => {
-      intervals.forEach((timeoutId, idx) => {
-        clearTimeout(timeoutId);
-        const interval = (data[idx] as any).intervalId;
-        if (interval) clearInterval(interval);
-      });
+      Object.values(intervalsRef.current).forEach(clearInterval);
+      timeoutsRef.current.forEach(clearTimeout);
     };
-  }, [pausedIds, data]);
+  }, [data, currentPage]); // 👈 IMPORTANT FIX
+
   const getImageUrl = (img: string) =>
     img.startsWith("http") ? img : `${BASE_URL}${img}`;
 
@@ -53,7 +73,10 @@ const ProductGrid: React.FC<{
   const paginatedProducts = data.slice(startIndex, startIndex + itemsPerPage);
 
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+    <section
+      className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 
+  grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6"
+    >
       {paginatedProducts.map((product) => {
         const index = imageIndex[product._id] ?? 0;
 
@@ -64,33 +87,65 @@ const ProductGrid: React.FC<{
             onMouseLeave={() =>
               setPausedIds((prev) => prev.filter((id) => id !== product._id))
             }
-            className="cursor-pointer w-40 sm:w-60 lg:w-72 bg-white rounded-xl shadow-md hover:shadow-xl transition-transform duration-300 hover:scale-105"
+            className="group cursor-pointer w-full rounded-2xl overflow-hidden 
+          bg-linear-to-br from-white to-gray-100 border shadow-md 
+          hover:shadow-2xl transition-all duration-500 hover:scale-105"
           >
-            <div className="relative h-48 sm:h-64 lg:h-80 overflow-hidden rounded-t-xl">
+            {/* IMAGE */}
+            <div className="relative h-48 sm:h-64 lg:h-72 overflow-hidden">
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-60 z-10" />
+
+              {/* Discount badge */}
               {product.discountPercentage > 0 && (
                 <span className="absolute top-2 left-2 z-10 bg-red-500 text-white text-xs px-2 py-1 rounded">
                   {product.discountPercentage}% OFF
                 </span>
               )}
+
+              {/* Images */}
               {product.image.map((img, i) => (
                 <img
                   key={i}
                   src={getImageUrl(img)}
-                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
-                    i === index ? "opacity-100" : "opacity-0"
-                  }`}
+                  alt={product.name}
+                  className={`absolute inset-0 w-full h-full object-cover 
+                transition-all duration-700 group-hover:scale-110 ${
+                  i === index ? "opacity-100" : "opacity-0"
+                }`}
                 />
               ))}
+
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition duration-500 z-10" />
             </div>
-            <div className="p-3">
-              <p className="text-xs text-gray-400">
-                {product.category.name}/{product.subCategory.name}{" "}
+
+            {/* CONTENT */}
+            <div className="p-4 bg-white/80 backdrop-blur-md">
+              {/* Category */}
+              <p className="text-xs text-gray-400 mb-1">
+                {product.category?.name}/{product.subCategory?.name}
               </p>
-              <p className="font-bold text-sm truncate">{product.name}</p>
-              <div className="flex gap-2">
-                <span>${product.sellingPrice}</span>
-                <del className="text-gray-400">${product.mrpPrice}</del>
+
+              {/* Title */}
+              <p className="font-semibold text-sm truncate text-gray-800 group-hover:text-black transition">
+                {product.name}
+              </p>
+
+              {/* Price */}
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-lg font-bold text-green-600">
+                  ₹{product.sellingPrice}
+                </span>
+
+                <del className="text-gray-400 text-sm">₹{product.mrpPrice}</del>
               </div>
+
+              {/* Bottom animation line */}
+              <div
+                className="h-[2px] w-0 bg-linear-to-r from-green-400 to-blue-500 mt-2 
+            group-hover:w-full transition-all duration-500"
+              />
             </div>
           </div>
         );
@@ -109,10 +164,10 @@ const ProductCardsWithPagination: React.FC<{
   hideSearch?: boolean;
   search?: string;
 }> = ({ hideSearch, sellerId, shopName }) => {
-const { data: products = [], isLoading } = useProductsForUser(
-  sellerId ?? "",
-  shopName ?? ""
-);
+  const { data: products = [], isLoading } = useProductsForUser(
+    sellerId ?? "",
+    shopName ?? "",
+  );
   const location = useLocation();
   const navigate = useNavigate();
   const [openSearch, setOpenSearch] = useState(false);

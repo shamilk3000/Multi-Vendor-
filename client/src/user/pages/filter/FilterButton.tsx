@@ -48,7 +48,7 @@ const INITIAL_FILTERS: ProductFilters = {
 
 const FilterButton: React.FC<ProductListProps> = ({ sellerId }) => {
   const { data: categories = [], isLoading } = useCategoriesForUser(sellerId);
-   
+
   const [open, setOpen] = useState<boolean>(false);
   const [filters, setFilters] = useState<ProductFilters>(INITIAL_FILTERS);
 
@@ -66,9 +66,6 @@ const FilterButton: React.FC<ProductListProps> = ({ sellerId }) => {
     // params.set("priceMin", String(updated.price[0]));
     // params.set("priceMax", String(updated.price[1]));
     // navigate(`/products?${params.toString()}`);
-
-
-
 
     console.log("filter:", updated);
   };
@@ -120,26 +117,29 @@ const FilterButton: React.FC<ProductListProps> = ({ sellerId }) => {
           >
             <h4 className="font-semibold mb-2">Category</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {categories.map((cat:Category  ) => (
-  <Badge
-    key={cat._id}
-    variant={filters.category === cat.name ? "default" : "outline"}
-    onClick={() =>
-      setFilters((prev) => {
-        const updated = {
-          ...prev,
-          category: prev.category === cat.name ? undefined : cat.name,
-          subCategory: undefined,
-        };
-        updateURL(updated);
-        return updated;
-      })
-    }
-    className="cursor-pointer"
-  >
-    {cat.name}
-  </Badge>
-))}
+              {categories.map((cat: Category) => (
+                <Badge
+                  key={cat._id}
+                  variant={
+                    filters.category === cat.name ? "default" : "outline"
+                  }
+                  onClick={() =>
+                    setFilters((prev) => {
+                      const updated = {
+                        ...prev,
+                        category:
+                          prev.category === cat.name ? undefined : cat.name,
+                        subCategory: undefined,
+                      };
+                      updateURL(updated);
+                      return updated;
+                    })
+                  }
+                  className="cursor-pointer"
+                >
+                  {cat.name}
+                </Badge>
+              ))}
             </div>
 
             {filters.category && (
@@ -147,27 +147,33 @@ const FilterButton: React.FC<ProductListProps> = ({ sellerId }) => {
                 <h4 className="font-semibold mb-2">Sub category</h4>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {categories
-  .find((c:Category  ) => c.name === filters.category)
-  ?.children?.map((sub: any) => (
-    <Badge
-      key={sub._id}
-      variant={filters.subCategory === sub.name ? "default" : "outline"}
-      onClick={() =>
-        setFilters((prev) => {
-          const updated = {
-            ...prev,
-            subCategory:
-              prev.subCategory === sub.name ? undefined : sub.name,
-          };
-          updateURL(updated);
-          return updated;
-        })
-      }
-      className="cursor-pointer"
-    >
-      {sub.name}
-    </Badge>
-  ))}
+                    .find((c: Category) => c.name === filters.category)
+                    ?.children?.map((sub: any) => (
+                      <Badge
+                        key={sub._id}
+                        variant={
+                          filters.subCategory === sub.name
+                            ? "default"
+                            : "outline"
+                        }
+                        onClick={() =>
+                          setFilters((prev) => {
+                            const updated = {
+                              ...prev,
+                              subCategory:
+                                prev.subCategory === sub.name
+                                  ? undefined
+                                  : sub.name,
+                            };
+                            updateURL(updated);
+                            return updated;
+                          })
+                        }
+                        className="cursor-pointer"
+                      >
+                        {sub.name}
+                      </Badge>
+                    ))}
                 </div>
               </>
             )}
