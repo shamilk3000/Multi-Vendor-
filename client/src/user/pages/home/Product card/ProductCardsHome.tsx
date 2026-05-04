@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Pagination from "@mui/material/Pagination";
 import PaginationItem from "@mui/material/PaginationItem";
-import { FaSearch } from "react-icons/fa";
+import { FaLayerGroup, FaSearch } from "react-icons/fa";
 import type { Product } from "@/types/product";
 
 // GRID (UNCHANGED)
@@ -40,7 +40,7 @@ const ProductGrid: React.FC<{
     paginatedProducts.forEach((product, idx) => {
       if (!product.image || product.image.length <= 1) return;
 
-      const delay = idx * 2500;
+      const delay = idx * 3500;
 
       const timeout = window.setTimeout(() => {
         intervalsRef.current[product._id] = window.setInterval(() => {
@@ -54,7 +54,7 @@ const ProductGrid: React.FC<{
               [product._id]: (current + 1) % product.image.length,
             };
           });
-        }, 2000);
+        }, 5000);
       }, delay);
 
       timeoutsRef.current.push(timeout);
@@ -88,8 +88,8 @@ const ProductGrid: React.FC<{
               setPausedIds((prev) => prev.filter((id) => id !== product._id))
             }
             className="group cursor-pointer w-full rounded-2xl overflow-hidden 
-          bg-linear-to-br from-white to-gray-100 border shadow-md 
-          hover:shadow-2xl transition-all duration-500 hover:scale-105"
+          bg-linear-to-br from-white to-gray-100 border border-gray-400 shadow-lg 
+          hover:shadow-3xl transition-all duration-500 hover:scale-105"
           >
             {/* IMAGE */}
             <div className="relative h-48 sm:h-64 lg:h-72 overflow-hidden">
@@ -121,9 +121,10 @@ const ProductGrid: React.FC<{
             </div>
 
             {/* CONTENT */}
-            <div className="p-4 bg-white/80 backdrop-blur-md">
+            <div className="p-3 bg-white/80 backdrop-blur-md">
               {/* Category */}
-              <p className="text-xs text-gray-400 mb-1">
+              <p className="text-xs text-gray-600 mb-1 flex items-center gap-1">
+                <FaLayerGroup className="text-gray-500 text-[10px]" />
                 {product.category?.name}/{product.subCategory?.name}
               </p>
 
@@ -138,14 +139,12 @@ const ProductGrid: React.FC<{
                   ₹{product.sellingPrice}
                 </span>
 
-                <del className="text-gray-400 text-sm">₹{product.mrpPrice}</del>
+                <del className=" text-red-600 text-sm">₹{product.mrpPrice}</del>
               </div>
 
               {/* Bottom animation line */}
-              <div
-                className="h-[2px] w-0 bg-linear-to-r from-green-400 to-blue-500 mt-2 
-            group-hover:w-full transition-all duration-500"
-              />
+              <div className="h-[2px] w-0 mt-1 bg-linear-to-r from-gray-200 via-gray-500 to-gray-900 group-hover:w-full transition-all duration-500" />           
+
             </div>
           </div>
         );
