@@ -4,16 +4,20 @@ import Pagination from "@mui/material/Pagination";
 import PaginationItem from "@mui/material/PaginationItem";
 import { FaLayerGroup, FaSearch } from "react-icons/fa";
 import type { Product } from "@/types/product";
-
+import { useDispatch } from "react-redux";
+import { setSellerId } from "../../../../redux/authSlice";
 // GRID (UNCHANGED)
 const ProductGrid: React.FC<{
   currentPage: number;
   itemsPerPage: number;
   data: Product[];
-}> = ({ currentPage, itemsPerPage, data }) => {
+  sellerId?: string;
+  shopName?: string;
+}> = ({ currentPage, itemsPerPage, data, shopName, sellerId }) => {
   const [imageIndex, setImageIndex] = useState<Record<string, number>>(
     data.reduce((acc, p) => ({ ...acc, [p._id]: 0 }), {}),
   );
+  const navigate = useNavigate();
   const [pausedIds, setPausedIds] = useState<string[]>([]);
   const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
 
@@ -82,6 +86,9 @@ const ProductGrid: React.FC<{
 
         return (
           <div
+            onClick={() =>
+              navigate(`/${sellerId}/${shopName}/products/${product._id}`)
+            }
             key={product._id}
             onMouseEnter={() => setPausedIds((prev) => [...prev, product._id])}
             onMouseLeave={() =>
@@ -94,7 +101,7 @@ const ProductGrid: React.FC<{
             {/* IMAGE */}
             <div className="relative h-48 sm:h-64 lg:h-72 overflow-hidden">
               {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-60 z-10" />
+              {/* <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-60 z-10" /> */}
 
               {/* Discount badge */}
               {product.discountPercentage > 0 && (
@@ -117,7 +124,7 @@ const ProductGrid: React.FC<{
               ))}
 
               {/* Hover overlay */}
-              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition duration-500 z-10" />
+              {/* <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition duration-500 z-10" /> */}
             </div>
 
             {/* CONTENT */}
@@ -143,8 +150,7 @@ const ProductGrid: React.FC<{
               </div>
 
               {/* Bottom animation line */}
-              <div className="h-[2px] w-0 mt-1 bg-linear-to-r from-gray-200 via-gray-500 to-gray-900 group-hover:w-full transition-all duration-500" />           
-
+              <div className="h-[2px] w-0 mt-1 bg-linear-to-r from-gray-200 via-gray-500 to-gray-900 group-hover:w-full transition-all duration-500" />
             </div>
           </div>
         );
@@ -163,10 +169,16 @@ const ProductCardsWithPagination: React.FC<{
   hideSearch?: boolean;
   search?: string;
 }> = ({ hideSearch, sellerId, shopName }) => {
+  const dispatch = useDispatch();
   const { data: products = [], isLoading } = useProductsForUser(
     sellerId ?? "",
     shopName ?? "",
   );
+  useEffect(() => {
+    if (sellerId && shopName) {
+      dispatch(setSellerId({ sellerId, shopName }));
+    }
+  }, [sellerId, shopName, dispatch]);
   const location = useLocation();
   const navigate = useNavigate();
   const [openSearch, setOpenSearch] = useState(false);
@@ -256,6 +268,8 @@ const ProductCardsWithPagination: React.FC<{
         <>
           {/* GRID */}
           <ProductGrid
+            sellerId={sellerId}
+            shopName={shopName}
             currentPage={page}
             itemsPerPage={itemsPerPage}
             data={filteredProducts}

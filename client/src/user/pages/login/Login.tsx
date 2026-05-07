@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaEnvelope,
@@ -9,13 +9,23 @@ import {
   FaUserShield,
   FaTimesCircle,
   FaCheckCircle,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../navbar/Navbar";
 import Footer from "../footer/Footer";
+import { useSelector } from "react-redux";
+import { useGoogleLogin } from "@react-oauth/google";
+import toast from "react-hot-toast";
+import api from "../../../features/axios";
+import { useDispatch } from "react-redux";
+import { setSellerId, setUser } from "../../../redux/authSlice";
 
 const Login = () => {
+  const sellerId = useSelector((state: any) => state.auth.sellerId);
+  const shopName = useSelector((state: any) => state.auth.shopName);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -115,15 +125,133 @@ const Login = () => {
     }
   };
 
-  const handleLogin = () => {
-    if (errors.email || errors.password) return;
+  const handleLogin = async () => {
+    if (!formData.email || !formData.password) {
+      toast.error("All fields are required", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
+      return;
+    }
 
-    console.log(formData);
-    navigate("/");
+    if (errors.email || errors.password) {
+      toast.error(errors.email || errors.password, {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
+      return;
+    } else {
+      try {
+        const promise = api.post(`/${sellerId}/${shopName}/user-login`, {
+          email: formData.email,
+          password: formData.password,
+        });
+
+        const res = await toast.promise(
+          promise,
+          {
+            loading: "Loging in...",
+            success: (res) =>
+              res.data.message || "Welcome back 👋! Login successful",
+            error: (err) => err.response?.data?.message || "Failed to login",
+          },
+          {
+            style: {
+              background: "#111",
+              color: "#fff",
+              border: "1px solid #333",
+            },
+            duration: 3500,
+          },
+        );
+        if (res.data.user) {
+          dispatch(setUser(res.data.user));
+          dispatch(setSellerId({ sellerId, shopName }));
+          navigate(`/${sellerId}/${shopName}`);
+        }
+      } catch (error: any) {
+        console.log(error.response?.data);
+      }
+    }
   };
+  const user = useSelector((state: any) => state.auth.user);
+
+  useEffect(() => {
+    if (user) {
+      navigate(`/${sellerId}/${shopName}`);
+    }
+  }, [user, sellerId, shopName, navigate]);
+
+  const googleLogin = useGoogleLogin({
+    flow: "auth-code",
+
+    onSuccess: async (credentialResponse) => {
+      if (!sellerId || !shopName) {
+        toast.error("Invalid shop context");
+        return;
+      }
+
+      try {
+        const res = await toast.promise(
+          api.post(`/${sellerId}/${shopName}/google-auth`, {
+            credential: credentialResponse.code,
+          }),
+          {
+            loading: "Signing in with Google...",
+            success: (res) => res.data.message,
+            error: (err) =>
+              err?.response?.data?.message ||
+              err?.response?.statusText ||
+              "Google signup failed",
+          },
+          {
+            style: {
+              background: "#111",
+              color: "#fff",
+              border: "1px solid #333",
+            },
+          },
+        );
+
+        dispatch(setUser(res.data.user));
+        dispatch(setSellerId({ sellerId, shopName }));
+        navigate(`/${sellerId}/${shopName}`);
+      } catch (error: any) {
+        console.log("ERROR 👉", error?.response);
+      }
+    },
+
+    onError: () => {
+      toast.error("Google Signup failed", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
+    },
+  });
 
   const handleGoogleLogin = () => {
-    console.log("Google login clicked");
+    googleLogin();
   };
 
   const inputStyle =
@@ -168,7 +296,7 @@ const Login = () => {
 
   return (
     <div className=" flex flex-col bg-gray-50 p-0">
-      <Navbar />
+      <Navbar shopName={shopName!} />
 
       <div className="md:py-5 flex items-center justify-center bg-gray-50 relative overflow-hidden">
         <motion.div
@@ -294,7 +422,8 @@ const Login = () => {
           </div>
 
           <div className="text-right mt-3 mb-3">
-            <span className="text-sm text-gray-600 relative cursor-pointer group">
+            <span  onClick={() => navigate(`/${sellerId}/${shopName}/email-otp`)}
+             className="text-sm text-gray-600 relative cursor-pointer group">
               Forgot Password?
               <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-black transition-all duration-300 group-hover:w-full"></span>
             </span>
@@ -336,7 +465,7 @@ const Login = () => {
           <p className="text-center text-sm text-gray-500 mt-6">
             Don't have an account?{" "}
             <span
-              onClick={() => navigate("/register")}
+              onClick={() => navigate(`/${sellerId}/${shopName}/signup`)}
               className="text-black relative cursor-pointer group"
             >
               Register

@@ -7,14 +7,14 @@ const cartController = require("../Controller/cartController");
 const orderController = require("../Controller/orderController");
 const paymentController = require("../Controller/paymentController");
 
-router.post("/:sellerId/:shopName/google-auth", userController.googleAuthController);
-router.post("/:sellerId/:shopName/start-user-signup", userController.userSignup);
-router.post("/:sellerId/:shopName/verify-user-signup-otp", userController.verifyUserSignupOtp);
-router.post("/:sellerId/:shopName/user-login", userController.userLogin);
+router.post("/:sellerId/:shopName/google-auth", userController.googleAuthController);                                          //using
+router.post("/:sellerId/:shopName/start-user-signup", userController.userSignup);                                          //using
+router.post("/:sellerId/:shopName/verify-user-signup-otp", userController.verifyUserSignupOtp);                                 //using
+router.post("/:sellerId/:shopName/user-login", userController.userLogin);                                          //using
 
-router.post("/:sellerId/:shopName/user-forget-password-otp-send", userController.userForgetPasswordOtpSend);
-router.post("/:sellerId/:shopName/user-forget-password-otp-verify", userController.userForgetPasswordOtpVerify);
-router.post("/:sellerId/:shopName/user-reset-password", userController.userResetPassword);
+router.post("/:sellerId/:shopName/user-forget-password-otp-send", userController.userForgetPasswordOtpSend);                       //using
+router.post("/:sellerId/:shopName/user-forget-password-otp-verify", userController.userForgetPasswordOtpVerify);                     //using
+router.post("/:sellerId/:shopName/user-reset-password", userController.userResetPassword);                                          //using
 
 router.get("/:sellerId/:shopName/get-user-profile", userAuth, userController.getUserProfile);
 router.put("/:sellerId/:shopName/update-user", userAuth, userController.updateUser);
@@ -24,7 +24,9 @@ router.delete("/:sellerId/:shopName/delete-address/:id", userAuth, userControlle
 
 router.get("/:sellerId/:shopName/search-products/:search", userAuth, productController.searchProducts);
 router.get("/:sellerId/:shopName/get-all-products-for-customer", productController.getAllProductsForCustomer);          //using
-router.get("/:sellerId/get-all-categories-of-seller", productController.getAllCategoriesOfSellerForUser);       //using
+router.get("/:sellerId/get-all-categories-of-seller", productController.getAllCategoriesOfSellerForUser);                //using
+router.get("/get-product-by-id/:productId", productController.getProductByIdForUser);                                          //using
+router.post("/add-rating", userAuth, productController.addRating);                                                  //using
 
 router.get("/:sellerId/:shopName/get-user-cart", userAuth, cartController.getUserCart);
 router.post("/:sellerId/:shopName/add-cart-item", userAuth, cartController.addCartItem);

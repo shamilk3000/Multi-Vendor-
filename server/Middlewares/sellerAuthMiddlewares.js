@@ -67,7 +67,7 @@ const sellerAuth = async (req, res, next) => {
 
     // ❌ TOKEN INVALID / EXPIRED
     try {
-      decoded = jwtProvider.verifyJwt(token);
+      decoded = await jwtProvider.verifyJwt(token);
       console.log("worked decoding");
     } catch (err) {
       console.log("No decode");

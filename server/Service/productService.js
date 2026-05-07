@@ -201,6 +201,41 @@ const getProductById = async (productId) => {
   }
 };
 
+const getProductByIdForUser = async (productId) => {
+  try {
+   const product = await Product.findById(productId)
+  .populate("category")
+  .populate("subCategory")
+  .lean();
+
+if (!product) throw new Error("Product not found");
+
+const reviews = await Review.find({ product: productId });
+
+const breakdownMap = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+
+reviews.forEach((r) => {
+  if (breakdownMap[r.rating] !== undefined) {
+    breakdownMap[r.rating]++;
+  }
+});
+
+product.breakdown = Object.keys(breakdownMap)
+  .map((star) => ({
+    stars: Number(star),
+    count: breakdownMap[star],
+  }))
+  .sort((a, b) => b.stars - a.stars);
+
+return product;
+  } catch (error) {
+    console.error(`Error getting product with ID ${productId}:`, error);
+    throw new Error(
+      `Unable to get product with ID ${productId}: ${error.message}`
+    );
+  }
+};
+
 const searchProducts = async (searchTerm, sellerId) => {
   try {
     const regex = new RegExp(searchTerm, "i"); // case-insensitive search
@@ -230,57 +265,13 @@ const getAllProductsBySeller = async (sellerId) => {
 
 const getAllProductsForCustomer = async (sellerId) => {
   try {
-    // const user = await req.user;
-    // const filterQuery = {};
-    // const sortQuery = {};
-
-    // if (req.category) {
-    //   const category = await Category.findOne({ _id: req.category });
-    //   if (!category) {
-    //     return { content: [], totalPages: 0, totalElements: 0 };
-    //   }
-    //   filterQuery.category = category._id.toString();
-    // }
-    // if (req.minPrice && req.maxPrice) {
-    //   filterQuery.sellingPrice = { $gte: req.minPrice, $lte: req.maxPrice };
-    // }
-    
-    // if (req.minDiscount) {
-    //   filterQuery.discount = { $gte: req.minDiscount };
-    // }
-
-    // if (req.sort === "price_low_to_high") {
-    //   sortQuery.sellingPrice = 1; // ascending
-    // } else if (req.sort === "price_high_to_low") {
-    //   sortQuery.sellingPrice = -1; // descending
-    // } else if (req.sort === "discount_high_to_low") {
-    //   sortQuery.discount = -1; // descending
-    // } else if (req.sort === "discount_low_to_high") {
-    //   sortQuery.discount = 1; // ascending
-    // }
 
    const products = await Product.find({
   isActive: true,
   seller: sellerId,
   stock: { $gt: 0 }, // 👈 this line
 }).populate("category").populate("subCategory");
-    //   .sort(sortQuery)
-    //   .skip((req.page - 1) * size)
-    //   .limit(size);
-
-    // const totalElements = await Product.countDocuments({
-    //   ...filterQuery,
-    //   isActive: true,
-    //   seller: user.sellerId,
-    // });
-
-    // const totalPages = Math.ceil(totalElements / size);
-
-    // const result = {
-      // content: products,
-      // totalPages,
-      // totalElements,
-    // };
+  
     return products;
   } catch (error) {
     console.error("Error getting all products for customer:", error);
@@ -666,20 +657,21 @@ const restoreCategory = async (categoryId) => {
 
 const addRating = async (reviewData, user) => {
   try {
-    const { product, rating, review } = reviewData;
+    const { productId, rating, review } = reviewData;
 
     // 1. Save new rating
     const newRating = await Review.create({
-      product: product,
+      product: productId,
       user: user._id,
-      username: user.email,
+      username: user.name,
+      email: user.email,
       rating,
       review,
     });
 
     // 2. Recalculate product rating
     const result = await Review.aggregate([
-      { $match: { product: new mongoose.Types.ObjectId(product) } },
+      { $match: { product: new mongoose.Types.ObjectId(productId) } },
       {
         $group: {
           _id: "$product",
@@ -690,8 +682,8 @@ const addRating = async (reviewData, user) => {
     ]);
 
     if (result.length > 0) {
-      await Product.findByIdAndUpdate(product, {
-        ratingAverage: result[0].averageRating,
+      await Product.findByIdAndUpdate(productId, {
+        ratingAverage: Math.round(result[0].averageRating),
         ratingCount: result[0].totalRatings,
       });
     }
@@ -710,6 +702,7 @@ module.exports = {
   deleteProduct,
   restoreProduct,
   getProductById,
+  getProductByIdForUser,
   searchProducts,
   getAllProductsBySeller,
   getAllProducts,

@@ -23,6 +23,8 @@ import Signup from "./user/pages/signup/SignUp";
 import OTPVerification from "./user/pages/verifyOtp/VerifyOtp";
 import CustomizeProduct from "./user/pages/customizeProduct/CustomizeProduct";
 import EmailOTPPage from "./user/pages/emailOTPPage/EmailOTPPage";
+import FpOTPVerification from "./user/pages/fpOTPpage/fpOTPpage";
+import PasswordEnter from "./user/pages/passwordEnter/PasswordEnter";
 
 import SellerDashboardList from "./seller/components/sellerDashboardSlider/SellerDashboardSlider";
 import SellerAddProduct from "./seller/pages/sellerAddProduct/SellerAddProduct";
@@ -66,12 +68,14 @@ const nav = useNavigate();
           <Route path="/dashboard/logout" element={<Logout />} />
       </Route>
       
-          <Route path="/products/:id" element={<ProductPage />} />         
+          <Route path="/:sellerId/:shopName/products/:productId" element={<ProductPage />} />         
           <Route path="/customize-product/:id" element={<CustomizeProduct />} />         
           <Route path="/otp-verification" element={<OTPVerification />} />         
-          <Route path="/email-otp" element={<EmailOTPPage />} />         
-          <Route path="/signup" element={<Signup />} />         
-          <Route path="/login" element={<Login />} />         
+          <Route path="/:sellerId/:shopName/email-otp" element={<EmailOTPPage />} />   
+          <Route path="/:sellerId/:shopName/fp-otp-verification" element={<FpOTPVerification />} />
+          <Route path="/:sellerId/:shopName/forgot-password" element={<PasswordEnter />} />       
+          <Route path="/:sellerId/:shopName/signup" element={<Signup />} />  
+          <Route path="/:sellerId/:shopName/login" element={<Login />} />         
           <Route path="/payment-success" element={<PaymentSuccess />} />         
           <Route path="/checkout" element={<Checkout />} />         
           <Route path="/cart" element={<Cart />} />         

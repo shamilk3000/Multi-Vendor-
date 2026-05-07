@@ -35,7 +35,7 @@ const Reviews = () => {
   const reviewsToShow = showAll ? reviewsData : reviewsData.slice(0, 4);
 
   return (
-    <section className="mt-12">
+    <section className="mt-1">
       <h3 className="text-lg md:text-xl font-semibold mb-6">Product Reviews</h3>
 
       <div className="space-y-6">

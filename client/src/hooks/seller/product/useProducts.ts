@@ -15,7 +15,7 @@ export const useProducts = () => {
 export const useProductById = (productId: string) => {
   return useQuery({
     queryKey: ["products", productId],
-    queryFn: () => getProductById(productId),
+    queryFn: () => getProductById(productId!),
      refetchInterval: 5000,
   staleTime: 0,
     enabled: !!productId,

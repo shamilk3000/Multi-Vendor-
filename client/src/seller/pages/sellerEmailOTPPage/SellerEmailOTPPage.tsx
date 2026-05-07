@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Footer from "../sellerFooter/SellerFooter";
 import Navbar from "../sellerNavbar/SellerNavbar";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import {
   FaEnvelope,
   FaPaperPlane,

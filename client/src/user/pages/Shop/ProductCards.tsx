@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Pagination from "@mui/material/Pagination";
 import PaginationItem from "@mui/material/PaginationItem";
-import { FaLayerGroup, FaSearch } from "react-icons/fa";
+import { FaLayerGroup } from "react-icons/fa";
 import type { Product } from "@/types/product";
 import { useProductsForUser } from "../../../hooks/user/product/useProducts";
 import ProductSkeletonGrid from "@/user/components/skeletons/productList";
 import type { ProductFilters } from "./FilterButton";
+import { useNavigate } from "react-router-dom";
 
 /* ================= GRID (UNCHANGED UI) ================= */
 
@@ -14,10 +15,13 @@ const ProductGrid: React.FC<{
   currentPage: number;
   itemsPerPage: number;
   data: Product[];
-}> = ({ currentPage, itemsPerPage, data }) => {
+  sellerId?: string;
+  shopName?: string;
+}> = ({ currentPage, itemsPerPage, data ,shopName,sellerId}) => {
   const [imageIndex, setImageIndex] = useState<Record<string, number>>(
     data.reduce((acc, p) => ({ ...acc, [p._id]: 0 }), {}),
   );
+   const navigate = useNavigate();
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedProducts = data.slice(startIndex, startIndex + itemsPerPage);
@@ -81,6 +85,7 @@ const ProductGrid: React.FC<{
 
         return (
           <div
+          onClick={() => navigate(`/${sellerId}/${shopName}/products/${product._id}`)}
             key={product._id}
             onMouseEnter={() =>
               setPausedIds((prev) =>
@@ -93,8 +98,8 @@ const ProductGrid: React.FC<{
             className="group cursor-pointer w-full rounded-2xl overflow-hidden bg-linear-to-br from-white via-gray-50 to-gray-100 border border-gray-400 shadow-lg hover:shadow-3xl hover:shadow-blue-200/40 transition-all duration-500 hover:scale-[1.04]"
           >
             {/* IMAGE */}
-            <div className="relative h-44 sm:h-60 lg:h-72 overflow-hidden">
-              <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent opacity-70 z-10" />
+            <div className="relative h-48 sm:h-60 lg:h-72 overflow-hidden">
+              {/* <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent opacity-70 z-10" /> */}
 
               {product.discountPercentage > 0 && (
                 <span className="absolute top-2 left-2 z-20 bg-red-500/90 backdrop-blur text-white text-xs px-2 py-1 rounded-md shadow">
@@ -115,7 +120,7 @@ const ProductGrid: React.FC<{
                 />
               ))}
 
-              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition duration-500 z-10" />
+              {/* <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition duration-500 z-10" /> */}
             </div>
 
             {/* CONTENT */}
@@ -151,7 +156,7 @@ const ProductCardsWithPagination: React.FC<{
   sellerId?: string;
   shopName?: string;
   filters?: ProductFilters | null; // ✅ NEW
-}> = ({ hideSearch, search, sellerId, shopName, filters }) => {
+}> = ({  search, sellerId, shopName, filters }) => {
   const { data: products = [], isLoading } = useProductsForUser(
     sellerId ?? "",
     shopName ?? "",
@@ -237,6 +242,8 @@ const ProductCardsWithPagination: React.FC<{
       ) : (
         <>
           <ProductGrid
+          sellerId={sellerId}
+  shopName={shopName}
             currentPage={page}
             itemsPerPage={itemsPerPage}
             data={sortedProducts}

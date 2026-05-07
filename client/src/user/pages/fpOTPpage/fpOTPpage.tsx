@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import Footer from "../sellerFooter/SellerFooter";
-import Navbar from "../sellerNavbar/SellerNavbar";
+import Footer from "../footer/Footer";
+import Navbar from "../navbar/Navbar";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -13,29 +13,28 @@ import {
   FaShieldAlt,
   FaUserShield,
 } from "react-icons/fa";
-import axios from "axios";
+import { useSelector } from "react-redux";
+import api from "../../../features/axios";
 
 const OTPVerification: React.FC = () => {
+      const sellerId = useSelector((state: any) => state.auth.sellerId);
+  const shopName = useSelector((state: any) => state.auth.shopName);
   const OTP_TIME = 300; // 5 minutes
   const location = useLocation();
   const navigate = useNavigate();
-  type SellerData = {
-    name: string;
-    email: string;
-    password: string;
-  };
+  type UserFpData = string;
 
-  const [sellerData, setSellerData] = useState<SellerData | null>(null);
+  const [userFpData, setUserFpData] = useState<UserFpData | null>(null);
 
   useEffect(() => {
-    if (location.state?.sellerData) {
-      setSellerData(location.state.sellerData);
+    if (location.state?.userFpData) {
+      setUserFpData(location.state.userFpData);
 
       // ✅ clear state after reading
       navigate(location.pathname, { replace: true, state: {} });
     } else {
       // ❌ no data → redirect
-      navigate("/seller/signup", { replace: true });
+      navigate(`/${sellerId}/${shopName}/login`, { replace: true });
     }
   }, []);
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
@@ -103,12 +102,15 @@ const OTPVerification: React.FC = () => {
     }
 
     try {
-      const promise = axios.post("/api/seller/verify-seller-signup-otp", {
-        otp: enteredOtp,
-        sellerData,
-      });
+      const promise = api.post(
+        `/${sellerId}/${shopName}/user-forget-password-otp-verify`,
+        {
+          email: userFpData,
+          otp: enteredOtp,
+        },
+      );
 
-      await toast.promise(
+      const res = await toast.promise(
         promise,
         {
           loading: "Verifying OTP...",
@@ -124,14 +126,25 @@ const OTPVerification: React.FC = () => {
           },
           duration: 3500,
         },
-      );
-      if (!sellerData) {
-        navigate("/seller/signup");
-        return;
-      }
-      navigate("/seller/details-entry", {
-        state: { sellerEmail: sellerData.email },
+    );
+    if (!res.data.otpVerified) {
+        toast.error("OTP verification failed", {
+          icon: <FaExclamationTriangle className="text-red-500" />,
+          style: {
+            borderRadius: "12px",
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+            boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+          },
+          duration: 3500,
+        });
+      } else {
+        navigate(`/${sellerId}/${shopName}/forgot-password`, {
+        state: { FpData: userFpData },
       });
+      }
+    
     } catch (error: any) {
       console.log("OTP VERIFY ERROR 👉", error?.response?.data);
     }
@@ -139,13 +152,15 @@ const OTPVerification: React.FC = () => {
 
   const handleResend = async () => {
     if (!expired) return;
-    if (!sellerData) return;
+    if (!userFpData) return;
+
     try {
-      const promise = axios.post("/api/seller/start-seller-signup", {
-        name: sellerData.name,
-        email: sellerData.email,
-        password: sellerData.password,
-      });
+    const promise = api.post(
+        `/${sellerId}/${shopName}/user-forget-password-otp-send`,
+        {
+          email: userFpData,
+        },
+      );
 
       await toast.promise(
         promise,
@@ -177,7 +192,7 @@ const OTPVerification: React.FC = () => {
 
   return (
     <div className=" flex flex-col bg-gray-50 p-0">
-      <Navbar />
+    <Navbar shopName={shopName!} />
 
       <div className="py-18 flex justify-center items-center  bg-gray-100 px-4 overflow-hidden">
         <motion.div
@@ -291,6 +306,7 @@ const OTPVerification: React.FC = () => {
           </form>
         </motion.div>
       </div>
+      {/* <Toaster containerStyle={{ top: 75 }} position="top-right" /> */}
 
       <Footer />
     </div>

@@ -39,9 +39,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: [
         AccountStatus.ACTIVE,
-        AccountStatus.DEACTIVATED,
-        AccountStatus.BANNED,
-        AccountStatus.CLOSED,
+        AccountStatus.SUSPENDED,
+        // AccountStatus.BANNED,
+        // AccountStatus.CLOSED,
       ],
       default: AccountStatus.ACTIVE,
     },

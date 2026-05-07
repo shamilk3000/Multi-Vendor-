@@ -10,8 +10,9 @@ const {
   verifyOtp,
 } = require("../Utils/genrtSendVerfyOtpUtils");
 const Cart = require("../Models/cartModel");
+const { verifyGoogleToken } = require("../Configurations/googleAuth");
 
-const userGoogleAuth = async (credential, sellerId) => {
+const userGoogleAuth = async (credential, sellerId, res) => {
   try {
     // Get verified Google user
     const googleUser = await verifyGoogleToken(credential);
@@ -44,12 +45,8 @@ const userGoogleAuth = async (credential, sellerId) => {
         await user.save();
       }
     }
-    if (user.accountStatus === "DEACTIVATED") {
-      throw new Error("User account is deactivated");
-    } else if (user.accountStatus === "BANNED") {
-      throw new Error("User account is banned");
-    } else if (user.accountStatus === "CLOSED") {
-      throw new Error("User account is closed");
+    if (user.accountStatus === "SUSPENDED") {
+      throw new Error("Your account is suspended");
     }
     // Always generate JWT (whether login or signup)
     const token = createJwt({
@@ -57,8 +54,14 @@ const userGoogleAuth = async (credential, sellerId) => {
       email: user.email,
       sellerId: user.sellerId,
     });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.COOKIE_SECURE === "true",
+      sameSite: process.env.COOKIE_SAMESITE,
+      maxAge: Number(process.env.COOKIE_MAXAGE), // 1 day ,
+    });
 
-    return { user, token, isNew };
+    return { user, isNew };
   } catch (error) {
     console.error("userGoogleAuth Service Error:", error);
     throw error;
@@ -72,13 +75,14 @@ const userSignup = async (userData, sellerId) => {
       sellerId: sellerId,
     });
     if (existingUser) {
+      err.statusCode = 400;
       throw new Error("User with this email already exists");
     }
 
-    const otp = generateOtp(userData.email, `user${sellerId}`);
+    const record = await generateOtp(userData.email, `user${sellerId}`);
 
     // 3️⃣ Send email
-    await sendOtpEmail(userData.email, otp, "Signup");
+    await sendOtpEmail(userData.email, record.otp, "Signup");
 
     return {
       userData,
@@ -86,13 +90,13 @@ const userSignup = async (userData, sellerId) => {
     };
   } catch (error) {
     console.error("userSignup Service Error:", error);
-    throw new Error(`Signup failed: ${error.message}`);
+    throw error;
   }
 };
 
-const verifyOtpAndCreateUser = async (userData, otp, sellerId) => {
+const verifyOtpAndCreateUser = async (userData, otp, sellerId, res) => {
   try {
-    await verifyOtp(userData.email, otp, `user${sellerId}`);
+    await verifyOtp( otp, userData, `user${sellerId}`);
 
     const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
     const user = await User.create({
@@ -108,12 +112,18 @@ const verifyOtpAndCreateUser = async (userData, otp, sellerId) => {
       sellerId: user.sellerId,
     });
 
-    return { user, token, isVerified: true, message: "OTP verified" };
+     res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.COOKIE_SECURE === "true",
+      sameSite: process.env.COOKIE_SAMESITE,
+      maxAge: Number(process.env.COOKIE_MAXAGE), // 1 day ,
+    });
+
+    return { user, isVerified: true, message: "OTP verified" };
   } catch (error) {
     console.error("verifyOtpAndCreateUser Service Error:", error);
     return {
       user: null,
-      token: null,
       isVerified: false,
       message: error.message,
     };
@@ -146,28 +156,24 @@ const getUserByEmail = async (userData) => {
   }
 };
 
-const userLogin = async (email, password, sellerId) => {
+const userLogin = async (email, password, sellerId, res) => {
   try {
     const user = await User.findOne({ email: email, sellerId: sellerId });
 
     if (!user) throw new Error("No account found with this email");
 
-    if (user.accountStatus === "DEACTIVATED") {
-      throw new Error("User account is deactivated");
-    } else if (user.accountStatus === "BANNED") {
-      throw new Error("User account is banned");
-    } else if (user.accountStatus === "CLOSED") {
-      throw new Error("User account is closed");
+    if (user.accountStatus === "SUSPENDED") {
+      throw new Error("Your account is suspended");
     }
     // Check if user was registered via Google
     if (user.isGoogleAccount && !user.password) {
       throw new Error(
-        "This email is linked with Google. Please login using Google."
+        "This email is linked with Google. Please login using Google.",
       );
     }
 
     // Compare password normally (if set)
-    const isMatch = bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) throw new Error("Invalid password");
 
     const token = createJwt({
@@ -176,7 +182,14 @@ const userLogin = async (email, password, sellerId) => {
       sellerId: user.sellerId,
     });
 
-    return { user, token };
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.COOKIE_SECURE === "true",
+      sameSite: process.env.COOKIE_SAMESITE,
+      maxAge: Number(process.env.COOKIE_MAXAGE), // 1 day ,
+    });
+
+    return { user };
   } catch (error) {
     console.error("userLogin Service Error:", error);
     throw error;
@@ -189,8 +202,8 @@ const userForgetPasswordOtp = async (email, sellerId) => {
     if (!user) {
       throw new Error("User not found");
     }
-    const otp = generateOtp(email, `user${sellerId}`);
-    await sendOtpEmail(email, otp, "Forgot Password");
+    const record = await generateOtp(email, `user${sellerId}`);
+    await sendOtpEmail(email, record.otp, "Forgot Password");
     return {
       message: "OTP sent successfully. Please verify to reset password.",
     };
@@ -200,9 +213,9 @@ const userForgetPasswordOtp = async (email, sellerId) => {
   }
 };
 
-const userForgetPasswordOtpVerify = async (email, otp, sellerId) => {
+const userForgetPasswordOtpVerify = async (data, otp, sellerId) => {
   try {
-    await verifyOtp(email, otp, `user${sellerId}`);
+    await verifyOtp(otp, data, `user${sellerId}`);
     return { isVerified: true, message: "OTP verified" };
   } catch (error) {
     console.error("userForgetPasswordOtpVerify Service Error:", error);
@@ -343,7 +356,7 @@ const updateUserStatus = async (userId, newStatus) => {
     return await User.findByIdAndUpdate(
       userId,
       { accountStatus: newStatus },
-      { new: true }
+      { new: true },
     );
   } catch (error) {
     console.error("updateUserStatus Service Error:", error);

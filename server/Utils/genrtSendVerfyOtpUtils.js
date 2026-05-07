@@ -45,7 +45,7 @@ async function sendOtpEmail(to, otp, purpose = "Verification") {
           margin: 20px 0;
         ">${otp}</p>
         <p style="font-size: 14px; color: #999; text-align: center;">
-          This OTP will expire in 10 minutes.
+          This OTP will expire in 5 minutes.
         </p>
         <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;" />
         <p style="font-size: 12px; color: #aaa; text-align: center;">

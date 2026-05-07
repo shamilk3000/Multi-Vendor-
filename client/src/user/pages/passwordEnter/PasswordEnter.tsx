@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Navbar from "../sellerNavbar/SellerNavbar";
-import Footer from "../sellerFooter/SellerFooter";
+import Footer from "../footer/Footer";
+import Navbar from "../navbar/Navbar";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -14,9 +14,12 @@ import {
   FaEdit,
   FaExclamationTriangle,
 } from "react-icons/fa";
-import axios from "axios";
+import { useSelector } from "react-redux";
+import api from "../../../features/axios";
 
 const ChangePassword: React.FC = () => {
+     const sellerId = useSelector((state: any) => state.auth.sellerId);
+      const shopName = useSelector((state: any) => state.auth.shopName);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPass, setShowNewPass] = useState(false);
@@ -35,7 +38,7 @@ const ChangePassword: React.FC = () => {
       navigate(location.pathname, { replace: true, state: {} });
     } else {
       // ❌ no data → redirect
-      navigate("/seller/login", { replace: true });
+      navigate(`/${sellerId}/${shopName}/login`, { replace: true });
     }
   }, []);
   const [showNewPassSuccess, setShowNewPassSuccess] = useState(true);
@@ -97,7 +100,7 @@ const ChangePassword: React.FC = () => {
     }
 
     try {
-      const promise = axios.post("/api/seller/seller-reset-password", {
+      const promise = api.post(`/${sellerId}/${shopName}/user-reset-password`, {
         email: FpData,
         password: newPassword,
       });
@@ -119,8 +122,8 @@ const ChangePassword: React.FC = () => {
           duration: 3500,
         },
       );
-
-      navigate("/seller/login");
+  
+      navigate(`/${sellerId}/${shopName}/login`);
     } catch (error: any) {
       console.log("PASSWORD CHANGING ERROR 👉", error?.response?.data);
     }
@@ -132,7 +135,7 @@ const ChangePassword: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* ✅ NAVBAR */}
-      <Navbar />
+      <Navbar shopName={shopName!} />
 
       {/* ✅ MAIN CONTENT */}
       <div className="flex flex-1 items-center justify-center px-2 md:px-4 py-10 bg-gray-100">

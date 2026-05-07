@@ -4,9 +4,10 @@ const googleAuthController = async (req, res) => {
   try {
     const { sellerId } = req.params;
     const { credential } = req.body;
-    const { user, token, isNew } = await userService.userGoogleAuth(
+    const { user, isNew } = await userService.userGoogleAuth(
       credential,
-      sellerId
+      sellerId,
+      res,
     );
 
     return res.status(200).json({
@@ -14,7 +15,6 @@ const googleAuthController = async (req, res) => {
         ? "Signup successful!"
         : "Login successful! Welcome back 👋",
       user,
-      token,
       isNew, // 👈 IMPORTANT: send this to frontend
     });
   } catch (error) {
@@ -41,12 +41,12 @@ const verifyUserSignupOtp = async (req, res) => {
     const result = await userService.verifyOtpAndCreateUser(
       userData,
       otp,
-      sellerId
+      sellerId,
+      res,
     );
 
     return res.status(result.isVerified ? 201 : 400).json({
       user: result.user,
-      token: result.token,
       otpVerified: result.isVerified, // tells frontend if OTP verified
       message: result.message,
     });
@@ -61,13 +61,14 @@ const userLogin = async (req, res) => {
     const { sellerId } = req.params;
     const { email, password } = req.body;
 
-    const { user, token } = await userService.userLogin(
+    const { user } = await userService.userLogin(
       email,
       password,
-      sellerId
+      sellerId,
+      res,
     );
 
-    return res.status(200).json({ user, token });
+    return res.status(200).json({ user });
   } catch (error) {
     console.error("userLogin Controller Error:", error);
     return res.status(500).json({ message: error.message });
@@ -89,13 +90,16 @@ const userForgetPasswordOtpSend = async (req, res) => {
 const userForgetPasswordOtpVerify = async (req, res) => {
   try {
     const { sellerId } = req.params;
-    const { email, otp } = req.body;
+    const data = req.body;
     const result = await userService.userForgetPasswordOtpVerify(
-      email,
-      otp,
-      sellerId
+      data,
+      data.otp,
+      sellerId,
     );
-    return res.status(result.isVerified ? 200 : 400).json(result);
+    return res.status(result.isVerified ? 200 : 400).json({
+      otpVerified: result.isVerified, // tells frontend if OTP verified
+      message: result.message,
+    });
   } catch (error) {
     console.error("userForgetPasswordOtpVerify Controller Error:", error);
     return res.status(400).json({ message: error.message });
@@ -109,7 +113,7 @@ const userResetPassword = async (req, res) => {
     const result = await userService.userResetPassword(
       email,
       password,
-      sellerId
+      sellerId,
     );
     return res.status(200).json(result);
   } catch (error) {

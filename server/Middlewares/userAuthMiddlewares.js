@@ -1,58 +1,68 @@
 const userService = require("../Service/userService");
+const jwtProvider = require("../Utils/jwtProvider");
 
 const userAuth = async (req, res, next) => {
   try {
+    // const sellerId = req.params.sellerId;
+    const token = req.cookies.token;
 
-    const sellerId = req.params.sellerId;
-    if (!sellerId) {
-      return res.status(401).json({
-        success: false,
-        message: "Seller ID is required",
-      });
-    }
-
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer")) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid token. Authorization failed",
-      });
-    }
-
-    const token = authHeader.split(" ")[1];
+    // ❌ NO COOKIE
     if (!token) {
+      console.log("No token");
       return res.status(401).json({
         success: false,
-        message: "Invalid token. Authorization failed",
+        code: "NO_TOKEN_USER",
+        message: "Login required",
       });
     }
 
-    const user = await userService.getUserProfileByToken(token);
+    let decoded;
+
+    // ❌ TOKEN INVALID / EXPIRED
+    try {
+      decoded = await jwtProvider.verifyJwt(token);
+      console.log("worked decoding");
+    } catch (err) {
+      console.log("No decode");
+      return res.status(401).json({
+        success: false,
+        code: "TOKEN_EXPIRED_USER",
+        message: "Session expired",
+      });
+    }
+
+    const user = await jwtProvider.getUserProfileByToken(
+      token,
+      decoded.sellerId,
+    );
+
     if (!user) {
-      return res
-        .status(401)
-        .json({ success: false, message: "User not found" });
-    }
-    if (sellerId !== user.sellerId) {
+      console.log("No user");
       return res.status(401).json({
         success: false,
-        message: "Unauthorized access",
+        code: "USER_NOT_FOUND_USER",
       });
     }
 
-    if (user.accountStatus === "DEACTIVATED") {
-      throw new Error("User account is deactivated");
-    } else if (user.accountStatus === "BANNED") {
-      throw new Error("User account is banned");
-    } else if (user.accountStatus === "CLOSED") {
-      throw new Error("User account is closed");
+    // ❌ ACCOUNT NOT ACTIVE (🔥 FIRST CHECK LIKE YOU SAID)
+    if (user.accountStatus !== "ACTIVE") {
+      console.log("Account is not active");
+      return res.status(403).json({
+        success: false,
+        code: "ACCOUNT_NOT_ACTIVE_USER",
+        status: user.accountStatus, // PAYMENT_PENDING etc
+      });
     }
 
     req.user = user;
     next();
   } catch (error) {
-    console.error("userAuth Error:", error.message);
-    res.status(401).json({ success: false, message: error.message });
+    console.log("UserAuth server error");
+    return res.status(500).json({
+      success: false,
+      code: "SERVER_ERROR_USER",
+      message: error.message,
+    });
   }
 };
 

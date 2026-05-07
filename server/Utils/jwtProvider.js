@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const Seller = require("../Models/sellerModel");
+const User = require("../Models/userModel");
 
 function createJwt(payload) {
   return jwt.sign(payload, process.env.JWT_SECRET, {
@@ -25,6 +26,16 @@ async function getSellerProfileByToken (jwt) {
   }
 };
 
+async function getUserProfileByToken (jwt, sellerId) {
+  try {
+    const email = await getEmailFromToken(jwt);
+    return await getUserByEmail(email , sellerId);
+  } catch (error) {;
+    throw new Error(`Unable to fetch user profile`);
+  }
+};
+
+
 async function getEmailFromToken(token) {
   try {
     const decoded = await verifyJwt(token);
@@ -46,14 +57,23 @@ const getSellerByEmail = async (email) => {
   }
 };
 
+const getUserByEmail = async (email, sellerId) => {
+  try {
+    const user = await User.findOne({ email, sellerId });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    return user;
+  } catch (error) {
+    throw new Error(`Unable to fetch user by email`);
+  }
+};
+
 async function getUserFromToken(token) {
   try {
     const decoded = await verifyJwt(token);
-    return {
-      id: decoded.id,
-      email: decoded.email,
-      sellerId: decoded.sellerId,
-    };
+    const user = await User.findOne({ email: decoded.email , sellerId: decoded.sellerId});
+    return user;
   } catch (error) {
     throw new Error("Failed to get user from token: " + error.message);
   }
@@ -65,5 +85,7 @@ module.exports = {
   getEmailFromToken,
   getUserFromToken,
   getSellerProfileByToken,
+  getUserProfileByToken,
   getSellerByEmail,
+  getUserByEmail,
 };

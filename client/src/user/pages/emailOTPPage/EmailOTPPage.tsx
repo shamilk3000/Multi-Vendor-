@@ -2,17 +2,25 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Footer from "../footer/Footer";
 import Navbar from "../navbar/Navbar";
+import api from "../../../features/axios";
 import {
   FaEnvelope,
   FaPaperPlane,
   FaTimesCircle,
   FaCheckCircle,
+  FaExclamationTriangle,
 } from "react-icons/fa";
-import OTPVerification from "../verifyOtp/VerifyOtp"; // your OTP page
+// import OTPVerification from "../verifyOtp/VerifyOtp"; // your OTP page
+import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const EmailOTPPage: React.FC = () => {
+    const sellerId = useSelector((state: any) => state.auth.sellerId);
+  const shopName = useSelector((state: any) => state.auth.shopName);
+   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
+  // const [otpSent, setOtpSent] = useState(false);
   const [errors, setErrors] = useState<{ email?: string }>({});
   const [visibleWarnings, setVisibleWarnings] = useState<{ email: boolean }>({
     email: false,
@@ -42,19 +50,60 @@ const EmailOTPPage: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateEmail(email)) {
+       toast.error("Enter a valid email", {
+              icon: <FaExclamationTriangle className="text-red-500" />,
+              style: {
+                borderRadius: "12px",
+                background: "#111",
+                color: "#fff",
+                border: "1px solid #333",
+                boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+              },
+              duration: 3500,
+            });
       setErrors({ email: "Enter a valid email" });
       setVisibleWarnings({ email: true });
       return;
     }
     setErrors({});
-    setOtpSent(true);
-    alert(`OTP sent to ${email} 📩`);
+
+    try {
+      const promise = api.post(
+        `/${sellerId}/${shopName}/user-forget-password-otp-send`,
+        {
+          email,
+        },
+      );
+
+      await toast.promise(
+        promise,
+        {
+          loading: "Sending OTP...",
+          success: (res) => res.data.message || "OTP sent successfully",
+          error: (err) => err.response?.data?.message || "Failed to send OTP",
+        },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+          duration: 3500,
+        },
+      );
+
+      navigate(`/${sellerId}/${shopName}/fp-otp-verification`, {
+        state: { userFpData: email },
+      });
+    } catch (error: any) {
+      console.log("OTP SENDING ERROR 👉", error?.response?.data);
+    }
+   
   };
 
-  if (otpSent) return <OTPVerification />;
 
   const inputStyle = `
   w-full border rounded-lg p-2.5 pl-9 text-sm 
@@ -65,7 +114,7 @@ const EmailOTPPage: React.FC = () => {
 
   return (
     <div className=" flex flex-col bg-gray-50">
-      <Navbar />
+      <Navbar shopName={shopName!} />
 
       <div className="min-h-[calc(100vh-350px)] md:min-h-[calc(100vh-250px)] flex justify-center items-center bg-gray-100 px-4">
         <motion.div

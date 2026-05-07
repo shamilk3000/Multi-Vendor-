@@ -5,17 +5,48 @@ import Navbar from "../navbar/Navbar";
 import {
   FaClock,
   FaExclamationCircle,
+  FaExclamationTriangle,
   FaKey,
   FaShieldAlt,
   FaUserShield,
 } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import api from "../../../features/axios";
+import { useDispatch } from "react-redux";
+import { setSellerId, setUser } from "../../../redux/authSlice";
 
 const OTPVerification: React.FC = () => {
+  const dispatch = useDispatch();
   const OTP_TIME = 300; // 5 minutes
-
+  const sellerId = useSelector((state: any) => state.auth.sellerId);
+  const shopName = useSelector((state: any) => state.auth.shopName);
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [timeLeft, setTimeLeft] = useState(OTP_TIME);
   const [expired, setExpired] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  type SellerData = {
+    name: string;
+    email: string;
+    password: string;
+  };
+
+  const [userData, setUserData] = useState<SellerData | null>(null);
+
+  useEffect(() => {
+    if (location.state?.userData) {
+      setUserData(location.state.userData);
+
+      // ✅ clear state after reading
+      navigate(location.pathname, { replace: true, state: {} });
+    } else {
+      // ❌ no data → redirect
+      navigate(`/${sellerId}/${shopName}/signup`, { replace: true });
+    }
+  }, []);
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -55,7 +86,7 @@ const OTPVerification: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (expired) return;
@@ -63,21 +94,102 @@ const OTPVerification: React.FC = () => {
     const enteredOtp = otp.join("");
 
     if (enteredOtp.length !== 6) {
-      alert("Enter full OTP");
+      toast.error("Enter full OTP", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
       return;
     }
 
-    alert("OTP Verified 🎉");
+    try {
+      const promise = api.post(
+        `/${sellerId}/${shopName}/verify-user-signup-otp`,
+        {
+          otp: enteredOtp,
+          userData,
+        },
+      );
+
+      const res = await toast.promise(
+        promise,
+        {
+          loading: "Verifying OTP...",
+          success: (res) => res.data.message || "OTP verified successfully",
+          error: (err) =>
+            err.response?.data?.message || "OTP verification failed",
+        },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+          duration: 3500,
+        },
+      );
+
+      if (!res.data.otpVerified) {
+        toast.error("OTP verification failed", {
+          icon: <FaExclamationTriangle className="text-red-500" />,
+          style: {
+            borderRadius: "12px",
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+            boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+          },
+          duration: 3500,
+        });
+      } else {
+        dispatch(setUser(res.data.user));
+        dispatch(setSellerId({ sellerId, shopName }));
+        navigate(`/${sellerId}/${shopName}`);
+      }
+    } catch (error: any) {
+      console.log("OTP VERIFY ERROR 👉", error?.response?.data);
+    }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     if (!expired) return;
+    if (!userData) return;
+    try {
+      const promise = api.post(`/${sellerId}/${shopName}/start-user-signup`, {
+        name: userData.name,
+        email: userData.email,
+        password: userData.password,
+      });
 
-    setOtp(["", "", "", "", "", ""]);
-    setTimeLeft(OTP_TIME);
-    setExpired(false);
+      await toast.promise(
+        promise,
+        {
+          loading: "Resending OTP....",
+          success: () => "OTP Resent Successful 📩 ",
+          error: () => "Failed to resent OTP",
+        },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+          duration: 3500,
+        },
+      );
 
-    alert("OTP Resent 📩");
+      setOtp(["", "", "", "", "", ""]);
+      setTimeLeft(OTP_TIME);
+      setExpired(false);
+    } catch (error: any) {
+      console.log(error.response?.data);
+    }
   };
 
   const minutes = Math.floor(timeLeft / 60);
@@ -85,7 +197,7 @@ const OTPVerification: React.FC = () => {
 
   return (
     <div className=" flex flex-col bg-gray-50 p-0">
-      <Navbar />
+      <Navbar shopName={shopName!} />
 
       <div className="py-18 flex justify-center items-center  bg-gray-100 px-4 overflow-hidden">
         <motion.div

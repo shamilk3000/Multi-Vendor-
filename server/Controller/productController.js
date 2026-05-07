@@ -53,6 +53,17 @@ const getProductById = async (req, res) => {
   }
 };
 
+const getProductByIdForUser = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const product = await productService.getProductByIdForUser(productId);
+    return res.status(200).json(product);
+  } catch (error) {
+    console.error("getProductByIdForUser Controller Error:", error);
+    return res.status(400).json({ message: error.message });
+  }
+};
+
 const deleteProduct = async (req, res) => {
   try {
     const { productId } = req.params;
@@ -238,6 +249,7 @@ module.exports = {
   restoreProduct,
   getProductBySellerId,
   getProductById,
+  getProductByIdForUser,
   getProductForSeller,
   getAllProducts,
   searchProducts,

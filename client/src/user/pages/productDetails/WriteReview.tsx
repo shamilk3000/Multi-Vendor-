@@ -1,10 +1,15 @@
 import { useState } from "react";
+import api from "../../../features/axios";
+import toast from "react-hot-toast";
+import { FaExclamationTriangle } from "react-icons/fa";
+import { ultrateAddReview } from "../../../hooks/user/review/ultrateReviews";
 
 interface ReviewFormProps {
   productId: string;
 }
 
 const WriteReview: React.FC<ReviewFormProps> = ({ productId }) => {
+  const { mutateAsync: addReview } = ultrateAddReview();
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
@@ -12,23 +17,63 @@ const WriteReview: React.FC<ReviewFormProps> = ({ productId }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!rating || !reviewText.trim()) return;
+
+    if (!rating) {
+      toast.error("Please select a rating", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
+      return;
+    }
+
+    if (!reviewText.trim()) {
+      toast.error("Review cannot be empty", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
+      return;
+    }
 
     setSubmitting(true);
+
+    const data = { productId, rating, review: reviewText };
+
     try {
-      const res = await fetch("/api/ratings/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, rating, review: reviewText }),
-      });
-      if (!res.ok) throw new Error("Failed to submit review");
-      alert("Review submitted!");
+      await toast.promise(
+        addReview(data),
+        {
+          loading: "Submitting review...",
+          success: "Review added successfully 🎉",
+          error: "Failed to submit review ❌",
+        },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+        },
+      );
+      // Reset only on success
       setRating(0);
       setHoverRating(0);
       setReviewText("");
     } catch (err) {
       console.error(err);
-      alert("Error submitting review.");
     } finally {
       setSubmitting(false);
     }

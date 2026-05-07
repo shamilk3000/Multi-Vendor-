@@ -133,20 +133,17 @@ const ProductInfo = ({ product }: { product: Product }) => {
       <div className="space-y-2 mb-6">
         <p className="text-sm font-bold text-gray-800">Product Details:</p>
         <ul className="space-y-2">
-          {product.description
-            .split(".")
-            .filter((p) => p.trim())
-            .map((point, idx) => (
-              <li
-                key={idx}
-                className="flex gap-2 text-gray-600
-                           hover:translate-x-1 hover:text-black
-                           transition"
-              >
-                <span className="text-yellow-400 animate-pulse">•</span>
-                <span>{point.trim()}.</span>
-              </li>
-            ))}
+          {product.description?.map((point, idx) => (
+            <li
+              key={idx}
+              className="flex gap-2 text-gray-600
+               hover:translate-x-1 hover:text-black
+               transition"
+            >
+              <span className="text-yellow-400 animate-pulse">•</span>
+              <span>{point}</span>
+            </li>
+          ))}
         </ul>
       </div>
 

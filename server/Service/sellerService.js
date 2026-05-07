@@ -347,22 +347,7 @@ const sellerGoogleAuth = async (credential , res) => {
     if (seller.isComplete === false) {
       return {seller: seller, isNew };
     } else {
-      // if (seller.accountStatus === "PENDING_VERIFICATION") {
-      //   throw new Error("Seller account verification is pending");
-      // } else 
-      //   if (seller.accountStatus === "PENDING_PAYMENT") {
-      //   throw new Error("Seller account payment is pending");
-      // } else if (seller.accountStatus === "SUSPENDED") {
-      //   throw new Error("Seller account is suspended");
-      // }
-      // else if (seller.accountStatus === "DEACTIVATED") {
-      //   throw new Error("Seller account is deactivated");
-      // } else if (seller.accountStatus === "BANNED") {
-      //   throw new Error("Seller account is banned");
-      // } else if (seller.accountStatus === "CLOSED") {
-      //   throw new Error("Seller account is closed");
-      // }
-      // Always generate JWT (whether login or signup)
+     
       const token = createJwt({ id: seller._id, email: seller.email });
        res.cookie("token", token, {
       httpOnly: true,
@@ -397,21 +382,7 @@ const sellerLogin = async (email, password, res) => {
 
       return {seller, isComplete: seller.isComplete};
     } else {
-      // if (seller.accountStatus === "PENDING_VERIFICATION") {
-      //   throw new Error("Seller account verification is pending");
-      // } else 
-      //   if (seller.accountStatus === "PENDING_PAYMENT") {
-      //   throw new Error("Seller account subscription payment is pending");
-      // } else if (seller.accountStatus === "SUSPENDED") {
-      //   throw new Error("Seller account is suspended");
-      // } 
-      // else if (seller.accountStatus === "DEACTIVATED") {
-      //   throw new Error("Seller account is deactivated");
-      // } else if (seller.accountStatus === "BANNED") {
-      //   throw new Error("Seller account is banned");
-      // } else if (seller.accountStatus === "CLOSED") {
-      //   throw new Error("Seller account is closed");
-      // }
+
 
       // Check if user was registered via Google
       if (seller.isGoogleAccount && !seller.password) {
@@ -420,7 +391,7 @@ const sellerLogin = async (email, password, res) => {
         );
       }
 
-      const isMatch = bcrypt.compare(password, seller.password);
+      const isMatch = await bcrypt.compare(password, seller.password);
       if (!isMatch) throw new Error("Invalid password");
 
       const token = createJwt({ id: seller._id, email: seller.email });
