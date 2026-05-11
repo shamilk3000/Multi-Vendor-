@@ -38,3 +38,14 @@ export const restoreProduct = async ({ productId }: { productId: string }) => {
   const res = await api.put(`/seller/restore-product/${productId}`);
   return res.data;
 };
+
+export const getProductByIdForDetails = async ({
+  productId
+}: {
+  productId: string;
+}) => {
+  const res = await api.get(
+    `/seller/get-product-by-id/${productId}`
+  );
+  return res.data;
+};

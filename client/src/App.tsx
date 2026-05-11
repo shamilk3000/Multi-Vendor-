@@ -102,7 +102,7 @@ const nav = useNavigate();
           <Route path="/seller/edit-profile" element={<SellerEditProfile />} />
           <Route path="/seller/add-product" element={<SellerAddProduct />} />
           <Route path="/seller/products" element={<SellerProducts />} />
-          <Route path="/seller/products/:id" element={<SellerProductDetails />} />
+          <Route path="/seller/products/:productId" element={<SellerProductDetails />} />
           <Route path="/seller/edit-product/:id" element={<SellerEditProduct />} />
           <Route path="/seller/category" element={<SellerCategoryList />} />
           <Route path="/seller/orders/" element={<SellerOrders />} />

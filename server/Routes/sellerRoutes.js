@@ -18,6 +18,7 @@ router.post("/seller-login", sellerController.sellerLogin);                     
 router.post("/seller-forget-password-otp-send", sellerController.sellerForgetPasswordOtpSend);                       //using
 router.post("/seller-forget-password-otp-verify", sellerController.sellerForgetPasswordOtpVerify);                  //using
 router.post("/seller-reset-password", sellerController.sellerResetPassword);                                         //using
+router.post("/seller-reset-password-dashboard", sellerAuth, sellerController.sellerResetPasswordDashboard);                                         //using
 
 router.get("/get-seller-profile", sellerAuth, sellerController.getSellerProfile);
 router.put("/update-seller", sellerAuth, sellerController.updateSeller);
@@ -44,6 +45,8 @@ router.get("/get-category-by-id/:categoryId", sellerAuth, productController.getC
 router.get("/get-all-categories-of-seller", sellerAuth, productController.getAllCategoriesOfSeller);                        //using
 router.put("/delete-category/:categoryId", sellerAuth, productController.deleteCategory);                                               //using
 router.put("/restore-category/:categoryId", sellerAuth, productController.restoreCategory);                                             //using
+router.get("/get-product-by-id/:productId",sellerAuth, productController.getProductByIdForUser);                                          //using
+router.get("/get-reviews/:productId",sellerAuth, productController.getReviews);                                                  //using
 
 router.get("/all-orders-of-seller", sellerAuth, orderController.allOrdersOfSeller);
 router.put("/update-order-status/:orderId/:status", sellerAuth, orderController.updateOrderStatus);

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getProducts, getProductById } from "../../../api/seller/product";
+import { getProducts, getProductById , getProductByIdForDetails} from "../../../api/seller/product";
 
 // 📦 Get all products
 export const useProducts = () => {
@@ -18,6 +18,18 @@ export const useProductById = (productId: string) => {
     queryFn: () => getProductById(productId!),
      refetchInterval: 5000,
   staleTime: 0,
+    enabled: !!productId,
+  });
+};
+
+export const useProductByIdForDetails = (productId?: string) => {
+  return useQuery({
+        queryKey: ["products", "singleProducts" , "seller" , productId ,],
+    queryFn: () => {
+      return getProductByIdForDetails({ productId: productId! });
+    },
+     refetchInterval: 5000,
+    staleTime: 0,
     enabled: !!productId,
   });
 };

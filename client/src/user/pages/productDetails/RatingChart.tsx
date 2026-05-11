@@ -107,7 +107,9 @@ const RatingChart = ({ average, totalRatings, breakdown }: RatingChartProps) => 
             group-hover:scale-110
           "
         >
-          {average.toFixed(1)}
+          {/* {average.toFixed(1)} */}
+          {average}
+
         </div>
 
         {/* ⭐ Shining Stars */}

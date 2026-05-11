@@ -8,7 +8,10 @@ import { useProducts } from "../../../hooks/seller/product/useProducts";
 import type { Product } from "@/types/product";
 import { useNavigate } from "react-router-dom";
 import ProductListSkeleton from "@/seller/components/skeletons/productSkeleton";
-import { ultrateDeleteProduct , ultrateRestoreProduct} from "../../../hooks/seller/product/ultrateProducts";
+import {
+  ultrateDeleteProduct,
+  ultrateRestoreProduct,
+} from "../../../hooks/seller/product/ultrateProducts";
 
 import {
   FaTrash,
@@ -23,7 +26,6 @@ import {
   FaPlus,
 } from "react-icons/fa";
 import { Pagination } from "@mui/material";
-
 
 const SellerProducts = () => {
   const [search, setSearch] = useState("");
@@ -42,26 +44,23 @@ const SellerProducts = () => {
     setPage(1);
   }, [search, filter, advancedFilters]);
 
- 
-
- 
   // 🔥 delete (SOFT DELETE)
-  const handleDelete = async ( id: string ) => {
+  const handleDelete = async (id: string) => {
     try {
       await toast.promise(
-        deleteProduct({ productId:id}),
+        deleteProduct({ productId: id }),
         {
-        loading: "Deleting product...",
-        success: "Product deleted 🗑️",
-        error: "Delete failed",
-      },
-      {
-        style: {
-          background: "#111",
-          color: "#fff",
-          border: "1px solid #333",
+          loading: "Deleting product...",
+          success: "Product deleted 🗑️",
+          error: "Delete failed",
         },
-      },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+        },
       );
     } catch (err) {
       console.error(err);
@@ -72,28 +71,27 @@ const SellerProducts = () => {
   const handleRestore = async (id: string) => {
     try {
       await toast.promise(
-        restoreProduct({ productId:id}),
+        restoreProduct({ productId: id }),
         {
-        loading: "Restoring product...",
-        success: "Product restored ♻️",
-        error: (err) => err.response?.data?.message || "Restore failed",
-      },
-      {
-        style: {
-          background: "#111",
-          color: "#fff",
-          border: "1px solid #333",
+          loading: "Restoring product...",
+          success: "Product restored ♻️",
+          error: (err) => err.response?.data?.message || "Restore failed",
         },
-      },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+        },
       );
     } catch (err) {
       console.error(err);
     }
   };
 
-
   // ✅ base filtered (same logic you already have BEFORE filter buttons)
-  const baseFiltered = products.filter((p :Product) => {
+  const baseFiltered = products.filter((p: Product) => {
     const matchSearch =
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       p.category.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -126,12 +124,12 @@ const SellerProducts = () => {
   // ✅ now apply status filter
   const totalCount = baseFiltered.length;
 
-  const activeCount = baseFiltered.filter((p:Product) => p.isActive).length;
+  const activeCount = baseFiltered.filter((p: Product) => p.isActive).length;
 
-  const deletedCount = baseFiltered.filter((p:Product) => !p.isActive).length;
+  const deletedCount = baseFiltered.filter((p: Product) => !p.isActive).length;
 
   // ✅ your actual displayed products (IMPORTANT)
-  const filteredProducts = baseFiltered.filter((p:Product) => {
+  const filteredProducts = baseFiltered.filter((p: Product) => {
     if (filter === "All") return true;
     if (filter === "Active") return p.isActive;
     if (filter === "Deleted") return !p.isActive;
@@ -163,7 +161,9 @@ const SellerProducts = () => {
           return b.sale - a.sale;
 
         case "date_new_old":
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
 
         default:
           return 0;
@@ -184,7 +184,7 @@ const SellerProducts = () => {
     (page - 1) * itemsPerPage,
     page * itemsPerPage,
   );
-  
+
   if (isLoading) return <ProductListSkeleton />;
   return (
     <motion.div
@@ -279,7 +279,8 @@ const SellerProducts = () => {
 
               {/* CATEGORY */}
               <p className="text-xs text-gray-500 flex items-center gap-1 mb-2 transition-all duration-300 hover:scale-[1.03]">
-                <FaLayerGroup /> {product.category.name} / {product.subCategory.name}
+                <FaLayerGroup /> {product.category.name} /{" "}
+                {product.subCategory.name}
               </p>
 
               {/* PRICE */}
@@ -332,7 +333,7 @@ const SellerProducts = () => {
                     className=" cursor-pointer flex-1 bg-black text-white py-1.5 rounded-lg flex items-center justify-center gap-2 text-sm transition-all duration-300 hover:scale-[1.03]"
                     onClick={(e) => {
                       e.stopPropagation(); // 🛑 STOP parent click
-                      navigate(`/seller/edit-product/${product._id}`);
+                      navigate(`/seller/edit-product/${product._id}?from=list`);
                     }}
                   >
                     <FaEdit /> Edit
@@ -361,46 +362,44 @@ const SellerProducts = () => {
               )}
             </motion.div>
           );
-{/* ✅ PAGINATION UI */}
-      <div className="flex justify-center mt-7">
-        <Pagination
-          page={page}
-          count={totalPages}
-          onChange={(_, value) => setPage(value)}
-        />
-      </div>
+          {
+            /* ✅ PAGINATION UI */
+          }
+          <div className="flex justify-center mt-7">
+            <Pagination
+              page={page}
+              count={totalPages}
+              onChange={(_, value) => setPage(value)}
+            />
+          </div>;
         })}
       </div>
 
       {/* EMPTY */}
       {products.length === 0 && (
-         <div className="flex flex-col items-center justify-center border border-dashed border-gray-400 rounded-xl p-8 bg-white text-center">
-            {/* ICON */}
-            <div className="bg-gray-100 p-4 rounded-full mb-4">
-              <FaLayerGroup className="text-2xl text-gray-600" />
-            </div>
-
-            {/* TITLE */}
-            <h2 className="text-lg font-semibold mb-1">No Products Found</h2>
-
-            {/* SUBTEXT */}
-            <p className="text-sm text-gray-500 mb-4">
-              Looks like you haven’t added any products yet.
-            </p>
-
-            {/* BUTTON */}
-            <button
-                    onClick={() =>navigate("/seller/add-product") }
-                    className=" cursor-pointer bg-black text-white hover:bg-white hover:text-black hover:ring hover:ring-black px-2 text-sm md:px-4 py-2 rounded-lg flex items-center gap-2 hover:scale-[1.03] transition"
-                  >
-                    <FaPlus /> Add Product
-                  </button>
+        <div className="flex flex-col items-center justify-center border border-dashed border-gray-400 rounded-xl p-8 bg-white text-center">
+          {/* ICON */}
+          <div className="bg-gray-100 p-4 rounded-full mb-4">
+            <FaLayerGroup className="text-2xl text-gray-600" />
           </div>
+
+          {/* TITLE */}
+          <h2 className="text-lg font-semibold mb-1">No Products Found</h2>
+
+          {/* SUBTEXT */}
+          <p className="text-sm text-gray-500 mb-4">
+            Looks like you haven’t added any products yet.
+          </p>
+
+          {/* BUTTON */}
+          <button
+            onClick={() => navigate("/seller/add-product")}
+            className=" cursor-pointer bg-black text-white hover:bg-white hover:text-black hover:ring hover:ring-black px-2 text-sm md:px-4 py-2 rounded-lg flex items-center gap-2 hover:scale-[1.03] transition"
+          >
+            <FaPlus /> Add Product
+          </button>
+        </div>
       )}
-
-      
-
-     
     </motion.div>
   );
 };

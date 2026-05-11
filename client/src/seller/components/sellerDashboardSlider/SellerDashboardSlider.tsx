@@ -34,8 +34,6 @@ import Navbar from "../../pages/sellerNavbar/SellerNavbar";
 const EXPANDED_WIDTH = 260;
 const COLLAPSED_WIDTH = 80;
 
-
-
 const sellerDashboard = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -67,7 +65,6 @@ const sellerDashboard = () => {
       icon: <Inventory2Outlined />,
       path: "/seller/products",
     },
-    
 
     {
       label: "Category",
@@ -238,7 +235,7 @@ const sellerDashboard = () => {
               p: 0,
             }}
           >
-           <Outlet />
+            <Outlet />
           </Box>
         </Box>
       </div>

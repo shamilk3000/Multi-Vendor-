@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getProductsForUser, getProductByIdForUser } from "../../../api/user/product";
+import { getProductsForUser, getProductByIdForUser, getProductsInCategory } from "../../../api/user/product";
 
 export const useProductsForUser = (sellerId: string, shopName: string) => {
   return useQuery({
@@ -17,6 +17,20 @@ export const useProductByIdForUser = (productId?: string) => {
     queryFn: () => {
       return getProductByIdForUser({ productId: productId! });
     },
+     refetchInterval: 5000,
+    staleTime: 0,
     enabled: !!productId,
+  });
+};
+
+export const useProductsInCategory = (categoryId?: string) => {
+  return useQuery({
+        queryKey: ["products", "categoryProducts" , "user" , categoryId ,],
+    queryFn: () => {
+      return getProductsInCategory({ categoryId: categoryId! });
+    },
+     refetchInterval: 5000,
+    staleTime: 0,
+    enabled: !!categoryId,
   });
 };

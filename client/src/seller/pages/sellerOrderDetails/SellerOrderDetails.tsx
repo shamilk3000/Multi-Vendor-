@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import { Toaster } from "react-hot-toast";
 import { pdf } from "@react-pdf/renderer";
-import InvoicePDF from "../../components/ivoice/InvoicePDF";
+import InvoicePDF from "../../components/invoice/InvoicePDF";
 
 import {
   //   FaArrowLeft,

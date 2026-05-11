@@ -26,12 +26,16 @@ import { useParams } from "react-router-dom";
 import { useCategories } from "../../../hooks/seller/category/useCategories";
 import { useProductById } from "../../../hooks/seller/product/useProducts";
 import EditProductSkeleton from "@/seller/components/skeletons/editProductSkeleton";
+import { useSearchParams } from "react-router-dom";
 
 const EditProduct = () => {
+  const [searchParams] = useSearchParams();
+
+  const from = searchParams.get("from");
   const { id } = useParams(); // 👈 this matches :id in route
   const navigate = useNavigate();
-const { data: product, isLoading } = useProductById(id as string);
-const { data: categories = [] } = useCategories({ onlyActive: true });
+  const { data: product, isLoading } = useProductById(id as string);
+  const { data: categories = [] } = useCategories({ onlyActive: true });
   const { mutateAsync: editProduct } = ultrateEditProduct();
   const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
 
@@ -60,6 +64,9 @@ const { data: categories = [] } = useCategories({ onlyActive: true });
 
   // ✅ FETCH PRODUCT (simulate)
   useEffect(() => {
+    if (!id) {
+      navigate("/seller/products");
+    }
     if (product) {
       setFormData({
         productId: product._id,
@@ -225,7 +232,9 @@ const { data: categories = [] } = useCategories({ onlyActive: true });
     formDataToSend.append("category", formData.category);
     formDataToSend.append("subCategory", formData.subCategory);
     formDataToSend.append("stock", stock.toString());
+    formDataToSend.append("needAttachment", String(formData.needAttachment));
 
+    formDataToSend.append("needMessage", String(formData.needMessage));
     formDataToSend.append("description", JSON.stringify(descriptionArray));
 
     formDataToSend.append("images", JSON.stringify(existingImages));
@@ -256,7 +265,11 @@ const { data: categories = [] } = useCategories({ onlyActive: true });
           },
         },
       );
-      navigate("/seller/products");
+      if (from == "details") {
+        navigate(`/seller/products/${product._id}`);
+      } else {
+        navigate("/seller/products");
+      }
     } catch (err) {
       console.error(err);
     }

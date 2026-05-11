@@ -10,6 +10,7 @@ interface ProductGalleryProps {
 }
 
 const ProductGallery = ({ product }: ProductGalleryProps) => {
+  const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
   const [activeImage, setActiveImage] = useState(0);
   useEffect(() => {
     const interval = setInterval(() => {
@@ -29,7 +30,7 @@ const ProductGallery = ({ product }: ProductGalleryProps) => {
                        sm:border group bg-gray-50"
           >
             <img
-              src={product.image[activeImage]}
+              src={`${BASE_URL}${product.image[activeImage]}`}
               alt={product.name}
               className="
                 w-full h-[300px] sm:h-[420px]
@@ -65,7 +66,7 @@ const ProductGallery = ({ product }: ProductGalleryProps) => {
                   }`}
               >
                 <img
-                  src={img}
+                 src={`${BASE_URL}${img}`}
                   alt={`${product.name} thumbnail ${idx + 1}`}
                   className="w-full h-full object-cover"
                 />
@@ -79,6 +80,4 @@ const ProductGallery = ({ product }: ProductGalleryProps) => {
 };
 
 export default ProductGallery;
-function setActiveImage(arg0: (prev: any) => number) {
-  throw new Error("Function not implemented.");
-}
+

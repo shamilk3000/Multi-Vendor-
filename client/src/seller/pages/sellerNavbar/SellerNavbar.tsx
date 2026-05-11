@@ -1,10 +1,10 @@
-import { FaHome, FaShoppingCart, FaUser, FaStore } from "react-icons/fa";
+// import { FaHome, FaShoppingCart, FaUser, FaStore } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const cartItemCount = 3; // Example cart count
+  // const cartItemCount = 3; // Example cart count
 
   return (
     <>
@@ -15,19 +15,19 @@ const Navbar = () => {
             onClick={() => navigate("/")}
             whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
             transition={{ type: "spring", stiffness: 300 }}
-            className="text-2xl font-bold cursor-pointer"
+            className="text-2xl font-bold cursor-pointer mt-2"
           >
             MyShop
           </motion.div>
 
           {/* Menu Items */}
-          <div className="flex items-center gap-10">
+          <div className="flex items-center gap-10 ">
             {/* Home */}
-            <div
+            {/* <div
               onClick={() => navigate("/")}
               className="group flex flex-col items-center cursor-pointer"
-            >
-              <motion.div
+            > */}
+            {/* <motion.div
                 whileHover={{ y: -4, scale: 1.15 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
@@ -37,10 +37,10 @@ const Navbar = () => {
                 Home
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-white transition-all duration-300 group-hover:w-full"></span>
               </span>
-            </div>
+            </div> */}
 
             {/* Shop */}
-            <div
+            {/* <div
               onClick={() => navigate("/shop")}
               className="group flex flex-col items-center cursor-pointer"
             >
@@ -54,10 +54,10 @@ const Navbar = () => {
                 Shop
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-white transition-all duration-300 group-hover:w-full"></span>
               </span>
-            </div>
+            </div> */}
 
             {/* Cart */}
-            <div
+            {/* <div
               onClick={() => navigate("/cart")}
               className="group relative flex flex-col items-center cursor-pointer"
             >
@@ -66,10 +66,10 @@ const Navbar = () => {
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <FaShoppingCart size={20} />
-              </motion.div>
+              </motion.div> */}
 
-              {/* Cart Badge */}
-              {cartItemCount > 0 && (
+            {/* Cart Badge */}
+            {/* {cartItemCount > 0 && (
                 <motion.span
                   className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full"
                   animate={{ scale: [1, 1.3, 1] }}
@@ -83,10 +83,10 @@ const Navbar = () => {
                 Cart
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-white transition-all duration-300 group-hover:w-full"></span>
               </span>
-            </div>
+            </div> */}
 
             {/* Profile */}
-            <div
+            {/* <div
               onClick={() => navigate("/profile")}
               className="group flex flex-col items-center cursor-pointer"
             >
@@ -100,7 +100,7 @@ const Navbar = () => {
                 Profile
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-white transition-all duration-300 group-hover:w-full"></span>
               </span>
-            </div>
+            </div> */}
           </div>
         </div>
       </nav>

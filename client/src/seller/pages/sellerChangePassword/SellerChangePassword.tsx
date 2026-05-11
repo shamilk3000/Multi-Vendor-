@@ -8,6 +8,8 @@ import {
   FaLock,
   FaEdit,
 } from "react-icons/fa";
+import api from "../../../features/axios";
+import toast from "react-hot-toast";
 
 const ChangePassword: React.FC = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -42,14 +44,38 @@ const ChangePassword: React.FC = () => {
     }
   }, [passwordsMatch]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!minLengthValid) return alert("Password must be at least 6 characters");
     if (!passwordsMatch) return alert("Passwords do not match");
 
-    alert("Password updated successfully!");
-    setNewPassword("");
-    setConfirmPassword("");
+    try {
+      const promise = api.post("/seller/seller-reset-password-dashboard", {
+        password: newPassword,
+      });
+
+      await toast.promise(
+        promise,
+        {
+          loading: "Changing password...",
+          success: (res) => res.data.message || "Password changed successfully",
+          error: (err) =>
+            err.response?.data?.message || "Failed to change password",
+        },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+          duration: 3500,
+        },
+      );
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+      console.log("PASSWORD CHANGING ERROR 👉", error?.response?.data);
+    }
   };
 
   const inputStyle =

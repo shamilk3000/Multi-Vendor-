@@ -160,7 +160,7 @@ const CategoryDetails: React.FC<CategoryDetailsProps> = ({ product }) => {
             <FaEnvelope /> Message
           </span>
           <span className="font-medium text-black">
-            {product.needMessage ? "Required" : "Optional"}
+            {product.needMessage ? "Required" : "No"}
           </span>
         </div>
 

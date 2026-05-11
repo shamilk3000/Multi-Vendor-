@@ -119,7 +119,6 @@ const updateProduct = async (req) => {
       needAttachment,
       needMessage,
     } = updateData;
-    
      const updatedProduct = await Product.findByIdAndUpdate(
       productId,
       {
@@ -278,6 +277,20 @@ const getAllProductsForCustomer = async (sellerId) => {
     throw new Error(
       `Unable to get all products for customer: ${error.message}`,
     );
+  }
+};
+
+const getProductsInCategory = async (categoryId) => {
+  try {
+    const products = await Product.find({
+      category: categoryId,
+      isActive: true,
+      stock: { $gt: 0 },
+    }).populate("category").populate("subCategory");
+    return products;
+  } catch (error) {
+    console.error("Error getting products in category:", error);
+    throw new Error(`Unable to get products in category: ${error.message}`);
   }
 };
 
@@ -683,7 +696,7 @@ const addRating = async (reviewData, user) => {
 
     if (result.length > 0) {
       await Product.findByIdAndUpdate(productId, {
-        ratingAverage: Math.round(result[0].averageRating),
+        ratingAverage: Math.round(result[0].averageRating * 2) / 2,
         ratingCount: result[0].totalRatings,
       });
     }
@@ -692,6 +705,16 @@ const addRating = async (reviewData, user) => {
   } catch (error) {
     console.error("Error adding rating:", error);
     throw new Error(`Unable to add rating: ${error.message}`);
+  }
+};
+
+const getReviews = async (productId) => {
+  try {
+    const reviews = await Review.find({ product: productId }).sort({ createdAt: -1 });
+    return reviews;
+  } catch (error) {
+    console.error("Error getting reviews:", error);
+    throw new Error(`Unable to get reviews: ${error.message}`);
   }
 };
 
@@ -707,6 +730,7 @@ module.exports = {
   getAllProductsBySeller,
   getAllProducts,
   getAllProductsForCustomer,
+  getProductsInCategory,
   createCategory,
   getAllCategoriesOfSellerForUser,
   // getAllParentCategories,
@@ -716,4 +740,5 @@ module.exports = {
   deleteCategory,
   restoreCategory,
   addRating,
+  getReviews,
 };

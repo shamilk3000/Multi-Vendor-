@@ -129,15 +129,16 @@ const ProductGrid: React.FC<{
 
             {/* CONTENT */}
             <div className="p-3 bg-white/80 backdrop-blur-md">
-              {/* Category */}
-              <p className="text-xs text-gray-600 mb-1 flex items-center gap-1">
-                <FaLayerGroup className="text-gray-500 text-[10px]" />
-                {product.category?.name}/{product.subCategory?.name}
-              </p>
-
+              
               {/* Title */}
               <p className="font-semibold text-sm truncate text-gray-800 group-hover:text-black transition">
                 {product.name}
+              </p>
+              
+{/* Category */}
+              <p className="text-xs text-gray-600 mb-1 flex items-center gap-1">
+                <FaLayerGroup className="text-gray-500 text-[10px]" />
+                {product.category?.name}/{product.subCategory?.name}
               </p>
 
               {/* Price */}

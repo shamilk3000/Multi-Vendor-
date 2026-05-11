@@ -9,15 +9,16 @@ export default interface Product {
   mrpPrice: number;
   sellingPrice: number;
   discountPercentage: number;
-
+ subCategory: string;
   category: string;
   seller: string;
 
   ratingAverage: number;
   ratingCount: number;
 
-  stock: boolean;
+  stock: number;
   needAttachment: boolean;
+  needMessage: boolean;
   isActive: boolean;
 
   sale: number;

@@ -1,48 +1,74 @@
 import { useState } from "react";
 import { Star } from "lucide-react";
+import { useReviewForSeller } from "../../../hooks/seller/review/useReviews";
 
-const reviewsData = [
-  {
-    email: "alice@example.com",
-    rating: 5,
-    text: "This is an amazing product!",
-  },
-  {
-    email: "bob@example.com",
-    rating: 4.5,
-    text: "Really liked the quality and design.",
-  },
-  {
-    email: "charlie@example.com",
-    rating: 5,
-    text: "Excellent value for money!  ",
-  },
-  {
-    email: "diana@example.com",
-    rating: 5,
-    text: "Highly recommend this to everyone.",
-  },
-  {
-    email: "ethan@example.com",
-    rating: 4,
-    text: "Good, but shipping was slow.",
-  },
-  { email: "fiona@example.com", rating: 5, text: "Perfect for gifting!" },
-];
-
-const Reviews = () => {
+const Reviews = (productId: any) => {
+  const { data: reviewsData = [], isLoading } = useReviewForSeller(
+    productId.productId,
+  );
   const [showAll, setShowAll] = useState(false);
   const reviewsToShow = showAll ? reviewsData : reviewsData.slice(0, 4);
+  // if (isLoading) {
+  //   return ( <h3 className="text-lg md:text-xl font-semibold mb-6">Product Reviews</h3>)
+  // }
 
   return (
     <section className="mt-1">
       <h3 className="text-lg md:text-xl font-semibold mb-6">Product Reviews</h3>
 
       <div className="space-y-6">
-        {reviewsToShow.map((review, i) => (
+        {!isLoading && reviewsData.length === 0 && (
+          <div
+            className="relative overflow-hidden rounded-2xl border border-gray-200
+               bg-linear-to-br from-gray-50 to-white
+               p-8 flex flex-col items-center justify-center text-center
+               shadow-sm transition-all duration-500
+               hover:shadow-xl hover:-translate-y-1"
+          >
+            {/* Decorative glow */}
+            <div
+              className="absolute inset-0 opacity-0 hover:opacity-100
+                 transition duration-500
+                 bg-linear-to-r from-yellow-100/40 via-transparent to-yellow-100/40"
+            />
+
+            {/* Empty stars */}
+            <div className="flex items-center gap-1 mb-4">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  fill="currentColor"
+                   className="text-yellow-400 w-5 h-5 
+                                   animate-pulse drop-shadow-[0_0_10px_rgba(250,204,21,0.7)]
+                                   hover:scale-125 hover:drop-shadow-[0_0_22px_rgba(250,204,21,1)]"
+                  strokeWidth={1.5}
+                />
+              ))}
+            </div>
+
+            {/* Title */}
+            <h4 className="text-xl font-semibold text-gray-800 mb-2">
+              No Reviews Yet
+            </h4>
+
+            {/* Subtitle */}
+            <p className="text-gray-500 text-sm md:text-base max-w-md leading-relaxed">
+             No customer reviews yet. Customer reviews will appear here once buyers start sharing their experiences with this product.
+            </p>
+
+            {/* Optional animated pulse */}
+            {/* <div
+      className="mt-5 px-4 py-2 rounded-full bg-yellow-100 text-yellow-700
+                 text-sm font-medium animate-pulse"
+    >
+      Start the conversation ✨
+    </div> */}
+          </div>
+        )}
+        {reviewsToShow.map((review: any, i: any) => (
           <div
             key={i}
-            className="group relative border-b last:border-none
+            className="group relative border-b 
                        rounded-lg p-4
                        border-2
                        transition-all duration-500
@@ -64,7 +90,8 @@ const Reviews = () => {
                          group-hover:animate-[wave_0.6s_ease-in-out] mb-2"
               style={{ animationDelay: "0ms" }}
             >
-              {review.email}
+              {review.username} -{" "}
+              <span className="text-gray-600 text-sm">{review.email}</span>
             </p>
 
             {/* Stars – staggered wave */}
@@ -122,7 +149,7 @@ const Reviews = () => {
                          group-hover:animate-[wave_0.6s_ease-in-out]"
               style={{ animationDelay: "200ms" }}
             >
-              {review.text}
+              {review.review}
             </p>
           </div>
         ))}

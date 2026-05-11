@@ -5,13 +5,13 @@ export const addReview = async (data: any) => {
   return res.data;
 };
 
-// export const getProductByIdForUser = async ({
-//   productId
-// }: {
-//   productId: string;
-// }) => {
-//   const res = await api.get(
-//     `/get-product-by-id/${productId}`
-//   );
-//   return res.data;
-// };
+export const getReviewForUser = async ({
+  productId
+}: {
+  productId: string;
+}) => {
+  const res = await api.get(
+    `/get-reviews/${productId}`
+  );
+  return res.data;
+};

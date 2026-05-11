@@ -497,7 +497,7 @@ const sellerResetPassword = async (email, password) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     seller.password = hashedPassword;
     await seller.save();
-    return { message: "Password reset successfully" };
+    return { message: "Password changed successfully" };
   } catch (error) {
     console.error("sellerResetPassword Service Error:", error);
     throw new Error(`Password reset failed: ${error.message}`);

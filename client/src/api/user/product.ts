@@ -23,3 +23,14 @@ export const getProductByIdForUser = async ({
   );
   return res.data;
 };
+
+export const getProductsInCategory = async ({
+  categoryId
+}: {
+  categoryId: string;
+}) => {
+  const res = await api.get(
+    `/get-products-in-category/${categoryId}`
+  );
+  return res.data;
+};

@@ -140,6 +140,19 @@ const getAllProductsForCustomer = async (req, res) => {
   }
 };
 
+const getProductsInCategory = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const products = await productService.getProductsInCategory(
+      categoryId,
+    );
+    return res.status(200).json(products);
+  } catch (error) {
+    console.error("getProductsInCategory Controller Error:", error);
+    return res.status(400).json({ message: error.message });
+  }
+};
+
 const createCategory = async (req, res) => {
   try {
     const seller = req.seller;
@@ -242,6 +255,17 @@ const addRating = async (req, res) => {
   }
 };
 
+const getReviews = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const reviews = await productService.getReviews(productId);
+    return res.status(200).json(reviews);
+  } catch (error) {
+    console.error("getReviews Controller Error:", error);
+    return res.status(400).json({ message: error.message });
+  }
+};
+
 module.exports = { 
   createProduct,
   updateProduct,
@@ -254,6 +278,7 @@ module.exports = {
   getAllProducts,
   searchProducts,
   getAllProductsForCustomer,
+  getProductsInCategory,
   createCategory,
   updateCategory,
   getCategoryById,
@@ -263,4 +288,5 @@ module.exports = {
   deleteCategory,
   restoreCategory,
   addRating,
+  getReviews,
 };

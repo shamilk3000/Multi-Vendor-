@@ -2,7 +2,7 @@ export default interface Product {
   _id: string;
 
   name: string;
-  description: string;
+  description:  string[];
 
   image: string[];
 
@@ -11,12 +11,15 @@ export default interface Product {
   discountPercentage: number;
 
   category: string;
-  parentCategoryName: string;
-  subCategoryName: string;
   seller: string;
+  subCategory: string;
+
+  ratingAverage: number;
+  ratingCount: number;
 
   stock: number;
   needAttachment: boolean;
+  needMessage: boolean;
   isActive: boolean;
 
   sale: number;

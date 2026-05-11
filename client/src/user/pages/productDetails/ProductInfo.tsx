@@ -130,7 +130,7 @@ const ProductInfo = ({ product }: { product: Product }) => {
       </div>
 
       {/* Description */}
-      <div className="space-y-2 mb-6">
+      <div className="space-y-2 mb-6 p-1">
         <p className="text-sm font-bold text-gray-800">Product Details:</p>
         <ul className="space-y-2">
           {product.description?.map((point, idx) => (

@@ -24,9 +24,11 @@ router.delete("/:sellerId/:shopName/delete-address/:id", userAuth, userControlle
 
 router.get("/:sellerId/:shopName/search-products/:search", userAuth, productController.searchProducts);
 router.get("/:sellerId/:shopName/get-all-products-for-customer", productController.getAllProductsForCustomer);          //using
+router.get("/get-products-in-category/:categoryId", productController.getProductsInCategory);     //using                        //using
 router.get("/:sellerId/get-all-categories-of-seller", productController.getAllCategoriesOfSellerForUser);                //using
 router.get("/get-product-by-id/:productId", productController.getProductByIdForUser);                                          //using
 router.post("/add-rating", userAuth, productController.addRating);                                                  //using
+router.get("/get-reviews/:productId", productController.getReviews);                                                  //using
 
 router.get("/:sellerId/:shopName/get-user-cart", userAuth, cartController.getUserCart);
 router.post("/:sellerId/:shopName/add-cart-item", userAuth, cartController.addCartItem);

@@ -1,10 +1,64 @@
 // import { useState } from "react";
 import type Product from "./Product";
 import { Star } from "lucide-react";
-import { FaChartLine } from "react-icons/fa";
+import { FaChartLine, FaEdit, FaTrash, FaUndo } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import {
+  ultrateDeleteProduct,
+  ultrateRestoreProduct,
+} from "../../../hooks/seller/product/ultrateProducts";
+import toast from "react-hot-toast";
 
 const ProductInfo = ({ product }: { product: Product }) => {
-  const rating = product.average;
+  const rating = product.ratingAverage;
+  const navigate = useNavigate();
+  const { mutateAsync: deleteProduct } = ultrateDeleteProduct();
+  const { mutateAsync: restoreProduct } = ultrateRestoreProduct();
+  // 🔥 delete (SOFT DELETE)
+  const handleDelete = async (id: string) => {
+    try {
+      await toast.promise(
+        deleteProduct({ productId: id }),
+        {
+          loading: "Deleting product...",
+          success: "Product deleted 🗑️",
+          error: "Delete failed",
+        },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+        },
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // 🔥 RESTORE (ADDED)
+  const handleRestore = async (id: string) => {
+    try {
+      await toast.promise(
+        restoreProduct({ productId: id }),
+        {
+          loading: "Restoring product...",
+          success: "Product restored ♻️",
+          error: (err) => err.response?.data?.message || "Restore failed",
+        },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+        },
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -117,23 +171,20 @@ const ProductInfo = ({ product }: { product: Product }) => {
       </div>
 
       {/* Description */}
-      <div className="space-y-2 mb-6">
+      <div className="space-y-2 mb-6 p-1">
         <p className="text-sm font-bold text-gray-800">Product Details:</p>
         <ul className="space-y-2">
-          {product.description
-            .split(".")
-            .filter((p) => p.trim())
-            .map((point, idx) => (
-              <li
-                key={idx}
-                className="flex gap-2 text-gray-600
-                           hover:translate-x-1 hover:text-black
-                           transition"
-              >
-                <span className="text-yellow-400 animate-pulse">•</span>
-                <span>{point.trim()}.</span>
-              </li>
-            ))}
+          {product.description?.map((point, idx) => (
+            <li
+              key={idx}
+              className="flex gap-2 text-gray-600
+               hover:translate-x-1 hover:text-black
+               transition"
+            >
+              <span className="text-yellow-400 animate-pulse">•</span>
+              <span className="max-w-screen">{point}</span>
+            </li>
+          ))}
         </ul>
       </div>
 
@@ -166,6 +217,72 @@ const ProductInfo = ({ product }: { product: Product }) => {
             {product.sale} sold
           </span>
         </div>
+      </div>
+      <div className="w-full pt-1 flex justify-start">
+        {/* ACTIONS */}
+        {product.isActive ? (
+          <div className="flex gap-2 w-fit">
+            <button
+              className="
+          cursor-pointer h-10 min-w-[110px]
+          bg-black text-white rounded-lg
+          flex items-center justify-center gap-1.5
+          text-sm font-medium px-3
+          shadow-sm hover:shadow-md
+          transition-all duration-300
+          hover:scale-[1.02]
+          active:scale-[0.98]
+        "
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/seller/edit-product/${product._id}?from=details`);
+              }}
+            >
+              <FaEdit />
+              Edit
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete(product._id);
+              }}
+              className="
+          cursor-pointer h-10 min-w-[110px]
+          bg-red-500 text-white rounded-lg
+          flex items-center justify-center gap-1.5
+          text-sm font-medium px-3
+          shadow-sm hover:shadow-md
+          transition-all duration-300
+          hover:scale-[1.02]
+          active:scale-[0.98]
+        "
+            >
+              <FaTrash />
+              Delete
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRestore(product._id);
+            }}
+            className="
+        cursor-pointer h-10 min-w-[110px]
+        bg-green-700 text-white rounded-lg
+        flex items-center justify-center gap-1.5
+        text-sm font-medium px-3
+        shadow-sm hover:shadow-md
+        transition-all duration-300
+        hover:scale-[1.02]
+        active:scale-[0.98]
+      "
+          >
+            <FaUndo />
+            Restore
+          </button>
+        )}
       </div>
     </div>
   );

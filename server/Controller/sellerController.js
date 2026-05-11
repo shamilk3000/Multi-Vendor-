@@ -226,6 +226,18 @@ const sellerResetPassword = async (req, res) => {
   }
 };
 
+const sellerResetPasswordDashboard = async (req, res) => {
+  try {
+    const { password } = req.body;
+    const email = req.seller.email;
+    const result = await sellerService.sellerResetPassword(email, password);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("sellerResetPasswordDashboard Controller Error:", error);
+    return res.status(400).json({ message: error.message });
+  }
+};
+
 const sellerSubscription = async (req, res) => {
   try {
     const { priceId , sellerId, sellerEmail} = req.body;
@@ -263,5 +275,6 @@ module.exports = {
   sellerForgetPasswordOtpSend,
   sellerForgetPasswordOtpVerify,
   sellerResetPassword,
+  sellerResetPasswordDashboard,
   sellerSubscription,
 };

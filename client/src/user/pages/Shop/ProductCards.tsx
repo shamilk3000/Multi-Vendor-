@@ -125,12 +125,13 @@ const ProductGrid: React.FC<{
 
             {/* CONTENT */}
             <div className="p-3 bg-white/80 backdrop-blur-md">
+            <p className="font-semibold text-sm truncate">{product.name}</p>
               <p className="text-xs text-gray-600 mb-1 flex items-center gap-1">
   <FaLayerGroup className="text-gray-500 text-[10px]" />
   {product.category?.name}/{product.subCategory?.name}
 </p>
 
-              <p className="font-semibold text-sm truncate">{product.name}</p>
+              
 
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-lg font-bold text-green-600">
