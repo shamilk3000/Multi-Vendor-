@@ -96,7 +96,7 @@ const userSignup = async (userData, sellerId) => {
 
 const verifyOtpAndCreateUser = async (userData, otp, sellerId, res) => {
   try {
-    await verifyOtp( otp, userData, `user${sellerId}`);
+    await verifyOtp(otp, userData, `user${sellerId}`);
 
     const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
     const user = await User.create({
@@ -112,7 +112,7 @@ const verifyOtpAndCreateUser = async (userData, otp, sellerId, res) => {
       sellerId: user.sellerId,
     });
 
-     res.cookie("token", token, {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.COOKIE_SECURE === "true",
       sameSite: process.env.COOKIE_SAMESITE,

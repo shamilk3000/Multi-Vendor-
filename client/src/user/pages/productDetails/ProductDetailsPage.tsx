@@ -49,7 +49,7 @@ if (isLoading) {
         </div>
         <main className="px-4 md:px-0 py-2 md:py-4 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-0">
           <ProductGallery product={product} />
-          <ProductInfo product={product} />
+          <ProductInfo product={product} shopName={shopName!}  sellerId={sellerId!}/>
         </main>
 
         <section className=" py-0 md:py-1 justify-center">

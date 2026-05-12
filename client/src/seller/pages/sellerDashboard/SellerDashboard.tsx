@@ -50,9 +50,7 @@ const SellerDashboard = () => {
   const [sellerSubStatus, setSellerSubStatus] = useState(false);
   const navigate = useNavigate();
 
-
-
-useEffect(() => {
+  useEffect(() => {
     const statusSub = searchParams.get("statusSub");
 
     const checkSession = async () => {
@@ -77,10 +75,10 @@ useEffect(() => {
         navigate("/seller/login");
       }
     };
-    checkSession(); 
+    checkSession();
 
-     if (statusSub === "true" && sellerSubStatus == true ) {
-      toast.dismiss()
+    if (statusSub === "true" && sellerSubStatus == true) {
+      toast.dismiss();
       toast.success("Subscription activated successfully", {
         icon: <FaCheckCircle className="text-green-500" />,
         style: {
@@ -94,7 +92,7 @@ useEffect(() => {
       });
       navigate("/seller", { replace: true });
     }
-  }, [searchParams,sellerSubStatus]);
+  }, [searchParams, sellerSubStatus]);
   const handleCopy = async () => {
     try {
       const textToCopy = webURL ?? "";
@@ -328,4 +326,3 @@ useEffect(() => {
 };
 
 export default SellerDashboard;
-

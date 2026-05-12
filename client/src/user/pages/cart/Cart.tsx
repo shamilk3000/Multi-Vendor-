@@ -17,16 +17,17 @@ import {
   ultrateQuantity,
   ultrateDeleteItem,
 } from "../../../hooks/user/cart/ultrateCart";
+import CartPageSkeleton from "@/user/components/skeletons/cart";
 
 const Cart: React.FC = () => {
   const { mutateAsync: changeQuantity } = ultrateQuantity();
   const { mutateAsync: deleteItem } = ultrateDeleteItem();
   const { sellerId, shopName } = useParams();
   const { data: cart = [], isLoading } = useCart();
+  const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
 
   const increaseQty = async (id: string) => {
-
     try {
       await toast.promise(
         changeQuantity({
@@ -53,7 +54,6 @@ const Cart: React.FC = () => {
   };
 
   const decreaseQty = async (id: string) => {
-
     try {
       await toast.promise(
         changeQuantity({
@@ -86,10 +86,11 @@ const Cart: React.FC = () => {
           cartItemId: id,
         }),
         {
-           loading: "Removing product from your cart...",
-           success: "Product removed from cart successfully 🗑️",
+          loading: "Removing product from your cart...",
+          success: "Product removed successfully 🗑️",
           error: (err) =>
-            err.response?.data?.message ||  "Failed to remove product. Try again later",
+            err.response?.data?.message ||
+            "Failed to remove product. Try again later",
         },
         {
           style: {
@@ -104,12 +105,8 @@ const Cart: React.FC = () => {
     }
   };
 
-  const navigate = useNavigate();
-
   if (isLoading) {
-    return (
-      <h3 className="text-lg md:text-xl font-semibold mb-6">Product Reviews</h3>
-    );
+    return <CartPageSkeleton />;
   }
 
   return (
@@ -149,9 +146,6 @@ const Cart: React.FC = () => {
               {cart.items.map((item: any) => (
                 <motion.div
                   key={item._id}
-                  // onClick={() =>
-                  //   navigate(`/${sellerId}/${shopName}/products/${item._id}`)
-                  // }
                   layout
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -288,6 +282,7 @@ const Cart: React.FC = () => {
             </div>
             <motion.button
               disabled={cart.items.length === 0}
+              onClick={() => navigate(`/${sellerId}/${shopName}/checkout`)}
               whileHover={
                 cart.items.length > 0
                   ? {

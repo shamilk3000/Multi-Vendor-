@@ -55,7 +55,7 @@ const Orders: React.FC = () => {
     {
       id: "ORD10002",
       date: "2026-03-02",
-      status: "Processed",
+      status: "Confirmed",
       products: [
         {
           id: "3",
@@ -104,7 +104,7 @@ const Orders: React.FC = () => {
       return {
         id: `ORD100${4 + i}`,
         date: `2026-03-${String(4 + i).padStart(2, "0")}`,
-        status: ["Delivered", "Processed", "Shipped", "Cancelled"][i % 4],
+        status: ["Delivered", "Confirmed", "Shipped", "Cancelled"][i % 4],
         products: [
           {
             id: `${i + 10}`,
@@ -129,7 +129,7 @@ const Orders: React.FC = () => {
     switch (status) {
       case "Delivered":
         return "bg-green-100 text-green-600 border-green-300";
-      case "Processed":
+      case "Confirmed":
         return "bg-yellow-100 text-yellow-600 border-yellow-300";
       case "Shipped":
         return "bg-blue-100 text-blue-600 border-blue-300";
@@ -141,7 +141,7 @@ const Orders: React.FC = () => {
     switch (status) {
       case "Delivered":
         return <FaHome />;
-      case "Processed":
+      case "Confirmed":
         return <FaBox />;
       case "Shipped":
         return <FaShippingFast />;

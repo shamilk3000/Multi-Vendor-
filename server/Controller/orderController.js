@@ -6,19 +6,26 @@ const createOrder = async (req, res) => {
   try {
     const user = req.user;
     const shippingAddress = req.body.shippingAddress;
-    const paymentMethod = req.query.paymentMethod;
-    const cart = cartService.getUserCart(user);
-    const order = await orderService.createOrder(user, cart, shippingAddress);
-    const payment = await paymentService.createPaymentOrder(user, order);
+    const isBuyNow = req.body.isBuyNow;
+    const cart = req.body.cart;
+    // const paymentMethod = req.query.paymentMethod;
+    // const cart = cartService.getUserCart(user);
+    const order = await orderService.createOrder(
+      user,
+      cart,
+      shippingAddress,
+      isBuyNow,
+    );
+    // const payment = await paymentService.createPaymentOrder(user, order);
     const response = {};
-    if (paymentMethod === "RAZORPAY") {
-      const paymentLink = await paymentService.createPaymentLink(user, order);
-      response.paymentLinkUrl = paymentLink.short_url;
-      payment.paymentLinkId = paymentLink.id;
-      await payment.save();
-    }
+    // if (paymentMethod === "RAZORPAY") {
+    //   const paymentLink = await paymentService.createPaymentLink(user, order);
+    //   response.paymentLinkUrl = paymentLink.short_url;
+    //   payment.paymentLinkId = paymentLink.id;
+    //   await payment.save();
+    // }
     response.order = order;
-    response.payment = payment;
+    // response.payment = payment;
     return res.status(200).json(response);
   } catch (error) {
     console.error("createOrder Controller Error:", error);

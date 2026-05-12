@@ -111,7 +111,7 @@ const OrderDetails: React.FC = () => {
 
   const steps = [
     { label: "Order Placed", icon: <FaCheck /> },
-    { label: "Processed", icon: <FaBox /> },
+    { label: "Confirmed", icon: <FaBox /> },
     { label: "Shipped", icon: <FaShippingFast /> },
     { label: "Delivered", icon: <FaHome /> },
   ];

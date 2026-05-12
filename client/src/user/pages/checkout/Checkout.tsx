@@ -17,30 +17,87 @@ import {
 } from "react-icons/fa";
 import Navbar from "../navbar/Navbar";
 import Footer from "../footer/Footer";
-import toast, { Toaster } from "react-hot-toast";
-
-interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-}
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useCart } from "../../../hooks/user/cart/useCart";
+import { useProductByIdForUser } from "../../../hooks/user/product/useProducts";
+import CheckOutSkeleton from "@/user/components/skeletons/checkOut";
+import api from "../../../features/axios";
 
 const Checkout: React.FC = () => {
-  const [cartItems] = useState<CartItem[]>([
-    { id: 1, name: "Wireless Headphones", price: 79.99, quantity: 1 },
-    { id: 2, name: "Phone Case", price: 25, quantity: 2 },
-  ]);
+  const user = useSelector((state: any) => state.auth.user);
+  const [searchParams] = useSearchParams();
+  const productId = searchParams.get("productId");
+  const quantity = Number(searchParams.get("quantity"));
 
-  const subtotal = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0,
+  const { sellerId, shopName } = useParams();
+  const navigate = useNavigate();
+  const isBuyNow = !!productId && !!quantity;
+
+  const { data: product, isLoading: productLoading } = useProductByIdForUser(
+    productId || undefined,
   );
 
+  const { data: cartdata, isLoading: cartLoading } = useCart();
+
+  const [existing, setExisting] = useState<any>(null);
+
+  useEffect(() => {
+    const getAddress = async () => {
+      try {
+        const res = await api.get("/get-user-address");
+
+        setExisting(res.data.address);
+
+        // console.log(res.data.address);
+      } catch (error: any) {
+        console.log("ADDRESS ERROR 👉", error?.response?.data);
+      }
+    };
+
+    getAddress();
+  }, []);
+
+  let cart: any = {
+    items: [],
+  };
+
+  if (isBuyNow && product) {
+    const qty = Number(quantity);
+
+    const totalMrp = product.mrpPrice * qty;
+
+    const totalSellingPrice = product.sellingPrice * qty;
+
+    const totalDiscount = (product.mrpPrice - product.sellingPrice) * qty;
+
+    cart.items = [
+      {
+        product,
+        quantity: qty,
+        _id: "1",
+      },
+    ];
+
+    cart.totalMrp = totalMrp;
+    cart.totalSellingPrice = totalSellingPrice;
+
+    cart.totalDiscount = totalDiscount;
+
+    cart.totalQuantity = qty;
+  } else if (cartdata) {
+    cart = cartdata;
+  }
+
+  if (cart && cart.items.length == 0 && isBuyNow == false) {
+    navigate(`/${sellerId}/${shopName}/shop`);
+  }
+
   const [formData, setFormData] = useState({
-    name: "",
+    name: user.name,
     phone: "",
-    email: "",
+    email: user.email,
     flatNoOrVillaNo: "",
     street: "",
     area: "",
@@ -50,6 +107,24 @@ const Checkout: React.FC = () => {
     postalCode: "",
     additionalNotes: "",
   });
+
+  useEffect(() => {
+    if (existing) {
+      setFormData({
+        name: user?.name || "",
+        phone: existing.phone || "",
+        email: user?.email || "",
+        flatNoOrVillaNo: existing.flatNoOrVillaNo || "",
+        street: existing.street || "",
+        area: existing.area || "",
+        landmark: existing.landmark || "",
+        city: existing.city || "",
+        emirate: existing.emirate || "",
+        postalCode: existing.postalCode || "",
+        additionalNotes: "",
+      });
+    }
+  }, [existing, user]);
 
   const [showPhoneSuccess, setShowPhoneSuccess] = useState(false);
   const [showEmailSuccess, setShowEmailSuccess] = useState(false);
@@ -81,7 +156,7 @@ const Checkout: React.FC = () => {
     });
   };
 
-  const placeOrder = () => {
+  const placeOrder = async () => {
     const phone = formData.phone.replace(/\s+/g, "");
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
     const phoneValid = /^(?:\+971|971|0)?5[0-9]{8}$/.test(phone);
@@ -132,27 +207,36 @@ const Checkout: React.FC = () => {
         },
       });
     }
+    try {
+      const promise = api.post("/create-order", {
+        shippingAddress: formData,
+        cart,
+        isBuyNow,
+      });
 
-    toast.promise(
-      new Promise((resolve) => {
-        setTimeout(() => {
-          console.log(formData);
-          resolve(true);
-        }, 800);
-      }),
-      {
-        loading: "Placing order...",
-        success: "Order placed successfully 🎉",
-        error: "Order failed",
-      },
-      {
-        style: {
-          background: "#111",
-          color: "#fff",
-          border: "1px solid #333",
+      const res = await toast.promise(
+        promise,
+        {
+          loading: "Placing order...",
+          success: "Order placed successfully 🎉",
+          error: "Order failed",
         },
-      },
-    );
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+          duration: 3500,
+        },
+      );
+      navigate(
+        `/${sellerId}/${shopName}/customize-product/${res.data.order._id}`,
+        { replace: true },
+      );
+    } catch (error: any) {
+      console.log("ORDER PLACING ERROR 👉", error?.response?.data);
+    }
   };
 
   const inputStyle =
@@ -160,9 +244,12 @@ const Checkout: React.FC = () => {
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
   const phoneValid = /^(?:\+971|971|0)?5[0-9]{8}$/.test(formData.phone);
+  if (productLoading || cartLoading) {
+    return <CheckOutSkeleton />;
+  }
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 p-0">
-      <Navbar />
+      <Navbar shopName={shopName!} sellerId={sellerId!} />
 
       <div className="min-h-[calc(100vh-120px)] md:min-h-[calc(100vh-64px)] bg-gray-50 px-4 md:px-5">
         <h1 className="text-2xl md:text-3xl font-bold my-5 flex items-center gap-2 transition-transform duration-300 hover:scale-101 text-black">
@@ -191,6 +278,8 @@ const Checkout: React.FC = () => {
               <div className="relative group">
                 <FaUser className="absolute left-3 top-3 text-gray-400 group-focus-within:text-black transition transform group-hover:scale-105  group-hover:text-black" />
                 <input
+                  readOnly
+                  value={user.name}
                   type="text"
                   name="name"
                   placeholder="Full Name"
@@ -204,6 +293,7 @@ const Checkout: React.FC = () => {
                 <FaPhone className="rotate-90 absolute left-3 top-3 text-gray-400 group-focus-within:text-black transition transform group-hover:scale-105  group-hover:text-black" />
                 <input
                   type="text"
+                  value={formData.phone}
                   name="phone"
                   placeholder="Phone Number"
                   onChange={handleChange}
@@ -238,6 +328,8 @@ const Checkout: React.FC = () => {
               <div className="relative group">
                 <FaEnvelope className="absolute left-3 top-3 text-gray-400 group-focus-within:text-black transition transform group-hover:scale-105  group-hover:text-black" />
                 <input
+                  readOnly
+                  value={user.email}
                   type="email"
                   name="email"
                   placeholder="Email Address"
@@ -276,6 +368,7 @@ const Checkout: React.FC = () => {
                 <FaHome className="absolute left-3 top-3 text-gray-400 group-focus-within:text-black transition transform group-hover:scale-105  group-hover:text-black" />
                 <input
                   type="text"
+                  value={formData.flatNoOrVillaNo}
                   name="flatNoOrVillaNo"
                   placeholder="Flat / Villa No"
                   onChange={handleChange}
@@ -287,6 +380,7 @@ const Checkout: React.FC = () => {
                 <FaMapMarkerAlt className="absolute left-3 top-3 text-gray-400 group-focus-within:text-black transition transform group-hover:scale-105  group-hover:text-black" />
                 <input
                   type="text"
+                  value={formData.street}
                   name="street"
                   placeholder="Street"
                   onChange={handleChange}
@@ -297,6 +391,7 @@ const Checkout: React.FC = () => {
               <div className="relative group">
                 <FaMapMarkerAlt className="absolute left-3 top-3 text-gray-400 group-focus-within:text-black transition transform group-hover:scale-105  group-hover:text-black" />
                 <input
+                  value={formData.area}
                   type="text"
                   name="area"
                   placeholder="Area"
@@ -308,6 +403,7 @@ const Checkout: React.FC = () => {
               <div className="relative group">
                 <FaMapMarkerAlt className="absolute left-3 top-3 text-gray-400 group-focus-within:text-black transition transform group-hover:scale-105  group-hover:text-black" />
                 <input
+                  value={formData.landmark}
                   type="text"
                   name="landmark"
                   placeholder="Landmark"
@@ -321,6 +417,7 @@ const Checkout: React.FC = () => {
                 <input
                   type="text"
                   name="city"
+                  value={formData.city}
                   placeholder="City"
                   onChange={handleChange}
                   className={inputStyle}
@@ -330,6 +427,7 @@ const Checkout: React.FC = () => {
               <div className="relative group">
                 <FaGlobe className=" absolute left-3 top-3 text-gray-400 group-focus-within:text-black transition transform group-hover:scale-105  group-hover:text-black" />
                 <select
+                  value={formData.emirate}
                   name="emirate"
                   onChange={handleChange}
                   className={`${inputStyle} cursor-pointer`}
@@ -349,6 +447,7 @@ const Checkout: React.FC = () => {
                 <FaMapMarkerAlt className="absolute left-3 top-3 text-gray-400 group-focus-within:text-black transition transform group-hover:scale-105  group-hover:text-black" />
                 <input
                   type="text"
+                  value={formData.postalCode}
                   name="postalCode"
                   placeholder="Postal Code"
                   onChange={handleChange}
@@ -383,16 +482,16 @@ const Checkout: React.FC = () => {
               </span>
             </h2>
             <div className="space-y-3 mb-4">
-              {cartItems.map((item) => (
+              {cart.items.map((item: any) => (
                 <div
-                  key={item.id}
+                  key={item._id}
                   className="flex justify-between text-sm hover:text-black transition hover:scale-[1.02]"
                 >
                   <span className="transition-transform duration-300 hover:scale-103 hover:text-gray-800">
-                    {item.name} x {item.quantity}
+                    {item.product.name} x {item.quantity}
                   </span>
                   <span className="transition-transform duration-300 hover:scale-103 hover:text-gray-800">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    ${(item.product.sellingPrice * item.quantity).toFixed(2)}
                   </span>
                 </div>
               ))}
@@ -400,7 +499,7 @@ const Checkout: React.FC = () => {
 
             <div className="flex justify-between mb-3 transition-transform duration-300 hover:scale-103 hover:text-gray-800">
               <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>${cart.totalSellingPrice.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between mb-3 transition-transform duration-300 hover:scale-103 hover:text-gray-800">
@@ -410,7 +509,7 @@ const Checkout: React.FC = () => {
 
             <div className="border-t pt-4 flex justify-between font-bold text-lg transition-transform duration-300 hover:scale-103 hover:text-gray-900">
               <span>Total</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>${cart.totalSellingPrice.toFixed(2)}</span>
             </div>
 
             <motion.button

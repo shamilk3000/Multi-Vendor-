@@ -24,12 +24,10 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
         ref: "Seller",
     },
-    address: [
-      {
+    address: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Address",
-      },
-    ],
+    },
     role: {
       type: String,
       enum: [UserRoles.CUSTOMER],

@@ -71,22 +71,15 @@ const orderSchema = new mongoose.Schema(
             return new Date(this.orderDate.getTime() + 7*24*60*60*1000);
         },
     },
+    additionalNotes: {
+      type: String,
+    },
     paymentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Payment",
       default: null,
     },
-    // needAttachment: {
-    //   type: Boolean,
-    //   default: false,
-    // },
-    // attachmentItem: [
-    //   {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "CartItem",
-    //     default: null,
-    //   },
-    // ],
+    
   },
   { timestamps: true }
 );

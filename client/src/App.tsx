@@ -47,9 +47,8 @@ import SellerDetailsEntry from "./seller/pages/sellerDetailsEntry/SellerDetailsE
 import SellerProfile from "./seller/pages/sellerProfile/SellerProfile";
 import SellerEditProfile from "./seller/pages/sellerEditProfile/SellerEditProfile";
 
-
 function App() {
-const nav = useNavigate();
+  const nav = useNavigate();
 
   useEffect(() => {
     setNavigate(nav);
@@ -57,83 +56,113 @@ const nav = useNavigate();
 
   return (
     <ThemeProvider theme={customTheme}>
-  <Routes>
-
-      
-      <Route path="/dashboard" element={<Sidebar />}>
+      <Routes>
+        <Route path="/dashboard" element={<Sidebar />}>
           <Route index element={<Dashboard />} />
           <Route path="/dashboard/orders" element={<Orders />} />
           <Route path="/dashboard/orders/:id" element={<OrderDetails />} />
-          <Route path="/dashboard/change-password" element={<ChangePassword />} />
+          <Route
+            path="/dashboard/change-password"
+            element={<ChangePassword />}
+          />
           <Route path="/dashboard/logout" element={<Logout />} />
-      </Route>
-      
-          <Route path="/:sellerId/:shopName/products/:productId" element={<ProductPage />} />         
-          <Route path="/customize-product/:id" element={<CustomizeProduct />} />         
-          <Route path="/otp-verification" element={<OTPVerification />} />         
-          <Route path="/:sellerId/:shopName/email-otp" element={<EmailOTPPage />} />   
-          <Route path="/:sellerId/:shopName/fp-otp-verification" element={<FpOTPVerification />} />
-          <Route path="/:sellerId/:shopName/forgot-password" element={<PasswordEnter />} />       
-          <Route path="/:sellerId/:shopName/signup" element={<Signup />} />  
-          <Route path="/:sellerId/:shopName/login" element={<Login />} />         
-          <Route path="/payment-success" element={<PaymentSuccess />} />         
-          <Route path="/checkout" element={<Checkout />} />         
-          <Route path="/:sellerId/:shopName/cart" element={<Cart />} />         
-          <Route path="/:sellerId/:shopName" element={<Home />} />         
-          <Route path="/:sellerId/:shopName/shop" element={<ShopPage />} />         
-      
+        </Route>
 
+        <Route
+          path="/:sellerId/:shopName/products/:productId"
+          element={<ProductPage />}
+        />
+        <Route
+          path="/:sellerId/:shopName/customize-product/:oRderId"
+          element={<CustomizeProduct />}
+        />
+        <Route path="/otp-verification" element={<OTPVerification />} />
+        <Route
+          path="/:sellerId/:shopName/email-otp"
+          element={<EmailOTPPage />}
+        />
+        <Route
+          path="/:sellerId/:shopName/fp-otp-verification"
+          element={<FpOTPVerification />}
+        />
+        <Route
+          path="/:sellerId/:shopName/forgot-password"
+          element={<PasswordEnter />}
+        />
+        <Route path="/:sellerId/:shopName/signup" element={<Signup />} />
+        <Route path="/:sellerId/:shopName/login" element={<Login />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/:sellerId/:shopName/checkout" element={<Checkout />} />
+        <Route path="/:sellerId/:shopName/cart" element={<Cart />} />
+        <Route path="/:sellerId/:shopName" element={<Home />} />
+        <Route path="/:sellerId/:shopName/shop" element={<ShopPage />} />
 
-      {/* <CustomizeProduct/> */}
-      {/* <OTPVerification/> */}
-      {/* <EmailOTPPage/> */}
-      {/* <Signup /> */}
-      {/* <Login/> */}
-      {/* <PaymentSuccess/> */}
-      {/* <Checkout/> */}
-      {/* <Cart/> */}
-      {/* <Home /> */}
-      {/* <ShopPage/> */}
-      {/* <ProductPage/> */}
+        {/* <CustomizeProduct/> */}
+        {/* <OTPVerification/> */}
+        {/* <EmailOTPPage/> */}
+        {/* <Signup /> */}
+        {/* <Login/> */}
+        {/* <PaymentSuccess/> */}
+        {/* <Checkout/> */}
+        {/* <Cart/> */}
+        {/* <Home /> */}
+        {/* <ShopPage/> */}
+        {/* <ProductPage/> */}
 
-      <Route path="/seller" element={<SellerDashboardList />}>
+        <Route path="/seller" element={<SellerDashboardList />}>
           <Route index element={<SellerDashboard />} />
           <Route path="/seller/profile" element={<SellerProfile />} />
           <Route path="/seller/edit-profile" element={<SellerEditProfile />} />
           <Route path="/seller/add-product" element={<SellerAddProduct />} />
           <Route path="/seller/products" element={<SellerProducts />} />
-          <Route path="/seller/products/:productId" element={<SellerProductDetails />} />
-          <Route path="/seller/edit-product/:id" element={<SellerEditProduct />} />
+          <Route
+            path="/seller/products/:productId"
+            element={<SellerProductDetails />}
+          />
+          <Route
+            path="/seller/edit-product/:id"
+            element={<SellerEditProduct />}
+          />
           <Route path="/seller/category" element={<SellerCategoryList />} />
           <Route path="/seller/orders/" element={<SellerOrders />} />
           <Route path="/seller/orders/:id" element={<SellerOrderDetails />} />
-          <Route path="/seller/change-password" element={<SellerChangePassword />} />
+          <Route
+            path="/seller/change-password"
+            element={<SellerChangePassword />}
+          />
           {/* <Route path="/seller/logout" element={<sellerLogout />} /> */}
-      </Route>
+        </Route>
 
-          <Route path="/seller/otp-verification" element={<SellerOTPVerification />} />
-          <Route path="/seller/email-otp" element={<SellerEmailOTPPage />} />
-          <Route path="/seller/fp-otp-verification" element={<SellerFpOTPVerification />} />
-          <Route path="/seller/forgot-password" element={<SellerPasswordEnter />} />
-          <Route path="/seller/signup" element={<SellerSignup />} />
-          <Route path="/seller/login" element={<SellerLogin />} />
-          <Route path="/seller/subscription" element={<SellerSubscription />} />
-          <Route path="/seller/details-entry" element={<SellerDetailsEntry />} />
-          <Route path="/seller/profile" element={<SellerProfile />} />
-          <Route path="/seller/edit-profile" element={<SellerEditProfile />} />
+        <Route
+          path="/seller/otp-verification"
+          element={<SellerOTPVerification />}
+        />
+        <Route path="/seller/email-otp" element={<SellerEmailOTPPage />} />
+        <Route
+          path="/seller/fp-otp-verification"
+          element={<SellerFpOTPVerification />}
+        />
+        <Route
+          path="/seller/forgot-password"
+          element={<SellerPasswordEnter />}
+        />
+        <Route path="/seller/signup" element={<SellerSignup />} />
+        <Route path="/seller/login" element={<SellerLogin />} />
+        <Route path="/seller/subscription" element={<SellerSubscription />} />
+        <Route path="/seller/details-entry" element={<SellerDetailsEntry />} />
+        <Route path="/seller/profile" element={<SellerProfile />} />
+        <Route path="/seller/edit-profile" element={<SellerEditProfile />} />
 
-     {/* <SellerOTPVerification/> */}
-      {/* <SellerEmailOTPPage/> */}
-      {/* <SellerSignup /> */}
-      {/* <SellerLogin/> */}
-      {/* <SellerSubscription/> */}
-      {/* <SellerDetailsEntry/> */}
-      {/* <SellerProfile/> */}
-      {/* <SellerEditProfile/> */}
-      
-
-       </Routes>
-             <Toaster containerStyle={{ top: 75 }} position="top-right" />
+        {/* <SellerOTPVerification/> */}
+        {/* <SellerEmailOTPPage/> */}
+        {/* <SellerSignup /> */}
+        {/* <SellerLogin/> */}
+        {/* <SellerSubscription/> */}
+        {/* <SellerDetailsEntry/> */}
+        {/* <SellerProfile/> */}
+        {/* <SellerEditProfile/> */}
+      </Routes>
+      <Toaster containerStyle={{ top: 75 }} position="top-right" />
     </ThemeProvider>
   );
 }

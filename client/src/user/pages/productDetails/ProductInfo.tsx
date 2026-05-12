@@ -3,11 +3,17 @@ import type Product from "./Product";
 import { ShoppingCart, Zap, Minus, Plus, Star } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../../../features/axios";
+import { useNavigate } from "react-router-dom";
+type ProductListProps = {
+  shopName: string;
+  sellerId: string;
+  product: Product;
+};
 
-const ProductInfo = ({ product }: { product: Product }) => {
+const ProductInfo = ({ product, shopName, sellerId }: ProductListProps) => {
   const [quantity, setQuantity] = useState<number>(1);
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   const decreaseQty = () => {
     setQuantity((prev) => (prev <= 1 ? 1 : prev - 1));
   };
@@ -236,6 +242,11 @@ const ProductInfo = ({ product }: { product: Product }) => {
         </button>
 
         <button
+          onClick={() =>
+            navigate(
+              `/${sellerId}/${shopName}/checkout?productId=${product._id}&quantity=${quantity}`,
+            )
+          }
           className="group border border-black py-3 px-6 rounded-md
                      flex items-center justify-center gap-3
                      hover:bg-black hover:text-white

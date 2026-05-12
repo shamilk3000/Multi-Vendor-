@@ -1,18 +1,52 @@
 const Address = require("../Models/addressModel");
+const Cart = require("../Models/cartModel");
+const CartItem = require("../Models/cartItemModel");
 const OrderItem = require("../Models/orderItemModel");
 const Order = require("../Models/orderModel");
 const OrderStatus = require("../Public/Domain/OrderStatus");
 const productService = require("./productService");
 
-const createOrder = async (user, cart, shippingAddress) => {
+const createOrder = async (user, cart, shippingAddress, isBuyNow) => {
   try {
-    if (shippingAddress._id && !user.addresses.includes(shippingAddress._id)) {
-      user.addresses.push(shippingAddress._id);
-      await user.save();
-    }
-    if (!shippingAddress._id) {
-      shippingAddress = await Address.create(shippingAddress);
-      user.addresses.push(shippingAddress._id);
+    // if (shippingAddress._id && !user.addresses.includes(shippingAddress._id)) {
+    //   user.addresses.push(shippingAddress._id);
+    //   await user.save();
+    // }
+    // if (!shippingAddress._id) {
+    //   shippingAddress = await Address.create(shippingAddress);
+    //   user.addresses.push(shippingAddress._id);
+    //   await user.save();
+    // }
+    let address = await Address.findById(user.address);
+
+    if (address) {
+      address.name = shippingAddress.name;
+      address.phone = shippingAddress.phone;
+      address.email = shippingAddress.email;
+      address.flatNoOrVillaNo = shippingAddress.flatNoOrVillaNo;
+      address.street = shippingAddress.street;
+      address.area = shippingAddress.area;
+      address.city = shippingAddress.city;
+      address.emirate = shippingAddress.emirate;
+      address.landmark = shippingAddress.landmark;
+      address.postalCode = shippingAddress.postalCode;
+      address.addressType = "address";
+      await address.save();
+    } else {
+      address = await Address.create({
+        name: shippingAddress.name,
+        phone: shippingAddress.phone,
+        email: shippingAddress.email,
+        flatNoOrVillaNo: shippingAddress.flatNoOrVillaNo,
+        street: shippingAddress.street,
+        area: shippingAddress.area,
+        city: shippingAddress.city,
+        emirate: shippingAddress.emirate,
+        landmark: shippingAddress.landmark,
+        postalCode: shippingAddress.postalCode,
+        addressType: "address",
+      });
+      user.address = address._id;
       await user.save();
     }
 
@@ -23,37 +57,52 @@ const createOrder = async (user, cart, shippingAddress) => {
     let totalDiscount = 0;
     let discountPercentage = 0;
     for (const item of cart.items) {
-      totalMrp += item.totalMrp;
-      totalSellingPrice += item.totalSellingPrice;
-      totalDiscount += item.totalDiscount;
+      totalMrp += item.product.mrpPrice * item.quantity;
+
+      totalSellingPrice += item.product.sellingPrice * item.quantity;
+
+      totalDiscount +=
+        (item.product.mrpPrice - item.product.sellingPrice) * item.quantity;
 
       let orderItem = new OrderItem({
         product: item.product._id,
         quantity: item.quantity,
-        totalMrp: item.totalMrp,
-        totalSellingPrice: item.totalSellingPrice,
-        totalDiscount: item.totalDiscount,
+        totalMrp: item.product.mrpPrice * item.quantity,
+        totalSellingPrice: item.product.sellingPrice * item.quantity,
+        totalDiscount:
+          (item.product.mrpPrice - item.product.sellingPrice) * item.quantity,
       });
       await orderItem.save();
-      orderItems.push(orderItem);
+      orderItems.push(orderItem._id);
     }
-    discountPercentage = productService.calculateDiscountPercentage(
-      totalMrp,
-      totalSellingPrice
-    );
+    if (totalMrp > 0) {
+      discountPercentage = productService.calculateDiscountPercentage(
+        totalMrp,
+        totalSellingPrice,
+      );
+    }
 
     const order = new Order({
       userId: user._id,
       sellerId: user.sellerId,
       orderItems: orderItems,
-      shippingAddress: shippingAddress,
+      shippingAddress: address._id,
       totalMrp: totalMrp,
       totalSellingPrice: totalSellingPrice,
       totalDiscount: totalDiscount,
       discountPercentage: discountPercentage,
       totalItems: totalItems,
+      additionalNotes: shippingAddress.additionalNotes,
     });
     await order.save();
+    if (!isBuyNow) {
+      const ogCart = await Cart.findOne({ userId: user._id });
+      for (const item of cart.items) {
+        ogCart.items.pull(item._id);
+        await CartItem.findByIdAndDelete(item._id);
+      }
+      await ogCart.save();
+    }
     return order;
   } catch (error) {
     console.error(`Error creating order`, error);
@@ -106,7 +155,7 @@ const updateOrderStatus = async (orderId, newStatus) => {
     return await Order.findByIdAndUpdate(
       orderId,
       { orderStatus: newStatus },
-      { new: true }
+      { new: true },
     ).populate(["orderItems", "shippingAddress"]);
   } catch (error) {
     console.error(`Error updating order status`, error);
@@ -119,7 +168,7 @@ const cancelOrder = async (orderId) => {
     return await Order.findByIdAndUpdate(
       orderId,
       { orderStatus: OrderStatus.CANCELLED },
-      { new: true }
+      { new: true },
     ).populate(["orderItems", "shippingAddress"]);
   } catch (error) {
     console.error(`Error cancelling order`, error);

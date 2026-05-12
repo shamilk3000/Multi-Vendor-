@@ -45,7 +45,7 @@ const createProduct = async (req) => {
       needMessage,
     } = productData;
     const productImages = req.files?.productImages || [];
-   
+
     const product = await Product.create({
       name,
       description,
@@ -88,10 +88,9 @@ const updateProduct = async (req) => {
       throw new Error("Product not found");
     }
 
-  // ✅ PARSE JSON FIELDS
+    // ✅ PARSE JSON FIELDS
     const description = JSON.parse(updateData.description || "[]");
     const removedImages = JSON.parse(updateData.removedImages || "[]");
-
 
     if (removedImages.length > 0) {
       await deleteFiles(removedImages);
@@ -119,11 +118,11 @@ const updateProduct = async (req) => {
       needAttachment,
       needMessage,
     } = updateData;
-     const updatedProduct = await Product.findByIdAndUpdate(
+    const updatedProduct = await Product.findByIdAndUpdate(
       productId,
       {
         name,
-        description, 
+        description,
         mrpPrice,
         sellingPrice,
         discountPercentage,
@@ -133,7 +132,7 @@ const updateProduct = async (req) => {
         needAttachment,
         needMessage,
       },
-      { new: true }
+      { new: true },
     );
     return updatedProduct;
   } catch (error) {
@@ -179,15 +178,15 @@ const restoreProduct = async (productId) => {
     return product;
   } catch (error) {
     console.error(`Error restoring product with ID ${productId}:`, error);
-    throw new Error(
-      `${error.message}`,
-    );
+    throw new Error(`${error.message}`);
   }
 };
 
 const getProductById = async (productId) => {
   try {
-    const product = await Product.findById(productId).populate("category").populate("subCategory");
+    const product = await Product.findById(productId)
+      .populate("category")
+      .populate("subCategory");
     if (!product) {
       throw new Error("Product not found");
     }
@@ -202,35 +201,35 @@ const getProductById = async (productId) => {
 
 const getProductByIdForUser = async (productId) => {
   try {
-   const product = await Product.findById(productId)
-  .populate("category")
-  .populate("subCategory")
-  .lean();
+    const product = await Product.findById(productId)
+      .populate("category")
+      .populate("subCategory")
+      .lean();
 
-if (!product) throw new Error("Product not found");
+    if (!product) throw new Error("Product not found");
 
-const reviews = await Review.find({ product: productId });
+    const reviews = await Review.find({ product: productId });
 
-const breakdownMap = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    const breakdownMap = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
 
-reviews.forEach((r) => {
-  if (breakdownMap[r.rating] !== undefined) {
-    breakdownMap[r.rating]++;
-  }
-});
+    reviews.forEach((r) => {
+      if (breakdownMap[r.rating] !== undefined) {
+        breakdownMap[r.rating]++;
+      }
+    });
 
-product.breakdown = Object.keys(breakdownMap)
-  .map((star) => ({
-    stars: Number(star),
-    count: breakdownMap[star],
-  }))
-  .sort((a, b) => b.stars - a.stars);
+    product.breakdown = Object.keys(breakdownMap)
+      .map((star) => ({
+        stars: Number(star),
+        count: breakdownMap[star],
+      }))
+      .sort((a, b) => b.stars - a.stars);
 
-return product;
+    return product;
   } catch (error) {
     console.error(`Error getting product with ID ${productId}:`, error);
     throw new Error(
-      `Unable to get product with ID ${productId}: ${error.message}`
+      `Unable to get product with ID ${productId}: ${error.message}`,
     );
   }
 };
@@ -254,7 +253,9 @@ const searchProducts = async (searchTerm, sellerId) => {
 
 const getAllProductsBySeller = async (sellerId) => {
   try {
-    const products = await Product.find({ seller: sellerId }).populate("category").populate("subCategory");
+    const products = await Product.find({ seller: sellerId })
+      .populate("category")
+      .populate("subCategory");
     return products;
   } catch (error) {
     console.error("Error getting all products:", error);
@@ -264,13 +265,14 @@ const getAllProductsBySeller = async (sellerId) => {
 
 const getAllProductsForCustomer = async (sellerId) => {
   try {
+    const products = await Product.find({
+      isActive: true,
+      seller: sellerId,
+      stock: { $gt: 0 }, // 👈 this line
+    })
+      .populate("category")
+      .populate("subCategory");
 
-   const products = await Product.find({
-  isActive: true,
-  seller: sellerId,
-  stock: { $gt: 0 }, // 👈 this line
-}).populate("category").populate("subCategory");
-  
     return products;
   } catch (error) {
     console.error("Error getting all products for customer:", error);
@@ -286,7 +288,9 @@ const getProductsInCategory = async (categoryId) => {
       category: categoryId,
       isActive: true,
       stock: { $gt: 0 },
-    }).populate("category").populate("subCategory");
+    })
+      .populate("category")
+      .populate("subCategory");
     return products;
   } catch (error) {
     console.error("Error getting products in category:", error);
@@ -366,7 +370,7 @@ const updateCategory = async (categoryId, updateData) => {
     const updatedCategory = await Category.findByIdAndUpdate(
       categoryId,
       updateFields,
-      { new: true }
+      { new: true },
     );
 
     // 4️⃣ CHECK: if parent changed
@@ -382,7 +386,7 @@ const updateCategory = async (categoryId, updateData) => {
           $set: {
             category: updateFields.parentCategory, // new parent
           },
-        }
+        },
       );
     }
 
@@ -420,8 +424,8 @@ const getAllCategoriesOfSeller = async (sellerId, onlyActive) => {
 
     const categories = await Category.find(filter);
 
-    const parents = categories.filter(c => c.parentCategory === null);
-    const children = categories.filter(c => c.parentCategory !== null);
+    const parents = categories.filter((c) => c.parentCategory === null);
+    const children = categories.filter((c) => c.parentCategory !== null);
 
     // 🔥 GET PRODUCT COUNT PER CATEGORY
     const productCounts = await Product.aggregate([
@@ -440,18 +444,17 @@ const getAllCategoriesOfSeller = async (sellerId, onlyActive) => {
 
     // 🔥 Convert to map for fast lookup
     const productCountMap = {};
-    productCounts.forEach(p => {
+    productCounts.forEach((p) => {
       productCountMap[p._id.toString()] = p.count;
     });
 
     // 🔥 BUILD TREE WITH COUNTS
-    const categoryTree = parents.map(parent => {
+    const categoryTree = parents.map((parent) => {
       const childList = children
         .filter(
-          child =>
-            child.parentCategory?.toString() === parent._id.toString()
+          (child) => child.parentCategory?.toString() === parent._id.toString(),
         )
-        .map(child => ({
+        .map((child) => ({
           ...child._doc,
           productCount: productCountMap[child._id.toString()] || 0,
         }));
@@ -459,7 +462,7 @@ const getAllCategoriesOfSeller = async (sellerId, onlyActive) => {
       // 🔥 total products in parent
       const totalProducts = childList.reduce(
         (sum, child) => sum + child.productCount,
-        0
+        0,
       );
 
       return {
@@ -484,16 +487,15 @@ const getAllCategoriesOfSellerForUser = async (sellerId) => {
     }
 
     let filter = {
-  sellerId,
-  isActive: true,
-  // stock: { $gt: 0 }   
-};
+      sellerId,
+      isActive: true,
+      // stock: { $gt: 0 }
+    };
 
     const categories = await Category.find(filter);
-   
 
-    const parents = categories.filter(c => c.parentCategory === null);
-    const children = categories.filter(c => c.parentCategory !== null);
+    const parents = categories.filter((c) => c.parentCategory === null);
+    const children = categories.filter((c) => c.parentCategory !== null);
 
     // 🔥 GET PRODUCT COUNT PER CATEGORY
     const productCounts = await Product.aggregate([
@@ -512,18 +514,17 @@ const getAllCategoriesOfSellerForUser = async (sellerId) => {
 
     // 🔥 Convert to map for fast lookup
     const productCountMap = {};
-    productCounts.forEach(p => {
+    productCounts.forEach((p) => {
       productCountMap[p._id.toString()] = p.count;
     });
 
     // 🔥 BUILD TREE WITH COUNTS
-    const categoryTree = parents.map(parent => {
+    const categoryTree = parents.map((parent) => {
       const childList = children
         .filter(
-          child =>
-            child.parentCategory?.toString() === parent._id.toString()
+          (child) => child.parentCategory?.toString() === parent._id.toString(),
         )
-        .map(child => ({
+        .map((child) => ({
           ...child._doc,
           productCount: productCountMap[child._id.toString()] || 0,
         }));
@@ -710,7 +711,9 @@ const addRating = async (reviewData, user) => {
 
 const getReviews = async (productId) => {
   try {
-    const reviews = await Review.find({ product: productId }).sort({ createdAt: -1 });
+    const reviews = await Review.find({ product: productId }).sort({
+      createdAt: -1,
+    });
     return reviews;
   } catch (error) {
     console.error("Error getting reviews:", error);

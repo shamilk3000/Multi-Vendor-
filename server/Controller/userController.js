@@ -1,4 +1,5 @@
 const userService = require("../Service/userService");
+const Address = require("../Models/addressModel");
 
 const googleAuthController = async (req, res) => {
   try {
@@ -232,6 +233,17 @@ const updateUserStatus = async (req, res) => {
   }
 };
 
+const getUserAddress = async (req, res) => {
+  try {
+    const user = req.user;
+    const address = await Address.findById(user.address);
+    return res.status(200).json({ address });
+  } catch (error) {
+    console.error("getUserAddress Controller Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   googleAuthController,
   userSignup,
@@ -248,4 +260,5 @@ module.exports = {
   deleteAddress,
   getAllUsers,
   updateUserStatus,
+  getUserAddress,
 };

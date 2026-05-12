@@ -29,6 +29,7 @@ const deleteCartItem = async (req, res) => {
   try {
     const user = req.user;
     const { cartItemId } = req.params;
+    console.log(cartItemId);
     const result = await cartService.deleteCartItem(user, cartItemId);
     return res.status(200).json(result);
   } catch (error) {
@@ -39,12 +40,11 @@ const deleteCartItem = async (req, res) => {
 
 const updateCartItemQuantity = async (req, res) => {
   try {
-  
     const cartItemId = req.params.cartItemId;
     const action = req.params.action;
     const updatedCartItem = await cartService.updateCartItemQuantity(
       cartItemId,
-      action
+      action,
     );
     return res.status(200).json(updatedCartItem);
   } catch (error) {

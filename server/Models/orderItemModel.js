@@ -27,10 +27,14 @@ const orderItemSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
-    needAttachment: {
-      type: Boolean,
-      default: false,
+    customMessage: {
+      type: String,
     },
+    customImages: [
+     {
+        type: String,
+      },
+    ],
   },
   { timestamps: true }
 );

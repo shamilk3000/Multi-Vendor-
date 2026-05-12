@@ -38,7 +38,7 @@ interface Order {
 const options = [
   { label: "All Status", value: "All", icon: <FaBox /> },
   { label: "Order Placed", value: "Placed", icon: <FaCheck /> },
-  { label: "Processed", value: "Processed", icon: <FaBox /> },
+  { label: "Confirmed", value: "Confirmed", icon: <FaBox /> },
   { label: "Shipped", value: "Shipped", icon: <FaShippingFast /> },
   { label: "Delivered", value: "Delivered", icon: <FaHome /> },
 ];
@@ -71,7 +71,7 @@ const SellerOrders: React.FC = () => {
     {
       id: "ORD10002",
       date: "2029-03-05",
-      status: "Processed",
+      status: "Confirmed",
       customer: { name: "Anjali Nair", email: "anjali@gmail.com" },
       products: [
         {
@@ -235,7 +235,7 @@ const SellerOrders: React.FC = () => {
       id: `ORD100${11 + i}`,
       date: `2029-03-${18 + i}`,
       isNew: i % 2 === 0,
-      status: ["Delivered", "Processed", "Shipped", "Cancelled", "Placed"][
+      status: ["Delivered", "Confirmed", "Shipped", "Cancelled", "Placed"][
         i % 4
       ],
       customer: {
@@ -267,7 +267,7 @@ const SellerOrders: React.FC = () => {
         return "bg-green-100 text-green-600 border-green-300";
       case "Placed":
         return "bg-yellow-100 text-yellow-600 border-yellow-300";
-      case "Processed":
+      case "Confirmed":
         return "bg-black text-white border-black";
       case "Shipped":
         return "bg-blue-100 text-blue-600 border-blue-300";
@@ -279,7 +279,7 @@ const SellerOrders: React.FC = () => {
     switch (status) {
       case "Delivered":
         return <FaHome />;
-      case "Processed":
+      case "Confirmed":
         return <FaBox />;
       case "Shipped":
         return <FaShippingFast />;
