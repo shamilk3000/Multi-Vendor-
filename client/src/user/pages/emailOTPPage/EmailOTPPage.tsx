@@ -114,7 +114,7 @@ const EmailOTPPage: React.FC = () => {
 
   return (
     <div className=" flex flex-col bg-gray-50">
-      <Navbar shopName={shopName!} />
+      <Navbar shopName={shopName!}  sellerId={sellerId!}/>
 
       <div className="min-h-[calc(100vh-350px)] md:min-h-[calc(100vh-250px)] flex justify-center items-center bg-gray-100 px-4">
         <motion.div

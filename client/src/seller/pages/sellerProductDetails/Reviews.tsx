@@ -8,9 +8,7 @@ const Reviews = (productId: any) => {
   );
   const [showAll, setShowAll] = useState(false);
   const reviewsToShow = showAll ? reviewsData : reviewsData.slice(0, 4);
-  // if (isLoading) {
-  //   return ( <h3 className="text-lg md:text-xl font-semibold mb-6">Product Reviews</h3>)
-  // }
+ 
 
   return (
     <section className="mt-1">

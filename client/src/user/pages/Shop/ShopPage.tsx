@@ -33,7 +33,7 @@ function ShopPage() {
 
   return (
     <div>
-      <Navbar shopName={shopName!} />
+     <Navbar shopName={shopName!}  sellerId={sellerId!}/>
 
       {/* HEADER */}
       <div className="relative flex items-center my-2 md:my-4">

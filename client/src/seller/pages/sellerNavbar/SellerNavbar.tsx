@@ -12,7 +12,7 @@ const Navbar = () => {
         <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-3">
           {/* Logo */}
           <motion.div
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/seller")}
             whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
             transition={{ type: "spring", stiffness: 300 }}
             className="text-2xl font-bold cursor-pointer mt-2"

@@ -17,27 +17,8 @@ const cartItemSchema = new mongoose.Schema(
       required: true,
       default: 1,
     },
-    totalMrp: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    totalSellingPrice: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    totalDiscount: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    needAttachment: {
-      type: Boolean,
-      default: false,
-    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const CartItem = mongoose.model("CartItem", cartItemSchema);

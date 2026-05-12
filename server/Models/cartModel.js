@@ -13,19 +13,8 @@ const cartSchema = new mongoose.Schema(
         ref: "CartItem",
       },
     ],
-    needAttachment: {
-      type: Boolean,
-      default: false,
-    },
-    attachmentItem: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "CartItem",
-        default: null,
-      },
-    ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Cart = mongoose.model("Cart", cartSchema);

@@ -328,7 +328,7 @@ const Signup = () => {
 
   return (
     <div className=" flex flex-col bg-gray-50 p-0">
-      <Navbar shopName={shopName!} />
+      <Navbar shopName={shopName!}  sellerId={sellerId!}/>
 
       <div className="md:py-5 flex items-center justify-center bg-gray-50 relative overflow-hidden">
         {/* BACKGROUND BLOBS */}

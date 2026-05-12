@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-
+import { useCart } from "../../../hooks/user/cart/useCart";
 import {
   FaTrash,
   FaPlus,
@@ -13,83 +13,108 @@ import {
 } from "react-icons/fa";
 import Footer from "../footer/Footer";
 import Navbar from "../navbar/Navbar";
-
-interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-}
+import {
+  ultrateQuantity,
+  ultrateDeleteItem,
+} from "../../../hooks/user/cart/ultrateCart";
 
 const Cart: React.FC = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      name: "Wireless Headphones",
-      price: 79.99,
-      quantity: 1,
-      image: "https://via.placeholder.com/100",
-    },
-    {
-      id: 2,
-      name: "Phone Case",
-      price: 25,
-      quantity: 2,
-      image: "https://via.placeholder.com/100",
-    },
-  ]);
+  const { mutateAsync: changeQuantity } = ultrateQuantity();
+  const { mutateAsync: deleteItem } = ultrateDeleteItem();
+  const { sellerId, shopName } = useParams();
+  const { data: cart = [], isLoading } = useCart();
+  const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
 
-  const increaseQty = (id: number) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item,
-      ),
-    );
-  };
+  const increaseQty = async (id: string) => {
 
-  const decreaseQty = (id: number) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item,
-      ),
-    );
-  };
-
-  const removeItem = (id: number) => {
-    toast.promise(
-      new Promise((resolve) => {
-        setTimeout(() => {
-          setCartItems((items) => items.filter((item) => item.id !== id));
-          resolve(true);
-        }, 500);
-      }),
-      {
-        loading: "Removing item...",
-        success: "Item removed 🗑️",
-        error: "Remove failed",
-      },
-      {
-        style: {
-          background: "#111",
-          color: "#fff",
-          border: "1px solid #333",
+    try {
+      await toast.promise(
+        changeQuantity({
+          cartItemId: id,
+          action: "inc",
+        }),
+        {
+          loading: "Increasing quantity...",
+          success: "Product quantity increased",
+          error: (err) =>
+            err.response?.data?.message || "Could not increase quantity",
         },
-      },
-    );
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+        },
+      );
+    } catch (err) {
+      console.error(err);
+    }
   };
+
+  const decreaseQty = async (id: string) => {
+
+    try {
+      await toast.promise(
+        changeQuantity({
+          cartItemId: id,
+          action: "dec",
+        }),
+        {
+          loading: "Decreasing quantity...",
+          success: "Product quantity decreased",
+          error: (err) =>
+            err.response?.data?.message || "Could not decrease quantity",
+        },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+        },
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const removeItem = async (id: string) => {
+    try {
+      await toast.promise(
+        deleteItem({
+          cartItemId: id,
+        }),
+        {
+           loading: "Removing product from your cart...",
+           success: "Product removed from cart successfully 🗑️",
+          error: (err) =>
+            err.response?.data?.message ||  "Failed to remove product. Try again later",
+        },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+        },
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const navigate = useNavigate();
 
-  const subtotal: number = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0,
-  );
+  if (isLoading) {
+    return (
+      <h3 className="text-lg md:text-xl font-semibold mb-6">Product Reviews</h3>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 p-0">
-      <Navbar />
+      <Navbar shopName={shopName!} sellerId={sellerId!} />
 
       <div className="min-h-[calc(100vh-120px)] md:min-h-[calc(100vh-64px)]  bg-gray-50 p-4 md:p-8">
         {/* Heading */}
@@ -107,7 +132,7 @@ const Cart: React.FC = () => {
           <div className="md:col-span-2 space-y-5">
             <AnimatePresence>
               {/* EMPTY CART MESSAGE */}
-              {cartItems.length === 0 && (
+              {cart.items.length === 0 && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -121,9 +146,12 @@ const Cart: React.FC = () => {
                 </motion.div>
               )}
 
-              {cartItems.map((item) => (
+              {cart.items.map((item: any) => (
                 <motion.div
-                  key={item.id}
+                  key={item._id}
+                  // onClick={() =>
+                  //   navigate(`/${sellerId}/${shopName}/products/${item._id}`)
+                  // }
                   layout
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -133,25 +161,34 @@ const Cart: React.FC = () => {
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     {/* LEFT: Image + ALL DETAILS */}
                     <div
-                      onClick={() => navigate(`/products/${item.id}`)}
+                      onClick={() =>
+                        navigate(
+                          `/${sellerId}/${shopName}/products/${item.product._id}`,
+                        )
+                      }
                       className="flex items-center gap-3 flex-1 cursor-pointer "
                     >
                       <motion.img
                         whileHover={{ scale: 1.05 }}
-                        src={item.image}
-                        alt={item.name}
+                        src={`${BASE_URL}${item.product.image[0]}`}
+                        alt={item.product.name}
                         className="w-16 h-16 md:w-20 md:h-20 rounded-lg object-cover"
                       />
 
                       <div className="flex flex-col">
                         <h2 className="font-semibold text-sm md:text-base">
-                          {item.name}
+                          {item.product.name}
                         </h2>
 
-                        <p className="text-gray-500 text-sm">${item.price}</p>
+                        <p className="text-green-700 text-sm">
+                          ${item.product.sellingPrice}
+                        </p>
 
                         <p className="text-sm font-medium text-gray-800">
-                          Total: ${(item.price * item.quantity).toFixed(2)}
+                          Total: $
+                          {(item.product.sellingPrice * item.quantity).toFixed(
+                            2,
+                          )}
                         </p>
                       </div>
                     </div>
@@ -163,7 +200,7 @@ const Cart: React.FC = () => {
                         <motion.button
                           whileTap={{ scale: 0.75 }}
                           whileHover={{ scale: 1.1 }}
-                          onClick={() => decreaseQty(item.id)}
+                          onClick={() => decreaseQty(item._id)}
                           className=" cursor-pointer w-8 h-8 flex items-center justify-center rounded-full hover:bg-black hover:text-white transition"
                         >
                           <FaMinus size={11} />
@@ -181,7 +218,7 @@ const Cart: React.FC = () => {
                         <motion.button
                           whileTap={{ scale: 0.75 }}
                           whileHover={{ scale: 1.1 }}
-                          onClick={() => increaseQty(item.id)}
+                          onClick={() => increaseQty(item._id)}
                           className=" cursor-pointer w-8 h-8 flex items-center justify-center rounded-full hover:bg-black hover:text-white transition"
                         >
                           <FaPlus size={11} />
@@ -192,7 +229,7 @@ const Cart: React.FC = () => {
                       <motion.button
                         whileHover={{ scale: 1.2 }}
                         whileTap={{ scale: 0.8 }}
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeItem(item._id)}
                         className="text-red-500 hover:text-red-700 cursor-pointer "
                       >
                         <FaTrash />
@@ -219,23 +256,25 @@ const Cart: React.FC = () => {
             </h2>
 
             <div className="space-y-3 mb-4">
-              {cartItems.map((item) => (
+              {cart.items.map((item: any) => (
                 <div
-                  key={item.id}
+                  key={item._id}
                   className="flex justify-between text-sm transition-transform duration-300 hover:scale-[1.02] hover:text-black"
                 >
                   <span>
-                    {item.name} x {item.quantity}
+                    {item.product.name} x {item.quantity}
                   </span>
 
-                  <span>${(item.price * item.quantity).toFixed(2)}</span>
+                  <span>
+                    ${(item.product.sellingPrice * item.quantity).toFixed(2)}
+                  </span>
                 </div>
               ))}
             </div>
 
             <div className="flex justify-between mb-3 transition-transform duration-300 hover:scale-[1.03] hover:text-gray-800">
               <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>${cart.totalSellingPrice.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between mb-3 transition-transform duration-300 hover:scale-[1.03] hover:text-gray-800">
@@ -245,15 +284,25 @@ const Cart: React.FC = () => {
 
             <div className="border-t pt-4 flex justify-between font-bold text-lg transition-transform duration-300 hover:scale-[1.03] hover:text-gray-900">
               <span>Total</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>${cart.totalSellingPrice.toFixed(2)}</span>
             </div>
             <motion.button
-              whileHover={{
-                scale: 1.03,
-                boxShadow: "0px 12px 30px rgba(0,0,0,0.25)",
-              }}
-              whileTap={{ scale: 0.95 }}
-              className=" cursor-pointer flex flex-row justify-center gap-2 w-full mt-5 bg-black text-white py-3 rounded-lg hover:bg-gray-900 transition"
+              disabled={cart.items.length === 0}
+              whileHover={
+                cart.items.length > 0
+                  ? {
+                      scale: 1.03,
+                      boxShadow: "0px 12px 30px rgba(0,0,0,0.25)",
+                    }
+                  : {}
+              }
+              whileTap={cart.items.length > 0 ? { scale: 0.95 } : {}}
+              className={`flex flex-row justify-center gap-2 w-full mt-5 py-3 rounded-lg transition
+    ${
+      cart.items.length === 0
+        ? "bg-gray-400 cursor-not-allowed text-gray-200"
+        : "bg-black text-white hover:bg-gray-900 cursor-pointer"
+    }`}
             >
               <div className="my-auto">
                 <FaCreditCard className="inline mr-2" />
@@ -264,7 +313,6 @@ const Cart: React.FC = () => {
         </div>
       </div>
       <Footer />
-      {/* <Toaster position="top-right" containerStyle={{ top: 75 }} /> */}
     </div>
   );
 };

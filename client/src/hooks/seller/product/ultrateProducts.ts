@@ -11,9 +11,10 @@ const useInvalidateProducts = () => {
   const queryClient = useQueryClient();
 
   return () => {
-    queryClient.invalidateQueries({ queryKey: ["products"], exact: false });
-    queryClient.invalidateQueries({ queryKey: ["categories"], exact: false });
+    queryClient.invalidateQueries({ queryKey: ["products"],refetchType: "all", exact: false });
+    queryClient.invalidateQueries({ queryKey: ["categories"],refetchType: "all", exact: false });
     queryClient.invalidateQueries({queryKey: ["reviews"],refetchType: "all",exact: false});
+    queryClient.invalidateQueries({queryKey: ["carts"],refetchType: "all",exact: false});
   };
 };
 

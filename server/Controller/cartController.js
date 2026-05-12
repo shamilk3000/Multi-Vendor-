@@ -39,6 +39,7 @@ const deleteCartItem = async (req, res) => {
 
 const updateCartItemQuantity = async (req, res) => {
   try {
+  
     const cartItemId = req.params.cartItemId;
     const action = req.params.action;
     const updatedCartItem = await cartService.updateCartItemQuantity(

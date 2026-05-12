@@ -1,6 +1,8 @@
 import { useState } from "react";
 import type Product from "./Product";
 import { ShoppingCart, Zap, Minus, Plus, Star } from "lucide-react";
+import toast from "react-hot-toast";
+import api from "../../../features/axios";
 
 const ProductInfo = ({ product }: { product: Product }) => {
   const [quantity, setQuantity] = useState<number>(1);
@@ -11,12 +13,35 @@ const ProductInfo = ({ product }: { product: Product }) => {
   };
 
   const increaseQty = () => {
-    setQuantity((prev) => prev + 1);
+    setQuantity((prev) => (prev >= product.stock ? product.stock : prev + 1));
   };
 
-  const handleAddToCart = () => {
-    setLoading(true);
-    setTimeout(() => setLoading(false), 1200);
+  const handleAddToCart = async () => {
+    try {
+      setLoading(true);
+      const promise = api.post("/add-cart-item", {
+        quantity: quantity,
+        productId: product._id,
+      });
+      await toast.promise(
+        promise,
+        {
+          loading: "Adding product to cart...",
+          success: "Product added to cart successfully 🛒",
+          error: "Failed to add product to cart ❌",
+        },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+        },
+      );
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const rating = product.ratingAverage;
@@ -167,8 +192,14 @@ const ProductInfo = ({ product }: { product: Product }) => {
 
           <input
             type="number"
+            min={1}
+            max={product.stock}
             value={quantity}
-            onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+            onChange={(e) =>
+              setQuantity(
+                Math.min(product.stock, Math.max(1, Number(e.target.value))),
+              )
+            }
             className="w-10 text-center font-semibold bg-transparent outline-none"
           />
 

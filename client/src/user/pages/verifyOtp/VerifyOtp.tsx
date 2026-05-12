@@ -197,7 +197,7 @@ const OTPVerification: React.FC = () => {
 
   return (
     <div className=" flex flex-col bg-gray-50 p-0">
-      <Navbar shopName={shopName!} />
+     <Navbar shopName={shopName!}  sellerId={sellerId!}/>
 
       <div className="py-18 flex justify-center items-center  bg-gray-100 px-4 overflow-hidden">
         <motion.div

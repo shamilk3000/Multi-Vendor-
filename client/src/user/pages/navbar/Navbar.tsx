@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 type ProductListProps = {
   shopName: string;
+  sellerId: string;
 };
 
-const Navbar = ({ shopName }: ProductListProps) => {
+const Navbar = ({ shopName, sellerId }: ProductListProps) => {
   const navigate = useNavigate();
-  const cartItemCount = 3; // Example cart count
-
+  const cartItemCount = 0; // Example cart count
   return (
     <>
       <nav className="w-full bg-black text-white relative shadow-lg">
@@ -27,7 +27,7 @@ const Navbar = ({ shopName }: ProductListProps) => {
           <div className="flex items-center gap-10">
             {/* Home */}
             <div
-              onClick={() => navigate("/")}
+              onClick={() => navigate(`/${sellerId}/${shopName}`)}
               className="group flex flex-col items-center cursor-pointer"
             >
               <motion.div
@@ -44,7 +44,7 @@ const Navbar = ({ shopName }: ProductListProps) => {
 
             {/* Shop */}
             <div
-              onClick={() => navigate("/shop")}
+              onClick={() => navigate(`/${sellerId}/${shopName}/shop`)}
               className="group flex flex-col items-center cursor-pointer"
             >
               <motion.div
@@ -61,7 +61,7 @@ const Navbar = ({ shopName }: ProductListProps) => {
 
             {/* Cart */}
             <div
-              onClick={() => navigate("/cart")}
+              onClick={() => navigate(`/${sellerId}/${shopName}/cart`)}
               className="group relative flex flex-col items-center cursor-pointer"
             >
               <motion.div
@@ -90,7 +90,7 @@ const Navbar = ({ shopName }: ProductListProps) => {
 
             {/* Profile */}
             <div
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate("/dashboard")}
               className="group flex flex-col items-center cursor-pointer"
             >
               <motion.div

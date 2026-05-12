@@ -12,7 +12,7 @@ function Home() {
   return (
     <div>
       <section>
-        <Navbar shopName={shopName!}/>
+       <Navbar shopName={shopName!}  sellerId={sellerId!}/>
         <Banner shopName={shopName!}/>
       </section>
       {/* <section>

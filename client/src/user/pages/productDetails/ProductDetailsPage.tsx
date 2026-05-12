@@ -40,7 +40,7 @@ if (isLoading) {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 p-0">
-      <Navbar shopName={shopName!} />
+      <Navbar shopName={shopName!}  sellerId={sellerId!}/>
 
       <div className="min-h-[calc(100vh-120px)] md:min-h-[calc(100vh-64px)] bg-gray-100 pt-0 px-0 p-6">
       

@@ -23,6 +23,10 @@ const useInvalidateCategories = () => {
       queryKey: ["reviews"],
    refetchType: "all",
     });
+    queryClient.invalidateQueries({
+      queryKey: ["carts"],
+   refetchType: "all",
+    });
   };
 };
 

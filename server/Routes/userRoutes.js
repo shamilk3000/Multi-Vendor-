@@ -30,10 +30,10 @@ router.get("/get-product-by-id/:productId", productController.getProductByIdForU
 router.post("/add-rating", userAuth, productController.addRating);                                                  //using
 router.get("/get-reviews/:productId", productController.getReviews);                                                  //using
 
-router.get("/:sellerId/:shopName/get-user-cart", userAuth, cartController.getUserCart);
-router.post("/:sellerId/:shopName/add-cart-item", userAuth, cartController.addCartItem);
-router.delete("/:sellerId/:shopName/delete-cart-item/:cartItemId", userAuth, cartController.deleteCartItem);
-router.put("/:sellerId/:shopName/update-cart-item-quantity/:cartItemId/:action", userAuth, cartController.updateCartItemQuantity);
+router.get("/get-user-cart", userAuth, cartController.getUserCart);                                                  //using
+router.post("/add-cart-item", userAuth, cartController.addCartItem);                                                  //using
+router.delete("/delete-cart-item/:cartItemId", userAuth, cartController.deleteCartItem);                              //using
+router.put("/update-cart-item-quantity/:cartItemId/:action", userAuth, cartController.updateCartItemQuantity);             //using
 
 router.post("/:sellerId/:shopName/create-order", userAuth, orderController.createOrder);
 router.get("/:sellerId/:shopName/get-order-by-id/:orderId", userAuth, orderController.getOrderById);

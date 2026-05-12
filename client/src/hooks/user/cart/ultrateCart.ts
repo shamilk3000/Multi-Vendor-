@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  addReview,
-} from "../../../api/user/review";
+  updateQuantity,
+  deleteItem
+} from "../../../api/user/cart";
 
 // 🧠 shared invalidate
 const useInvalidateReviews = () => {
@@ -28,11 +29,20 @@ const useInvalidateReviews = () => {
 };
 
 // 📦 Create
-export const ultrateAddReview = () => {
+export const ultrateQuantity = () => {
   const invalidate = useInvalidateReviews();
 
   return useMutation({
-    mutationFn: addReview,
+    mutationFn: updateQuantity,
+    onSuccess: invalidate,
+  });
+};
+
+export const ultrateDeleteItem = () => {
+  const invalidate = useInvalidateReviews();
+
+  return useMutation({
+    mutationFn: deleteItem,
     onSuccess: invalidate,
   });
 };

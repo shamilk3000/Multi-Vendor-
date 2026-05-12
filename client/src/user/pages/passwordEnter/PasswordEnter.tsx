@@ -135,7 +135,7 @@ const ChangePassword: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* ✅ NAVBAR */}
-      <Navbar shopName={shopName!} />
+      <Navbar shopName={shopName!}  sellerId={sellerId!}/>
 
       {/* ✅ MAIN CONTENT */}
       <div className="flex flex-1 items-center justify-center px-2 md:px-4 py-10 bg-gray-100">
