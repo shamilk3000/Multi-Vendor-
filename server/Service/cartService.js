@@ -17,7 +17,7 @@ const getUserCart = async (user) => {
     });
 
     if (!cart) {
-      throw new Error("Cart not found for the user");
+      return cart = []
     }
 
     // Update quantities based on stock

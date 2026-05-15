@@ -14,7 +14,10 @@ function createMulterUpload(folderName) {
         dynamicFolder = `${dynamicFolder}/PersonalImages/${req.body.updatedForm.email}`;
       } else if (file.fieldname === "productImages") {
         dynamicFolder = `${dynamicFolder}/${req.seller.email}`;
+      } else if (file.fieldname.startsWith("images_")) {
+        dynamicFolder = `${dynamicFolder}/${req.user.email}-${req.user._id}`;
       }
+
 
       const uploadPath = path.join(
         __dirname,

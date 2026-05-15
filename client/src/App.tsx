@@ -2,9 +2,11 @@ import { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { setNavigate } from "./features/navigation";
-
 import { ThemeProvider } from "@mui/material";
 import customTheme from "./theme/customTheme";
+
+
+
 import Home from "./user/pages/home/Home";
 import ShopPage from "./user/pages/Shop/ShopPage";
 import ProductPage from "./user/pages/productDetails/ProductDetailsPage";
@@ -72,10 +74,12 @@ function App() {
           path="/:sellerId/:shopName/products/:productId"
           element={<ProductPage />}
         />
+        
         <Route
-          path="/:sellerId/:shopName/customize-product/:oRderId"
+          path="/:sellerId/:shopName/customize-product/:orderId"
           element={<CustomizeProduct />}
         />
+        
         <Route path="/otp-verification" element={<OTPVerification />} />
         <Route
           path="/:sellerId/:shopName/email-otp"
@@ -91,7 +95,7 @@ function App() {
         />
         <Route path="/:sellerId/:shopName/signup" element={<Signup />} />
         <Route path="/:sellerId/:shopName/login" element={<Login />} />
-        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/:sellerId/:shopName/payment-success" element={<PaymentSuccess />} />
         <Route path="/:sellerId/:shopName/checkout" element={<Checkout />} />
         <Route path="/:sellerId/:shopName/cart" element={<Cart />} />
         <Route path="/:sellerId/:shopName" element={<Home />} />

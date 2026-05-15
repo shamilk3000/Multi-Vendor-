@@ -6,7 +6,7 @@ const { deleteFiles } = require("../Utils/multerUtil");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS);
-const {stripe} = require("../Utils/stripe");
+const { stripe } = require("../Utils/stripe");
 const {
   generateOtp,
   sendOtpEmail,
@@ -22,7 +22,7 @@ const getAllSellers = async (status) => {
   }
 };
 
-const createSellerDetails = async (req , res) => {
+const createSellerDetails = async (req, res) => {
   try {
     if (typeof req.body.updatedForm === "string") {
       req.body.updatedForm = JSON.parse(req.body.updatedForm);
@@ -73,7 +73,8 @@ const createSellerDetails = async (req , res) => {
       ? `/Uploads/Seller/PersonalImages/${existingSeller.email}/${personalImageFile.filename}`
       : "";
     existingSeller.idProof = idProofFiles.map(
-      (file) => `/Uploads/Seller/IdProofs/${existingSeller.email}/${file.filename}`,
+      (file) =>
+        `/Uploads/Seller/IdProofs/${existingSeller.email}/${file.filename}`,
     );
     existingSeller.address = address._id;
 
@@ -99,23 +100,29 @@ const createSellerDetails = async (req , res) => {
     // existingSeller.bankingDetails.SWIFTcode =
     //   sellerData.bankingDetails.SWIFTcode;
     existingSeller.bankingDetails.bankName = sellerData.bankingDetails.bankName;
-    existingSeller.bankingDetails.stripeAccountId =
-      sellerData.bankingDetails.stripeAccountId;
+
     existingSeller.isComplete = true;
 
-    await existingSeller.save();
+    let stripeOnboardingUrl = null;
+    if (!existingSeller.stripeAccountId) {
+      const account = await stripe.accounts.create({
+        type: "express",
+      });
+      existingSeller.bankingDetails.stripeAccountId = account.id;
 
-    // if (existingSeller.accountStatus === "PENDING_VERIFICATION") {
-    //   throw new Error("Seller account verification is pending");
-    // } else 
-     
-    // else if (existingSeller.accountStatus === "DEACTIVATED") {
-    //   throw new Error("Seller account is deactivated");
-    // } else if (existingSeller.accountStatus === "BANNED") {
-    //   throw new Error("Seller account is banned");
-    // } else if (existingSeller.accountStatus === "CLOSED") {
-    //   throw new Error("Seller account is closed");
-    // }
+      await existingSeller.save();
+
+      const accountLink = await stripe.accountLinks.create({
+        account: account.id,
+        refresh_url: process.env.REFRESH_URL,
+        return_url: process.env.RETURN_URL,
+        type: "account_onboarding",
+      });
+
+      // you can return this later if needed
+      stripeOnboardingUrl = accountLink.url;
+    }
+
     const token = createJwt({
       id: existingSeller._id,
       email: existingSeller.email,
@@ -127,17 +134,16 @@ const createSellerDetails = async (req , res) => {
       sameSite: process.env.COOKIE_SAMESITE,
       maxAge: Number(process.env.COOKIE_MAXAGE), // 1 day ,
     });
-
+    req.seller = existingSeller;
     return {
-      seller:existingSeller,
+      seller: existingSeller,
+      onboardingUrl: stripeOnboardingUrl,
     };
   } catch (error) {
     console.error("createSellerDetails Service Error:", error);
     throw error;
   }
 };
-
-
 
 const getSellerProfileById = async (id) => {
   try {
@@ -319,7 +325,7 @@ const updateSellerStatus = async (sellerId, newStatus) => {
   }
 };
 
-const sellerGoogleAuth = async (credential , res) => {
+const sellerGoogleAuth = async (credential, res) => {
   try {
     // Get verified Google user
     const googleUser = await verifyGoogleToken(credential);
@@ -345,24 +351,22 @@ const sellerGoogleAuth = async (credential , res) => {
     }
 
     if (seller.isComplete === false) {
-      return {seller: seller, isNew };
+      return { seller: seller, isNew };
     } else {
-     
       const token = createJwt({ id: seller._id, email: seller.email });
-       res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.COOKIE_SECURE === "true",
-      sameSite: process.env.COOKIE_SAMESITE,
-      maxAge: Number(process.env.COOKIE_MAXAGE), // 1 day ,
-    });
-      return { seller: seller,isNew,  };
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.COOKIE_SECURE === "true",
+        sameSite: process.env.COOKIE_SAMESITE,
+        maxAge: Number(process.env.COOKIE_MAXAGE), // 1 day ,
+      });
+      return { seller: seller, isNew };
     }
   } catch (error) {
     console.error("sellerGoogleAuth Service Error:", error);
     throw error;
   }
 };
-
 
 const sellerLogin = async (email, password, res) => {
   try {
@@ -380,10 +384,8 @@ const sellerLogin = async (email, password, res) => {
       const isMatch = bcrypt.compare(password, seller.password);
       if (!isMatch) throw new Error("Invalid password");
 
-      return {seller, isComplete: seller.isComplete};
+      return { seller, isComplete: seller.isComplete };
     } else {
-
-
       // Check if user was registered via Google
       if (seller.isGoogleAccount && !seller.password) {
         throw new Error(
@@ -395,13 +397,13 @@ const sellerLogin = async (email, password, res) => {
       if (!isMatch) throw new Error("Invalid password");
 
       const token = createJwt({ id: seller._id, email: seller.email });
- res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.COOKIE_SECURE === "true",
-      sameSite: process.env.COOKIE_SAMESITE,
-      maxAge: Number(process.env.COOKIE_MAXAGE), // 1 day ,
-    });
-      return {seller,  isComplete: seller.isComplete };
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.COOKIE_SECURE === "true",
+        sameSite: process.env.COOKIE_SAMESITE,
+        maxAge: Number(process.env.COOKIE_MAXAGE), // 1 day ,
+      });
+      return { seller, isComplete: seller.isComplete };
     }
   } catch (error) {
     console.error("sellerLogin Service Error:", error);
@@ -504,8 +506,6 @@ const sellerResetPassword = async (email, password) => {
   }
 };
 
-
-
 const handleSellerSubscription = async (priceId, sellerId, sellerEmail) => {
   try {
     // 🧠 Get seller from DB
@@ -517,7 +517,7 @@ const handleSellerSubscription = async (priceId, sellerId, sellerEmail) => {
     if (seller.subscriptionId) {
       try {
         subscription = await stripe.subscriptions.retrieve(
-          seller.subscriptionId
+          seller.subscriptionId,
         );
       } catch (err) {
         console.log("Old subscription not found in Stripe");
@@ -525,18 +525,14 @@ const handleSellerSubscription = async (priceId, sellerId, sellerEmail) => {
     }
 
     // 🔥 CASE 1: Subscription exists and NOT canceled → reuse
-    if (
-      subscription &&
-      subscription.status !== "canceled"
-    ) {
-
+    if (subscription && subscription.status !== "canceled") {
       // Create billing portal session for upgrade/payment
       const portalSession = await stripe.billingPortal.sessions.create({
         customer: subscription.customer,
         return_url: process.env.SUBSCRIPTION_SUCCESS_URL,
       });
       console.log("🔁 Subscription exists and NOT canceled . it will renew");
-      return portalSession.url ;
+      return portalSession.url;
     }
 
     // 🔴 CASE 2: No subscription OR canceled → create new
@@ -545,7 +541,7 @@ const handleSellerSubscription = async (priceId, sellerId, sellerEmail) => {
       mode: "subscription",
       line_items: [{ price: priceId, quantity: 1 }],
 
-      customer_email: sellerEmail, 
+      customer_email: sellerEmail,
 
       success_url: process.env.SUBSCRIPTION_SUCCESS_URL,
       cancel_url: process.env.SUBSCRIPTION_CANCEL_URL,
@@ -555,16 +551,13 @@ const handleSellerSubscription = async (priceId, sellerId, sellerEmail) => {
         sellerEmail,
       },
     });
-      console.log("✅ No subscription OR canceled → create new subscription");
+    console.log("✅ No subscription OR canceled → create new subscription");
     return session.url;
-
   } catch (error) {
     console.error("Stripe session creation failed:", error.message);
     throw new Error("Unable to handle subscription");
   }
 };
-
-
 
 module.exports = {
   getAllSellers,

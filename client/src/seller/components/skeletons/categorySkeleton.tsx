@@ -3,10 +3,11 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 const CategoryPageSkeleton = () => {
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-      <div className="min-h-screen p-0 md:p-3">
+    <div>
+    {/* <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+      <div className="min-h-screen p-0 md:p-3"> */}
         {/* HEADER */}
-        <div className="flex justify-between items-center mb-3">
+        {/* <div className="flex justify-between items-center mb-3">
           <div className="flex md:ms-0 ms-10 items-center gap-2">
             <Skeleton circle width={22} height={22} />
             <div className=" w-[120px] md:w-[160px]">
@@ -15,12 +16,12 @@ const CategoryPageSkeleton = () => {
           </div>
 
           <Skeleton width={120} height={36} borderRadius={8} />
-        </div>
+        </div> */}
 
         {/* SEARCH */}
-        <div className="relative mb-5 ">
+        {/* <div className="relative mb-5 ">
           <Skeleton height={30} borderRadius={8} />
-        </div>
+        </div> */}
 
         {/* CATEGORY CARDS */}
         <div className="flex flex-col gap-4">
@@ -79,7 +80,8 @@ const CategoryPageSkeleton = () => {
             </div>
           ))}
         </div>
-      </div>
+      {/* </div>
+    </div> */}
     </div>
   );
 };

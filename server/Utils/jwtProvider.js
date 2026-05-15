@@ -11,7 +11,8 @@ function createJwt(payload) {
 
 async function verifyJwt(token) {
   try {
-    return await jwt.verify(token, process.env.JWT_SECRET);
+    let decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    return decoded
   } catch (error) {
     throw new Error("Invalid token. Authorization failed");
   }
@@ -59,7 +60,7 @@ const getSellerByEmail = async (email) => {
 
 const getUserByEmail = async (email, sellerId) => {
   try {
-    const user = await User.findOne({ email, sellerId });
+    const user = await User.findOne({ email, sellerId }).populate("sellerId");
     if (!user) {
       throw new Error("User not found");
     }

@@ -112,6 +112,11 @@ const verifyOtpAndCreateUser = async (userData, otp, sellerId, res) => {
       sellerId: user.sellerId,
     });
 
+    const cart = new Cart({
+        userId: user._id,
+      });
+      await cart.save();
+
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.COOKIE_SECURE === "true",

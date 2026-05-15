@@ -110,11 +110,47 @@ const createOrder = async (user, cart, shippingAddress, isBuyNow) => {
   }
 };
 
+const customize = async (user, customData, orderId) => {
+  try {
+    const order = await getOrderById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // loop through order items
+    for (const item of order.orderItems) {
+      const productId = item.product._id.toString();
+
+      if (customData[productId]) {
+        item.customMessage = customData[productId].message;
+        item.customImages = customData[productId].images;
+        // save populated orderItem document
+        await item.save();
+      }
+    }
+    // save updated order
+    await order.save();
+
+    return order;
+  } catch (error) {
+    console.error(`Error creating order`, error);
+    throw new Error(`Unable to create order : ${error.message}`);
+  }
+};
+
 const getOrderById = async (orderId) => {
   try {
     const order = await Order.findById(orderId).populate([
-      "orderItems",
-      "shippingAddress",
+      {
+        path: "orderItems",
+        populate: {
+          path: "product",
+        },
+      },
+      {
+        path: "shippingAddress",
+      },
     ]);
     if (!order) {
       throw new Error("Order not found");
@@ -191,6 +227,7 @@ const getOderItemById = async (orderItemId) => {
 
 module.exports = {
   createOrder,
+  customize,
   getOrderById,
   allOrdersOfSeller,
   allOrdersOfUser,

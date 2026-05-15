@@ -46,6 +46,7 @@ const Checkout: React.FC = () => {
   useEffect(() => {
     const getAddress = async () => {
       try {
+      
         const res = await api.get("/get-user-address");
 
         setExisting(res.data.address);

@@ -1,6 +1,8 @@
 const orderService = require("../Service/orderService");
 const cartService = require("../Service/cartService");
 const paymentService = require("../Service/paymentService");
+const { createMulterUpload } = require("../Utils/multerUtil");
+const userOrderUpload = createMulterUpload("User/OrderCustomizations");
 
 const createOrder = async (req, res) => {
   try {
@@ -31,6 +33,35 @@ const createOrder = async (req, res) => {
     console.error("createOrder Controller Error:", error);
     return res.status(500).json({ message: error.message });
   }
+};
+
+const customize = async (req, res) => {
+  userOrderUpload.any()(req, res, async (err) => {
+    try {
+      if (err)
+        return res
+          .status(400)
+          .json({ message: "File upload failed", error: err.message });
+
+      const user = req.user;
+      const orderId = req.body.orderId;
+      const customData = JSON.parse(req.body.customData);
+
+      req.files.forEach((file) => {
+        const productId = file.fieldname.replace("images_", "");
+
+        customData[productId].images.push(
+          `/Uploads/User/OrderCustomizations/${user.email}-${user._id}/${file.filename}`,
+        );
+      });
+
+      const order = await orderService.customize(user, customData, orderId);
+      return res.status(200).json(order);
+    } catch (error) {
+      console.error("customize Controller Error:", error);
+      return res.status(500).json({ message: error.message });
+    }
+  });
 };
 
 const getOrderById = async (req, res) => {
@@ -101,6 +132,7 @@ const getOderItemById = async (req, res) => {
 
 module.exports = {
   createOrder,
+  customize,
   getOrderById,
   allOrdersOfSeller,
   allOrdersOfUser,

@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import { ultrateAddCategory, ultrateDeleteCategory, ultrateRestoreCategory } from "../../../hooks/seller/category/ultrateCategories";
+import {
+  ultrateAddCategory,
+  ultrateDeleteCategory,
+  ultrateRestoreCategory,
+} from "../../../hooks/seller/category/ultrateCategories";
 import { useCategories } from "../../../hooks/seller/category/useCategories";
 import type { Category } from "@/types/category";
 import {
@@ -17,13 +21,14 @@ import EditCategoryModal from "../sellerEditCategory/SellerEditCategory";
 import CategoryPageSkeleton from "@/seller/components/skeletons/categorySkeleton";
 
 const CategoryList = () => {
-const [search, setSearch] = useState("");
-const [modalOpen, setModalOpen] = useState(false);
-const { mutateAsync: addCategory } = ultrateAddCategory();
-const { mutateAsync: deleteCategory } = ultrateDeleteCategory();
-const { mutateAsync: restoreCategory } = ultrateRestoreCategory();
-const { data: categories = [], isLoading } = useCategories({ onlyActive: false });
-
+  const [search, setSearch] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const { mutateAsync: addCategory } = ultrateAddCategory();
+  const { mutateAsync: deleteCategory } = ultrateDeleteCategory();
+  const { mutateAsync: restoreCategory } = ultrateRestoreCategory();
+  const { data: categories = [], isLoading } = useCategories({
+    onlyActive: false,
+  });
 
   // 🔥 ADD CATEGORY
   const handleAdd = async (data: Partial<Category>) => {
@@ -50,13 +55,13 @@ const { data: categories = [], isLoading } = useCategories({ onlyActive: false }
 
   // 🔥 DELETE WITH TOAST
   const handleDelete = async (id: string) => {
-     try {
+    try {
       await toast.promise(
-        deleteCategory({ categoryId:id}),
+        deleteCategory({ categoryId: id }),
         {
-        loading: "Deleting category...",
-        success: "Category deleted 🗑️",
-        error: "Delete failed",
+          loading: "Deleting category...",
+          success: "Category deleted 🗑️",
+          error: "Delete failed",
         },
         {
           style: {
@@ -73,13 +78,13 @@ const { data: categories = [], isLoading } = useCategories({ onlyActive: false }
 
   // 🔥 RESTORE WITH TOAST
   const handleRestore = async (id: string) => {
-     try {
+    try {
       await toast.promise(
-        restoreCategory({ categoryId:id}),
+        restoreCategory({ categoryId: id }),
         {
           loading: "Restoring category...",
-        success: "Category restored ♻️",
-        error: "Restore failed",
+          success: "Category restored ♻️",
+          error: "Restore failed",
         },
         {
           style: {
@@ -95,41 +100,35 @@ const { data: categories = [], isLoading } = useCategories({ onlyActive: false }
   };
 
   // 🔍 SEARCH (parent + sub)
-const parents = categories
-  .map((parent: Category) => {
-    const filteredChildren =
-      parent.children?.filter((child) =>
-        child.name.toLowerCase().includes(search.toLowerCase())
-      ) || [];
+  const parents = categories
+    .map((parent: Category) => {
+      const filteredChildren =
+        parent.children?.filter((child) =>
+          child.name.toLowerCase().includes(search.toLowerCase()),
+        ) || [];
 
-    const matchesParent = parent.name
-      .toLowerCase()
-      .includes(search.toLowerCase());
+      const matchesParent = parent.name
+        .toLowerCase()
+        .includes(search.toLowerCase());
 
-    if (matchesParent || filteredChildren.length > 0) {
-      const childrenToUse = matchesParent
-        ? parent.children
-        : filteredChildren;
+      if (matchesParent || filteredChildren.length > 0) {
+        const childrenToUse = matchesParent
+          ? parent.children
+          : filteredChildren;
 
-      return {
-        ...parent,
-        children: childrenToUse?.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        ), // ✅ SORT CHILDREN HERE
-      };
-    }
+        return {
+          ...parent,
+          children: childrenToUse?.sort((a, b) => a.name.localeCompare(b.name)), // ✅ SORT CHILDREN HERE
+        };
+      }
 
-    return null;
-  })
-  .filter(Boolean)
-  .sort((a: Category, b: Category) =>
-    a.name.localeCompare(b.name)
-  );
+      return null;
+    })
+    .filter(Boolean)
+    .sort((a: Category, b: Category) => a.name.localeCompare(b.name));
 
   const btn =
     "w-[85px] flex items-center justify-center gap-1 py-1.5 text-xs rounded-md transition-all duration-300 hover:scale-[1.04]";
-    
-if (isLoading) return <CategoryPageSkeleton />;
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -155,7 +154,9 @@ if (isLoading) return <CategoryPageSkeleton />;
 
       {/* LIST */}
       <div className="flex flex-col gap-4">
-        {parents.length === 0 ? (
+        {isLoading ? (
+          <CategoryPageSkeleton />
+        ) : parents.length === 0 ? (
           <div className="flex flex-col items-center justify-center border border-dashed border-gray-400 rounded-xl p-8 bg-white text-center">
             {/* ICON */}
             <div className="bg-gray-100 p-4 rounded-full mb-4">
@@ -329,8 +330,6 @@ if (isLoading) return <CategoryPageSkeleton />;
         )}
       </div>
 
-      {/* 🔥 TOASTER */}
-      {/* <Toaster position="top-right" containerStyle={{ top: 75 }} /> */}
       <style>
         {`
           @keyframes wave {

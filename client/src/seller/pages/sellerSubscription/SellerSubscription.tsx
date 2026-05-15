@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa";
 import Navbar from "../sellerNavbar/SellerNavbar";
 import Footer from "../sellerFooter/SellerFooter";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -33,36 +33,58 @@ const SubscriptionPage: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-    useEffect(() => {
-      const checkSession = async () => {
-        try {
-          const res = await axios.get("/api/seller/coockie-test", {
-            withCredentials: true,
-          });
-          if (res.data.success == true) {
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const res = await axios.get("/api/seller/coockie-test", {
+          withCredentials: true,
+        });
+        if (res.data.success == true) {
+          dispatch(setSeller(res.data.seller));
+          navigate("/seller");
+        } else {
+          if (res.data?.status == "PENDING_PAYMENT") {
             dispatch(setSeller(res.data.seller));
-            navigate("/seller");
+            setSellerSubStatus(true);
           } else {
-            if (res.data?.status == "PENDING_PAYMENT") {
-              dispatch(setSeller(res.data.seller));
-               setSellerSubStatus(true);
-            } else {
-              dispatch(logout());
-              navigate("/seller/login");
-            }
+            dispatch(logout());
+            navigate("/seller/login");
           }
-        } catch (err) {
-          dispatch(logout());
-          navigate("/seller/login");
         }
-      };
-      checkSession();
+      } catch (err) {
+        dispatch(logout());
+        navigate("/seller/login");
+      }
+    };
+    checkSession();
+    check();
   }, []);
-  useEffect(() => { 
+  useEffect(() => {
     const statusSub = searchParams.get("statusSub");
-    if(!statusSub) return;
-    if (statusSub === "false"  && sellerSubStatus == true ) {
-      toast.dismiss()
+    const statusStripe = searchParams.get("statusStripe");
+
+    if (!statusSub) return;
+    if (!statusStripe) return;
+    if (statusStripe == "false") {
+      toast.dismiss();
+      toast.error("Stripe onboarding failed", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
+      retryOnboard();
+    } else if (statusStripe == "true") {
+      check();
+    }
+
+    if (statusSub === "false" && sellerSubStatus == true) {
+      toast.dismiss();
       toast.error("Payment failed. Please try again", {
         icon: <FaExclamationTriangle className="text-red-500" />,
         style: {
@@ -76,18 +98,53 @@ const SubscriptionPage: React.FC = () => {
       });
       navigate("/seller/subscription", { replace: true });
     }
-  }, [searchParams,sellerSubStatus]);
-
+  }, [searchParams, sellerSubStatus]);
+  const check = async () => {
+  
+    try {
+      const res = await axios.post("/api/seller/stripe-check/",{
+         sellerId: seller._id,
+        });
+      const { isReady } = res.data;
+      if (!isReady) {
+        toast.dismiss();
+      toast.error("Retry onboarding", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
+        retryOnboard();
+      }
+    } catch (err: any) {
+      console.log(err?.response?.data);
+    }
+  };
+  const retryOnboard = async () => {
+    try {
+      const res = await axios.post("/api/seller/stripe-retry-onboarding",{
+         sellerId: seller._id
+        });
+      window.location.href = res.data.onboardingUrl;
+    } catch (err: any) {
+      console.log(err?.response?.data);
+    }
+  };
 
   const handleSubscribe = async () => {
-    if (!seller) return
+    if (!seller) return;
     try {
       const res = await axios.post("/api/seller/subscribe-session", {
-        priceId: import.meta.env.VITE_SUBSCRIPTION_PRICE_ID, 
+        priceId: import.meta.env.VITE_SUBSCRIPTION_PRICE_ID,
         sellerId: seller._id,
         sellerEmail: seller.email,
       });
-      
+
       window.location.href = res.data.url;
     } catch (err: any) {
       toast.error(err, {
@@ -164,7 +221,8 @@ const SubscriptionPage: React.FC = () => {
               whileTap={{ scale: 0.95 }}
               onClick={handleSubscribe}
               style={{ cursor: "pointer", position: "relative", zIndex: 50 }}
-              className={`pointer-events-auto w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 bg-white text-black hover:bg-black hover:text-white`}>
+              className={`pointer-events-auto w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 bg-white text-black hover:bg-black hover:text-white`}
+            >
               <FaFire />
               "Unlock Premium"
             </motion.button>

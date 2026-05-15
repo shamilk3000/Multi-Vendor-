@@ -1,6 +1,9 @@
 const sellerService = require("../Service/sellerService");
 const { createMulterUpload } = require("../Utils/multerUtil");
 const sellerUpload = createMulterUpload("Seller");
+const { stripe } = require("../Utils/stripe");
+const Seller = require("../Models/sellerModel");
+require("dotenv").config();
 
 const getAllSellers = async (req, res) => {
   try {
@@ -50,15 +53,102 @@ const createSellerDetails = (req, res) => {
           .status(400)
           .json({ message: "File upload failed", error: err.message });
 
-      const result = await sellerService.createSellerDetails(req , res);
+      const result = await sellerService.createSellerDetails(req, res);
       return res
         .status(201)
-        .json({seller : result.seller , message: "Seller profile completed. Please choose a plan" });
+        .json({
+          seller: result.seller,
+          onboardingUrl: result.onboardingUrl,
+          message: "Seller profile completed. Please choose a plan",
+        });
     } catch (error) {
       console.error("createSellerDetails Controller Error:", error);
       return res.status(500).json({ message: error.message });
     }
   });
+};
+
+const checkStripeSellerStatus = async (req, res) => {
+  try {
+    const { sellerId } = req.body;
+    const seller = await Seller.findById(sellerId);
+
+    if (!seller) {
+      return res.status(400).json({
+        message: "Seller not found",
+      });
+    }
+    if (!seller.bankingDetails.stripeAccountId) {
+      return res.status(200).json({
+        isReady: false,
+      });
+    }
+    const account = await stripe.accounts.retrieve(
+      seller.bankingDetails.stripeAccountId,
+    );
+
+    const isReady =
+      account.details_submitted &&
+      account.charges_enabled &&
+      account.payouts_enabled;
+      
+    return res.status(200).json({
+      isReady,
+      status: {
+        details_submitted: account.details_submitted,
+        charges_enabled: account.charges_enabled,
+        payouts_enabled: account.payouts_enabled,
+      },
+      requirements: {
+        currently_due: account.requirements?.currently_due || [],
+        past_due: account.requirements?.past_due || [],
+      },
+    });
+  } catch (error) {
+    console.error("createSellerDetails Controller Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const retryStripeOnboarding = async (req, res) => {
+  try {
+    const { sellerId } = req.body;
+    const seller = await Seller.findById(sellerId);
+    if (!seller) {
+      return res.status(400).json({
+        message: "Seller not found",
+      });
+    }
+    if (!seller.bankingDetails.stripeAccountId) {
+      const account = await stripe.accounts.create({
+        type: "express",
+      });
+      seller.bankingDetails.stripeAccountId = account.id;
+
+      await seller.save();
+
+      const accountLink = await stripe.accountLinks.create({
+        account: account.id,
+        refresh_url: process.env.REFRESH_URL,
+        return_url: process.env.RETURN_URL,
+        type: "account_onboarding",
+      });
+
+      // you can return this later if needed
+      return res.json({ onboardingUrl: accountLink.url });
+    }
+
+    const accountLink = await stripe.accountLinks.create({
+      account: seller.bankingDetails.stripeAccountId,
+      refresh_url: process.env.REFRESH_URL,
+      return_url: process.env.RETURN_URL,
+      type: "account_onboarding",
+    });
+
+    return res.json({ onboardingUrl: accountLink.url });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
 };
 
 // const updateSeller = async (req, res) => {
@@ -132,15 +222,16 @@ const updateSellerStatus = async (req, res) => {
 const googleAuthController = async (req, res) => {
   try {
     const { credential } = req.body;
-    const {seller, isNew } = await sellerService.sellerGoogleAuth(
-      credential , res
+    const { seller, isNew } = await sellerService.sellerGoogleAuth(
+      credential,
+      res,
     );
 
     return res.status(200).json({
       message: isNew
         ? "Signup successful! Complete profile"
         : "Welcome back 👋! Login successful",
-      seller
+      seller,
     });
   } catch (error) {
     console.error("Google Auth Controller Error:", error);
@@ -152,9 +243,20 @@ const sellerLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const {seller , isComplete } = await sellerService.sellerLogin(email, password ,res);
+    const { seller, isComplete } = await sellerService.sellerLogin(
+      email,
+      password,
+      res,
+    );
 
-    return res.status(200).json({seller  , message: isComplete ? "Please complete your profile to continue" : "Login successful" });
+    return res
+      .status(200)
+      .json({
+        seller,
+        message: isComplete
+          ? "Please complete your profile to continue"
+          : "Login successful",
+      });
   } catch (error) {
     console.error("sellerLogin Controller Error:", error);
     return res.status(500).json({ message: error.message });
@@ -206,7 +308,7 @@ const sellerForgetPasswordOtpVerify = async (req, res) => {
     const { email, otp } = req.body;
     const result = await sellerService.sellerForgetPasswordOtpVerify(
       email,
-      otp
+      otp,
     );
     return res.status(result.isVerified ? 200 : 400).json(result);
   } catch (error) {
@@ -240,12 +342,12 @@ const sellerResetPasswordDashboard = async (req, res) => {
 
 const sellerSubscription = async (req, res) => {
   try {
-    const { priceId , sellerId, sellerEmail} = req.body;
+    const { priceId, sellerId, sellerEmail } = req.body;
 
     const url = await sellerService.handleSellerSubscription(
       priceId,
-       sellerId,
-       sellerEmail,
+      sellerId,
+      sellerEmail,
     );
 
     res.json({ url });
@@ -258,13 +360,13 @@ const sellerSubscription = async (req, res) => {
   }
 };
 
-
-
 module.exports = {
   getAllSellers,
   getSellerProfile,
   getSellerProfileById,
   createSellerDetails,
+  checkStripeSellerStatus,
+  retryStripeOnboarding,
   updateSeller,
   // deleteSeller,
   updateSellerStatus,

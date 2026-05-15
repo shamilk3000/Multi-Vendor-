@@ -37,11 +37,12 @@ router.delete("/delete-cart-item/:cartItemId", userAuth, cartController.deleteCa
 router.put("/update-cart-item-quantity/:cartItemId/:action", userAuth, cartController.updateCartItemQuantity);             //using
 
 router.post("/create-order", userAuth, orderController.createOrder);                                                  //using
-router.get("/:sellerId/:shopName/get-order-by-id/:orderId", userAuth, orderController.getOrderById);
+router.post("/customize-order", userAuth, orderController.customize);                                                  //using
+router.get("/get-order-by-id/:orderId", userAuth, orderController.getOrderById);
 router.get("/:sellerId/:shopName/all-orders-of-user", userAuth, orderController.allOrdersOfUser);
 router.put("/:sellerId/:shopName/cancel-order/:orderId", userAuth, orderController.cancelOrder);
 router.get("/:sellerId/:shopName/get-order-item-by-id/:orderId/:itemId", userAuth, orderController.getOderItemById);
 
-router.get("/:sellerId/:shopName/get-payment-link/:paymentLinkId", userAuth, paymentController.paymentHandler);
+router.post("/create-checkout-session", userAuth, paymentController.paymentHandler);
 
 module.exports = router;

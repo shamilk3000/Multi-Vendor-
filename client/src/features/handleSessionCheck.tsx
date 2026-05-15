@@ -2,14 +2,69 @@ import { toast } from "react-hot-toast";
 import api from "./axios";
 import { FaExclamationTriangle } from "react-icons/fa";
 import { navigateTo } from "./navigation";
-import { logout , logoutUser} from "@/redux/authSlice";
+import { logout, logoutUser } from "@/redux/authSlice";
 import { store } from "@/redux/store";
 
-
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+const pathParts = window.location.pathname.split("/").filter(Boolean);
+
+let sellerId = pathParts[0];
+let shopName = pathParts[1];
+    const tokenSellerId = res.data?.tokenSellerId;
+    const tokenShopName = res.data?.tokenShopName;
+
+    const state = store.getState();
+
+    const reduxSellerId = state.auth.sellerId;
+    const reduxShopName = state.auth.shopName;
+
+
+    // console.log(tokenSellerId);
+    // console.log(tokenShopName);
+    // console.log(reduxSellerId);
+    // console.log(reduxShopName);
+    // console.log(sellerId);
+    // console.log(shopName);
+
+    if (
+  sellerId &&
+  reduxSellerId &&
+  tokenSellerId &&
+  shopName &&
+  reduxShopName &&
+  tokenShopName &&
+  !(
+   sellerId === reduxSellerId &&
+sellerId === tokenSellerId &&
+shopName === reduxShopName &&
+shopName === tokenShopName
+  )
+) {console.log('worked');
+
+      toast.dismiss();
+      toast.error("Seller mismatch error", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
+
+      store.dispatch(logoutUser());
+      navigateTo(`/${tokenSellerId}/${tokenShopName}/login`);
+
+      return Promise.reject(new Error("Seller mismatch"));
+    }
+
+    return res;
+  },
   (err) => {
-      const state = store.getState();
+    const state = store.getState();
     const sellerId = state.auth.sellerId;
     const shopName = state.auth.shopName;
     const code = err.response?.data?.code;

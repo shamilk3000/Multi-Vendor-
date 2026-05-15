@@ -175,11 +175,12 @@ const ProductCardsWithPagination: React.FC<{
     sellerId ?? "",
     shopName ?? "",
   );
-  useEffect(() => {
-    if (sellerId && shopName) {
-      dispatch(setSellerId({ sellerId, shopName }));
-    }
-  }, [sellerId, shopName, dispatch]);
+useEffect(() => {
+
+  if (sellerId && shopName) {
+    dispatch(setSellerId({ sellerId, shopName }));
+  }
+}, [sellerId, shopName, dispatch]);
   const location = useLocation();
   const navigate = useNavigate();
   const [openSearch, setOpenSearch] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   FaUpload,
@@ -13,45 +13,53 @@ import {
 } from "react-icons/fa";
 import Navbar from "../navbar/Navbar";
 import Footer from "../footer/Footer";
-
-interface Product {
-  id: number;
-  name: string;
-  image: string;
-  customImage: boolean;
-  message: boolean;
-}
-
-const products: Product[] = [
-  {
-    id: 1,
-    name: "Custom Mug",
-    image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=200",
-    customImage: true,
-    message: false,
-  },
-  {
-    id: 2,
-    name: "Photo Frame",
-    image:
-      "https://images.unsplash.com/photo-1646753522408-077ef9839300?auto=format&fit=crop&w=500&q=60",
-    customImage: false,
-    message: true,
-  },
-  {
-    id: 3,
-    name: "Custom T-Shirt",
-    image: "https://via.placeholder.com/300",
-    customImage: true,
-    message: true,
-  },
-];
+import { useParams } from "react-router-dom";
+import api from "../../../features/axios";
+import toast from "react-hot-toast";
+import { useOrderForUser } from "../../../hooks/user/order/useOrder";
+import Customize from "@/user/components/skeletons/customize";
+import { useNavigate } from "react-router-dom";
 
 const inputStyle =
   "w-full border rounded-lg p-2.5 pl-9 text-sm transition-all duration-300 focus:ring-2 focus:ring-black focus:scale-[1.02] hover:border-black hover:scale-[1.01]";
 
 const CustomizeProducts: React.FC = () => {
+  const navigate = useNavigate();
+  // const [clientSecret, setClientSecret] = useState("");
   const [imageWarning, setImageWarning] = useState<Record<number, string>>({});
+  const { sellerId, shopName, orderId } = useParams();
+  const { data: order = [], isLoading } = useOrderForUser(orderId!);
+
+  useEffect(() => {
+    const createIntentIfNeeded = async () => {
+      if (!order?.orderItems) return;
+
+      const filteredItems = order.orderItems.filter(
+        (item: any) =>
+          !(
+            item.product?.needAttachment === false &&
+            item.product?.needMessage === false
+          ),
+      );
+
+      // ⚠️ do NOT mutate original order
+      const shouldCreatePayment = filteredItems.length === 0;
+
+      if (shouldCreatePayment && orderId) {
+        try {
+           const res = await api.post("/create-checkout-session", { orderId });
+
+       // Redirect to Stripe Checkout
+    window.location.href = res.data.url;
+        } catch (err) {
+          console.log("Payment intent error:", err);
+        }
+      }
+    };
+
+    createIntentIfNeeded();
+  }, [order, orderId]);
+  const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
 
   const [customData, setCustomData] = useState<
     Record<number, { images: File[]; message: string }>
@@ -129,14 +137,72 @@ const CustomizeProducts: React.FC = () => {
     }));
   };
 
-  const handleSubmit = () => {
-    console.log(customData);
-    alert("Customization saved 🎉");
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    if (orderId) {
+      formData.append("orderId", orderId);
+    }
+    type CustomItem = {
+      message: string;
+      images: File[];
+    };
+
+    const customDataWithoutImages: Record<string, CustomItem> = {};
+
+    Object.entries(customData).forEach(([productId, value]) => {
+      customDataWithoutImages[productId] = {
+        message: value.message,
+        images: [],
+      };
+
+      value.images.forEach((image: File) => {
+        formData.append(`images_${productId}`, image);
+      });
+    });
+
+    formData.append("customData", JSON.stringify(customDataWithoutImages));
+
+    try {
+      // 1. Upload customization
+      await toast.promise(
+        api.post("/customize-order", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }),
+        {
+          loading: "Uploading customization...",
+          success: "Customization added successfully 🎨✨",
+          error: "Failed to submit customization ❌",
+        },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+          duration: 3500,
+        },
+      );
+
+      // 2. Only after success → create payment
+      const res = await api.post("/create-checkout-session", { orderId });
+
+       // Redirect to Stripe Checkout
+    window.location.href = res.data.url;
+ 
+    } catch (error: any) {
+      console.log("ORDER PLACING ERROR 👉", error?.response?.data);
+    }
   };
+
+  if (isLoading) {
+    return <Customize />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 p-0">
-      <Navbar />
+      <Navbar shopName={shopName!} sellerId={sellerId!} />
 
       <div className="min-h-[calc(100vh-120px)] md:min-h-[calc(100vh-64px)] bg-gray-100 pt-0 p-6">
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-5 mt-3 flex items-center justify-center gap-1 sm:gap-2 hover:scale-105 transition ">
@@ -145,19 +211,22 @@ const CustomizeProducts: React.FC = () => {
         </h1>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => {
-            const data = customData[product.id] || { images: [], message: "" };
+          {order.orderItems.map((item: any) => {
+            const data = customData[item.product._id] || {
+              images: [],
+              message: "",
+            };
 
             return (
               <motion.div
-                key={product.id}
+                key={item.product._id}
                 whileHover={{ y: -8 }}
                 className="bg-white rounded-2xl shadow-md hover:shadow-xl transition p-5 flex flex-col gap-4 border"
               >
                 {/* Product Image */}
-                <h2 className="font-semibold text-lg">{product.name}</h2>
+                <h2 className="font-semibold text-lg">{item.product.name}</h2>
                 <img
-                  src={product.image}
+                  src={`${BASE_URL}${item.product.image[0]}`}
                   className="rounded-xl h-40 object-contain"
                 />
 
@@ -166,7 +235,7 @@ const CustomizeProducts: React.FC = () => {
                   <FaImages size={12} /> Custom Images
                 </label>
 
-                {product.customImage ? (
+                {item.product.needAttachment ? (
                   <>
                     <motion.label
                       whileHover={{ scale: 1.03 }}
@@ -189,15 +258,15 @@ const CustomizeProducts: React.FC = () => {
                         multiple
                         accept="image/*"
                         hidden
-                        onChange={(e) => handleImageChange(e, product.id)}
+                        onChange={(e) => handleImageChange(e, item.product._id)}
                       />
                     </motion.label>
 
                     {/* Warning message */}
-                    {imageWarning[product.id] && (
+                    {imageWarning[item.product._id] && (
                       <div className="flex items-center gap-1 text-red-500 text-xs">
                         <FaExclamationCircle size={12} />
-                        <span>{imageWarning[product.id]}</span>
+                        <span>{imageWarning[item.product._id]}</span>
                       </div>
                     )}
                   </>
@@ -224,7 +293,7 @@ const CustomizeProducts: React.FC = () => {
                         />
 
                         <button
-                          onClick={() => removeImage(product.id, index)}
+                          onClick={() => removeImage(item.product._id, index)}
                           className="absolute top-1 right-1 bg-black text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
                         >
                           <FaTrash size={10} />
@@ -241,14 +310,17 @@ const CustomizeProducts: React.FC = () => {
                     <FaPen size={12} /> Message
                   </label>
 
-                  {product.message ? (
+                  {item.product.needMessage ? (
                     <>
                       <div className="relative group">
                         <FaStickyNote className="absolute left-3 top-3 text-gray-500 group-focus-within:text-black transition transform group-hover:scale-105 group-hover:text-black" />
                         <textarea
                           value={data.message}
                           onChange={(e) =>
-                            handleMessageChange(e.target.value, product.id)
+                            handleMessageChange(
+                              e.target.value,
+                              item.product._id,
+                            )
                           }
                           placeholder="Write your custom message..."
                           rows={3}
@@ -267,7 +339,7 @@ const CustomizeProducts: React.FC = () => {
             );
           })}
         </div>
-
+      
         {/* Submit */}
 
         <div className="flex justify-center mt-10">

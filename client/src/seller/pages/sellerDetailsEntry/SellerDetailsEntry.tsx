@@ -135,7 +135,7 @@ const SellerDetailsPage = () => {
       accountNumber: "",
       bankName: "",
       iban: "",
-      stripeAccountId: "",
+      // stripeAccountId: "",
     },
     personalImage: null as File | null,
     idProof: [] as File[],
@@ -259,8 +259,8 @@ const SellerDetailsPage = () => {
       if (Object.values(b).some((v) => !v)) return "Fill all banking fields";
 
       // ✅ Stripe validation
-      if (!/^acct_[a-zA-Z0-9]+$/.test(b.stripeAccountId))
-        return "Invalid Stripe Account ID";
+      // if (!/^acct_[a-zA-Z0-9]+$/.test(b.stripeAccountId))
+      //   return "Invalid Stripe Account ID";
 
       // ✅ Account number validation
       if (!/^[0-9]{9,18}$/.test(b.accountNumber))
@@ -332,7 +332,7 @@ const SellerDetailsPage = () => {
         loading: "Creating seller...",
         success: (res) =>
           res?.data?.message ||
-          "Seller profile completed. Please choose a plan",
+          "Seller profile completed.",
         error: (err) =>
           err?.response?.data?.message || "Failed to create seller",
       },
@@ -346,6 +346,10 @@ const SellerDetailsPage = () => {
     );
 
     dispatch(setSeller(res.data.seller));
+    if (res.data.onboardingUrl) {
+  window.location.href = res.data.onboardingUrl;
+  return;
+}
     navigate("/seller/subscription");
   };
 
@@ -728,7 +732,7 @@ const SellerDetailsPage = () => {
                     e.target.value,
                   )
                 }
-                placeholder="Business Name"
+                placeholder="Business Name / Shop Name"
               />
               <Field
                 icon={<FaEnvelope />}
@@ -879,7 +883,7 @@ const SellerDetailsPage = () => {
           {/* STEP 4 */}
           {step === 4 && (
             <div className="space-y-4">
-              <Field
+              {/* <Field
                 icon={<FaCreditCard />}
                 value={form.bankingDetails.stripeAccountId}
                 onChange={(e: any) =>
@@ -890,7 +894,7 @@ const SellerDetailsPage = () => {
                   )
                 }
                 placeholder="Stripe Account ID"
-              />
+              /> */}
               <Field
                 icon={<FaUser />}
                 value={form.bankingDetails.accountHolder}
