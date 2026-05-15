@@ -42,6 +42,27 @@ const Checkout: React.FC = () => {
   const { data: cartdata, isLoading: cartLoading } = useCart();
 
   const [existing, setExisting] = useState<any>(null);
+useEffect(() => {
+  // wait until loading finished
+  if (productLoading || cartLoading) return;
+
+  // if no cart data AND no valid buy now params
+  if (
+    (!cartdata || cartdata.items?.length === 0) &&
+    (!productId || !quantity)
+  ) {
+    navigate(`/${sellerId}/${shopName}`, { replace: true });
+  }
+}, [
+  cartdata,
+  productId,
+  quantity,
+  productLoading,
+  cartLoading,
+  navigate,
+  sellerId,
+  shopName,
+]);
 
   useEffect(() => {
     const getAddress = async () => {
@@ -91,9 +112,11 @@ const Checkout: React.FC = () => {
     cart = cartdata;
   }
 
-  if (cart && cart.items.length == 0 && isBuyNow == false) {
+  useEffect(() => {
+  if (cart && cart.items.length === 0 && !isBuyNow) {
     navigate(`/${sellerId}/${shopName}/shop`);
   }
+}, [cart, isBuyNow, navigate, sellerId, shopName]);
 
   const [formData, setFormData] = useState({
     name: user.name,
@@ -231,10 +254,47 @@ const Checkout: React.FC = () => {
           duration: 3500,
         },
       );
-      navigate(
-        `/${sellerId}/${shopName}/customize-product/${res.data.order._id}`,
+      const order = res.data.order;
+      let filteredItems = order.orderItems.filter(
+        (item: any) =>
+          !(
+            item.product?.needAttachment == false &&
+            item.product?.needMessage == false
+          ),
+      );
+      const shouldCreatePayment = filteredItems.length === 0;
+      
+      if (shouldCreatePayment) {
+        try {
+          const res = await toast.promise(
+            api.post("/create-checkout-session", {
+              orderId :order._id,
+            }),
+            {
+              loading: "Redirecting to payment...",
+              success: "Opening secure payment page 💳",
+              error: "Failed to start payment session ❌",
+            },
+            {
+              style: {
+                background: "#111",
+                color: "#fff",
+                border: "1px solid #333",
+              },
+              duration: 3500,
+            },
+          );
+          window.location.href = res.data.url;
+        } catch (err) {
+          console.log("Payment retry error:", err);
+        }
+      } else {
+        navigate(
+        `/${sellerId}/${shopName}/customize-product/${order._id}`,
         { replace: true },
       );
+      }
+      
     } catch (error: any) {
       console.log("ORDER PLACING ERROR 👉", error?.response?.data);
     }

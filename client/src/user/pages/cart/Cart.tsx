@@ -26,6 +26,7 @@ const Cart: React.FC = () => {
   const { data: cart = [], isLoading } = useCart();
   const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
+// console.log(cart);
 
   const increaseQty = async (id: string) => {
     try {

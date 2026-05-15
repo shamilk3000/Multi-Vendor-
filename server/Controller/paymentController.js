@@ -87,27 +87,6 @@ const paymentHandler = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    //     const paymentIntent = await stripe.paymentIntents.create({
-    //   amount: order.totalSellingPrice * 100,
-    //   currency: "aed",
-
-    //   automatic_payment_methods: {
-    //     enabled: true,
-    //   },
-
-    //   transfer_data: {
-    //     destination: sellerStripeAccountId,
-    //   },
-
-    //     metadata: {
-    //     orderId: order._id.toString(),
-    //     userId: user._id.toString(),
-    //     userEmail: user.email,
-    //     sellerId: seller._id.toString(),
-    //     sellerEmail: seller.email,
-    //   },
-    // });
-
     const amount = Math.round(order.totalSellingPrice * 100);
 
     const session = await stripe.checkout.sessions.create({
@@ -120,8 +99,8 @@ const paymentHandler = async (req, res) => {
 
       billing_address_collection: "auto",
 
-      payment_method_collection: "always",
-
+      // payment_method_collection: "always",
+customer_email: seller.email,
       line_items: [
         {
           price_data: {

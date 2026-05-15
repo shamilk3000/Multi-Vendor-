@@ -103,7 +103,18 @@ const createOrder = async (user, cart, shippingAddress, isBuyNow) => {
       }
       await ogCart.save();
     }
-    return order;
+    const fullOrder = await Order.findById(order._id).populate([
+      {
+        path: "orderItems",
+        populate: {
+          path: "product",
+        },
+      },
+      {
+        path: "shippingAddress",
+      },
+    ]);;
+    return fullOrder;
   } catch (error) {
     console.error(`Error creating order`, error);
     throw new Error(`Unable to create order : ${error.message}`);

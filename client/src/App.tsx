@@ -20,6 +20,7 @@ import OrderDetails from "./user/pages/orderDetails/OrderDetails";
 import Cart from "./user/pages/cart/Cart";
 import Checkout from "./user/pages/checkout/Checkout";
 import PaymentSuccess from "./user/pages/paymentSuccess/PaymentSuccess";
+import PaymentFail from "./user/pages/paymentFail/PaymentFail";
 import Login from "./user/pages/login/Login";
 import Signup from "./user/pages/signup/SignUp";
 import OTPVerification from "./user/pages/verifyOtp/VerifyOtp";
@@ -96,6 +97,7 @@ function App() {
         <Route path="/:sellerId/:shopName/signup" element={<Signup />} />
         <Route path="/:sellerId/:shopName/login" element={<Login />} />
         <Route path="/:sellerId/:shopName/payment-success" element={<PaymentSuccess />} />
+        <Route path="/:sellerId/:shopName/payment-fail" element={<PaymentFail />} />
         <Route path="/:sellerId/:shopName/checkout" element={<Checkout />} />
         <Route path="/:sellerId/:shopName/cart" element={<Cart />} />
         <Route path="/:sellerId/:shopName" element={<Home />} />

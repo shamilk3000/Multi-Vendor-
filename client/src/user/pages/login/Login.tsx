@@ -24,13 +24,14 @@ import { setSellerId, setUser } from "../../../redux/authSlice";
 import { useParams } from "react-router-dom";
 
 const Login = () => {
-  // const sellerId = useSelector((state: any) => state.auth.sellerId);
-  // const shopName = useSelector((state: any) => state.auth.shopName);
+  
   const { sellerId, shopName } = useParams();
   const dispatch = useDispatch();
-   if (sellerId && shopName) {
+   useEffect(() => {
+  if (sellerId && shopName) {
     dispatch(setSellerId({ sellerId, shopName }));
   }
+}, [sellerId, shopName, dispatch]);
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);

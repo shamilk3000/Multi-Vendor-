@@ -7,10 +7,10 @@ import { store } from "@/redux/store";
 
 api.interceptors.response.use(
   (res) => {
-const pathParts = window.location.pathname.split("/").filter(Boolean);
+    const pathParts = window.location.pathname.split("/").filter(Boolean);
 
-let sellerId = pathParts[0];
-let shopName = pathParts[1];
+    let sellerId = pathParts[0];
+    let shopName = pathParts[1];
     const tokenSellerId = res.data?.tokenSellerId;
     const tokenShopName = res.data?.tokenShopName;
 
@@ -18,7 +18,6 @@ let shopName = pathParts[1];
 
     const reduxSellerId = state.auth.sellerId;
     const reduxShopName = state.auth.shopName;
-
 
     // console.log(tokenSellerId);
     // console.log(tokenShopName);
@@ -28,22 +27,21 @@ let shopName = pathParts[1];
     // console.log(shopName);
 
     if (
-  sellerId &&
-  reduxSellerId &&
-  tokenSellerId &&
-  shopName &&
-  reduxShopName &&
-  tokenShopName &&
-  !(
-   sellerId === reduxSellerId &&
-sellerId === tokenSellerId &&
-shopName === reduxShopName &&
-shopName === tokenShopName
-  )
-) {console.log('worked');
-
+      sellerId &&
+      reduxSellerId &&
+      tokenSellerId &&
+      shopName &&
+      reduxShopName &&
+      tokenShopName &&
+      !(
+        sellerId === reduxSellerId &&
+        sellerId === tokenSellerId &&
+        shopName === reduxShopName &&
+        shopName === tokenShopName
+      )
+    ) {
       toast.dismiss();
-      toast.error("Seller mismatch error", {
+      toast.error("URL mismatch error. Please login again", {
         icon: <FaExclamationTriangle className="text-red-500" />,
         style: {
           borderRadius: "12px",

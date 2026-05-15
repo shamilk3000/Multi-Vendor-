@@ -18,47 +18,64 @@ import api from "../../../features/axios";
 import toast from "react-hot-toast";
 import { useOrderForUser } from "../../../hooks/user/order/useOrder";
 import Customize from "@/user/components/skeletons/customize";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 const inputStyle =
   "w-full border rounded-lg p-2.5 pl-9 text-sm transition-all duration-300 focus:ring-2 focus:ring-black focus:scale-[1.02] hover:border-black hover:scale-[1.01]";
 
 const CustomizeProducts: React.FC = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   // const [clientSecret, setClientSecret] = useState("");
   const [imageWarning, setImageWarning] = useState<Record<number, string>>({});
   const { sellerId, shopName, orderId } = useParams();
-  const { data: order = [], isLoading } = useOrderForUser(orderId!);
+  const { data: orderdetails, isLoading } = useOrderForUser(orderId!);
+  let order = orderdetails?._doc;
+  const filteredItems =
+  order?.orderItems?.filter(
+    (item: any) =>
+      !(
+        item.product?.needAttachment == false &&
+        item.product?.needMessage == false
+      ),
+  ) || [];
 
-  useEffect(() => {
-    const createIntentIfNeeded = async () => {
-      if (!order?.orderItems) return;
+  
+ useEffect(() => {
+  const createIntentIfNeeded = async () => {
+    if (!order || !order.orderItems) return;
+    const shouldCreatePayment = filteredItems.length === 0;
+  
 
-      const filteredItems = order.orderItems.filter(
-        (item: any) =>
-          !(
-            item.product?.needAttachment === false &&
-            item.product?.needMessage === false
-          ),
-      );
+    if (shouldCreatePayment && orderId) {
+      try {
+        const res = await toast.promise(
+          api.post("/create-checkout-session", {
+            orderId,
+          }),
+          {
+            loading: "Redirecting to payment...",
+            success: "Opening secure payment page 💳",
+            error: "Failed to start payment session ❌",
+          },
+          {
+            style: {
+              background: "#111",
+              color: "#fff",
+              border: "1px solid #333",
+            },
+            duration: 3500,
+          },
+        );
 
-      // ⚠️ do NOT mutate original order
-      const shouldCreatePayment = filteredItems.length === 0;
-
-      if (shouldCreatePayment && orderId) {
-        try {
-           const res = await api.post("/create-checkout-session", { orderId });
-
-       // Redirect to Stripe Checkout
-    window.location.href = res.data.url;
-        } catch (err) {
-          console.log("Payment intent error:", err);
-        }
+        window.location.href = res.data.url;
+      } catch (err) {
+        console.log("Payment retry error:", err);
       }
-    };
+    }
+  };
 
-    createIntentIfNeeded();
-  }, [order, orderId]);
+  createIntentIfNeeded();
+}, [order, orderId, filteredItems]);
   const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
 
   const [customData, setCustomData] = useState<
@@ -186,15 +203,36 @@ const CustomizeProducts: React.FC = () => {
       );
 
       // 2. Only after success → create payment
-      const res = await api.post("/create-checkout-session", { orderId });
+      try {
+        const res = await toast.promise(
+          api.post("/create-checkout-session", {
+            orderId,
+          }),
+          {
+            loading: "Redirecting to payment...",
+            success: "Opening secure payment page 💳",
+            error: "Failed to start payment session ❌",
+          },
+          {
+            style: {
+              background: "#111",
+              color: "#fff",
+              border: "1px solid #333",
+            },
+            duration: 3500,
+          },
+        );
 
-       // Redirect to Stripe Checkout
-    window.location.href = res.data.url;
- 
+        // Redirect to Stripe Checkout
+        window.location.href = res.data.url;
+      } catch (err) {
+        console.log("Payment retry error:", err);
+      }
     } catch (error: any) {
       console.log("ORDER PLACING ERROR 👉", error?.response?.data);
     }
   };
+  // console.log(order);
 
   if (isLoading) {
     return <Customize />;
@@ -211,7 +249,7 @@ const CustomizeProducts: React.FC = () => {
         </h1>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {order.orderItems.map((item: any) => {
+          {filteredItems.map((item: any) => {
             const data = customData[item.product._id] || {
               images: [],
               message: "",
@@ -339,7 +377,7 @@ const CustomizeProducts: React.FC = () => {
             );
           })}
         </div>
-      
+
         {/* Submit */}
 
         <div className="flex justify-center mt-10">
