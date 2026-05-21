@@ -90,7 +90,7 @@ const Navbar = ({ shopName, sellerId }: ProductListProps) => {
 
             {/* Profile */}
             <div
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate(`/${sellerId}/${shopName}/dashboard`)}
               className="group flex flex-col items-center cursor-pointer"
             >
               <motion.div

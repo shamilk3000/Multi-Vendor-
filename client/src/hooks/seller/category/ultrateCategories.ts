@@ -31,6 +31,10 @@ const useInvalidateCategories = () => {
       queryKey: ["orders"],
    refetchType: "all",
     });
+    queryClient.invalidateQueries({
+      queryKey: ["profile"],
+   refetchType: "all",
+    });
   };
 };
 

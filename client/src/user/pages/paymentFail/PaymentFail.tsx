@@ -89,7 +89,7 @@ const PaymentFailed = () => {
               </span>
 
               <span className="font-medium group-hover:text-black transition">
-                #{orderId?.slice(-8).toUpperCase()}
+                  #ORD-{orderId}
               </span>
             </div>
 

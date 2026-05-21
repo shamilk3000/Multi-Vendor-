@@ -547,6 +547,7 @@ const handleSellerSubscription = async (priceId, sellerId, sellerEmail) => {
       cancel_url: process.env.SUBSCRIPTION_CANCEL_URL,
 
       metadata: {
+        type: "SELLER_SUBSCRIPTION",
         sellerId,
         sellerEmail,
       },

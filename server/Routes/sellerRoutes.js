@@ -50,8 +50,9 @@ router.put("/restore-category/:categoryId", sellerAuth, productController.restor
 router.get("/get-product-by-id/:productId",sellerAuth, productController.getProductByIdForUser);                                          //using
 router.get("/get-reviews/:productId",sellerAuth, productController.getReviews);                                                  //using
 
-router.get("/all-orders-of-seller", sellerAuth, orderController.allOrdersOfSeller);
-router.put("/update-order-status/:orderId/:status", sellerAuth, orderController.updateOrderStatus);
+router.get("/all-orders-of-seller", sellerAuth, orderController.allOrdersOfSeller);                                              //using
+router.get("/get-order-by-id/:orderId", sellerAuth, orderController.getOrderByIdForSeller);                                              //using
+router.put("/update-order-status/:orderId/:status", sellerAuth, orderController.updateOrderStatus);                                       //using
 
 router.get("/get-transaction-by-seller", sellerAuth, transactionController.getTransactionsBySellerId);
 

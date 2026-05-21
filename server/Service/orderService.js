@@ -5,18 +5,10 @@ const OrderItem = require("../Models/orderItemModel");
 const Order = require("../Models/orderModel");
 const OrderStatus = require("../Public/Domain/OrderStatus");
 const productService = require("./productService");
-
+const Product = require("../Models/productModel");
+const Category = require("../Models/categoryModel");
 const createOrder = async (user, cart, shippingAddress, isBuyNow) => {
   try {
-    // if (shippingAddress._id && !user.addresses.includes(shippingAddress._id)) {
-    //   user.addresses.push(shippingAddress._id);
-    //   await user.save();
-    // }
-    // if (!shippingAddress._id) {
-    //   shippingAddress = await Address.create(shippingAddress);
-    //   user.addresses.push(shippingAddress._id);
-    //   await user.save();
-    // }
     let address = await Address.findById(user.address);
 
     if (address) {
@@ -94,15 +86,15 @@ const createOrder = async (user, cart, shippingAddress, isBuyNow) => {
       totalItems: totalItems,
       additionalNotes: shippingAddress.additionalNotes,
     });
-    await order.save();
     if (!isBuyNow) {
       const ogCart = await Cart.findOne({ userId: user._id });
       for (const item of cart.items) {
-        ogCart.items.pull(item._id);
-        await CartItem.findByIdAndDelete(item._id);
+        order.cartDeleteItemIds.push(item._id);
       }
-      await ogCart.save();
     }
+    await order.save();
+    order.orderId = `#ORD-${order._id}`;
+    await order.save();
     const fullOrder = await Order.findById(order._id).populate([
       {
         path: "orderItems",
@@ -113,7 +105,7 @@ const createOrder = async (user, cart, shippingAddress, isBuyNow) => {
       {
         path: "shippingAddress",
       },
-    ]);;
+    ]);
     return fullOrder;
   } catch (error) {
     console.error(`Error creating order`, error);
@@ -152,20 +144,53 @@ const customize = async (user, customData, orderId) => {
 
 const getOrderById = async (orderId) => {
   try {
-    const order = await Order.findById(orderId).populate([
-      {
+    const order = await Order.findById(orderId)
+      .populate("userId")
+      .populate("paymentId")
+      .populate("sellerId")
+      .populate("shippingAddress")
+      .populate({
         path: "orderItems",
         populate: {
           path: "product",
+          populate: [{ path: "category" }, { path: "subCategory" }],
         },
-      },
-      {
-        path: "shippingAddress",
-      },
-    ]);
+      });
     if (!order) {
       throw new Error("Order not found");
     }
+    order.orderItems.sort((a, b) =>
+      a.product.name.localeCompare(b.product.name),
+    );
+    return order;
+  } catch (error) {
+    console.error(`Error finding order`, error);
+    throw new Error(`Unable to find order : ${error.message}`);
+  }
+};
+
+const getOrderByIdForSeller = async (orderId) => {
+  try {
+    const order = await Order.findById(orderId)
+      .populate("userId")
+      .populate("paymentId")
+      .populate("sellerId")
+      .populate("shippingAddress")
+      .populate({
+        path: "orderItems",
+        populate: {
+          path: "product",
+          populate: [{ path: "category" }, { path: "subCategory" }],
+        },
+      });
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    order.isNew = false;
+    await order.save();
+    order.orderItems.sort((a, b) =>
+      a.product.name.localeCompare(b.product.name),
+    );
     return order;
   } catch (error) {
     console.error(`Error finding order`, error);
@@ -175,9 +200,10 @@ const getOrderById = async (orderId) => {
 
 const allOrdersOfSeller = async (sellerId) => {
   try {
-    const orders = await Order.find({ sellerId: sellerId })
-      .sort({ orderDate: -1 })
-      .populate(["orderItems", "shippingAddress"]);
+    const orders = await Order.find({ sellerId: sellerId }).populate([
+      "orderItems",
+      "shippingAddress",
+    ]);
     return orders;
   } catch (error) {
     console.error(`Error finding orders of seller`, error);
@@ -187,9 +213,25 @@ const allOrdersOfSeller = async (sellerId) => {
 
 const allOrdersOfUser = async (userId) => {
   try {
-    const orders = await Order.find({ userId: userId })
-      .sort({ orderDate: -1 })
-      .populate(["orderItems", "shippingAddress"]);
+    const orders = await Order.find({
+      userId: userId,
+      paymentStatus: "success",
+    })
+      .sort({ createdAt: -1 })
+      .populate("userId")
+      .populate("sellerId")
+      .populate({
+        path: "orderItems",
+        populate: {
+          path: "product",
+          populate: [{ path: "category" }, { path: "subCategory" }],
+        },
+      });
+    for (const order of orders) {
+      order.orderItems.sort((a, b) =>
+        a.product.name.localeCompare(b.product.name),
+      );
+    }
     return orders;
   } catch (error) {
     console.error(`Error finding orders of user`, error);
@@ -199,11 +241,37 @@ const allOrdersOfUser = async (userId) => {
 
 const updateOrderStatus = async (orderId, newStatus) => {
   try {
-    return await Order.findByIdAndUpdate(
+    const order = await Order.findByIdAndUpdate(
       orderId,
       { orderStatus: newStatus },
       { new: true },
-    ).populate(["orderItems", "shippingAddress"]);
+    )
+      .populate("userId")
+      .populate("paymentId")
+      .populate("sellerId")
+      .populate("shippingAddress")
+      .populate({
+        path: "orderItems",
+        populate: {
+          path: "product",
+          populate: [{ path: "category" }, { path: "subCategory" }],
+        },
+      });
+    if (newStatus === "Cancelled") {
+      for (const item of order.orderItems) {
+        const category = await Category.findById(item.product.category);
+        const subCategory = await Category.findById(item.product.subCategory);
+        const product = await Product.findById(item.product._id);
+        product.stock += item.quantity;
+        product.sale -= item.quantity;
+        await product.save();
+        category.sale -= item.quantity;
+        await category.save();
+        subCategory.sale -= item.quantity;
+        await subCategory.save();
+      }
+    }
+    return order;
   } catch (error) {
     console.error(`Error updating order status`, error);
     throw new Error(`Unable to update order status : ${error.message}`);
@@ -216,7 +284,18 @@ const cancelOrder = async (orderId) => {
       orderId,
       { orderStatus: OrderStatus.CANCELLED },
       { new: true },
-    ).populate(["orderItems", "shippingAddress"]);
+    )
+      .populate("userId")
+      .populate("paymentId")
+      .populate("sellerId")
+      .populate("shippingAddress")
+      .populate({
+        path: "orderItems",
+        populate: {
+          path: "product",
+          populate: [{ path: "category" }, { path: "subCategory" }],
+        },
+      });
   } catch (error) {
     console.error(`Error cancelling order`, error);
     throw new Error(`Unable to cancel order : ${error.message}`);
@@ -245,4 +324,5 @@ module.exports = {
   updateOrderStatus,
   cancelOrder,
   getOderItemById,
+  getOrderByIdForSeller,
 };

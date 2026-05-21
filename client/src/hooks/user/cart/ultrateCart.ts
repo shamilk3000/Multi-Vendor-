@@ -29,6 +29,10 @@ const useInvalidateReviews = () => {
       queryKey: ["orders"],
    refetchType: "all",
     });
+    queryClient.invalidateQueries({
+      queryKey: ["profile"],
+   refetchType: "all",
+    });
   };
   
 };

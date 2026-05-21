@@ -5,7 +5,7 @@ const userAuth = async (req, res, next) => {
   try {
     // const sellerId = req.params.sellerId;
     const token = req.cookies.token;
-// const { sellerId } = req.params;
+    // const { sellerId } = req.params;
     // ❌ NO COOKIE
     if (!token) {
       console.log("No token");
@@ -31,7 +31,6 @@ const userAuth = async (req, res, next) => {
       });
     }
 
-
     const user = await jwtProvider.getUserProfileByToken(
       token,
       decoded.sellerId,
@@ -44,7 +43,6 @@ const userAuth = async (req, res, next) => {
         code: "USER_NOT_FOUND_USER",
       });
     }
-
 
     // ❌ ACCOUNT NOT ACTIVE (🔥 FIRST CHECK LIKE YOU SAID)
     if (user.accountStatus !== "ACTIVE") {
@@ -60,25 +58,20 @@ const userAuth = async (req, res, next) => {
 
     req.tokenSellerId = decoded.sellerId;
 
-req.tokenShopName =
-  user.sellerId.businessDetails.bussinessName;
+    req.tokenShopName = user.sellerId.businessDetails.bussinessName;
 
-// ✅ override res.json globally
-const originalJson = res.json;
+    // ✅ override res.json globally
+    const originalJson = res.json;
 
-res.json = function (data) {
+    res.json = function (data) {
+      return originalJson.call(this, {
+        ...data,
 
-  return originalJson.call(this, {
-    ...data,
+        tokenSellerId: data.tokenSellerId || req.tokenSellerId || null,
 
-    tokenSellerId:
-      data.tokenSellerId || req.tokenSellerId || null,
-
-    tokenShopName:
-      data.tokenShopName || req.tokenShopName || null,
-  });
-};
-
+        tokenShopName: data.tokenShopName || req.tokenShopName || null,
+      });
+    };
 
     next();
   } catch (error) {

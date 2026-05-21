@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getOrderForUser } from "../../../api/user/order";
+import { getOrderForUser , getAllOrderForUser, getOrderByIdForUser} from "../../../api/user/order";
 
 
 export const useOrderForUser = (orderId: string) => { 
@@ -9,5 +9,24 @@ export const useOrderForUser = (orderId: string) => {
      refetchInterval: 5000,
   staleTime: 0,
     enabled: !!orderId
+  });
+};
+
+export const useAllOrderForUser = () => { 
+  return useQuery({
+    queryKey: ["orders", "all"],
+    queryFn: () => getAllOrderForUser(),
+     refetchInterval: 5000,
+  staleTime: 0,
+  });
+};
+
+export const useOrderByIdForUser = (orderId: string) => {  
+  return useQuery({
+    queryKey: ["orders", "single", orderId],
+    queryFn: () => getOrderByIdForUser({ orderId }),
+     refetchInterval: 5000,
+  staleTime: 0,
+  enabled: !!orderId
   });
 };

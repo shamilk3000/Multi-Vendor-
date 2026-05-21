@@ -10,256 +10,32 @@ import {
   FaCheck,
   FaShippingFast,
   FaHome,
+  FaTimes,
+  FaList,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useOrderForSeller } from "../../../hooks/seller/order/useOrder";
+import SellerOrdersSkeleton from "../../components/skeletons/ordersSkeleton";
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-}
-
-interface Customer {
-  name: string;
-  email: string;
-}
-
-interface Order {
-  id: string;
-  date: string;
-  status: string;
-  customer: Customer;
-  products: Product[];
-  isNew: boolean;
-}
 const options = [
-  { label: "All Status", value: "All", icon: <FaBox /> },
+  { label: "All Status", value: "All", icon: <FaList /> },
   { label: "Order Placed", value: "Placed", icon: <FaCheck /> },
   { label: "Confirmed", value: "Confirmed", icon: <FaBox /> },
   { label: "Shipped", value: "Shipped", icon: <FaShippingFast /> },
   { label: "Delivered", value: "Delivered", icon: <FaHome /> },
+  { label: "Cancelled", value: "Cancelled", icon: <FaTimes /> },
 ];
 
 const SellerOrders: React.FC = () => {
   const navigate = useNavigate();
+  const { data: orderdetails = [], isLoading } = useOrderForSeller();
+  const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
+
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [open, setOpen] = useState(false);
   const selected = options.find((opt) => opt.value === statusFilter);
-
-  const orders: Order[] = [
-    {
-      id: "ORD10001",
-      date: "2029-03-02",
-      status: "Delivered",
-      customer: { name: "Rahul Kumar", email: "rahul@gmail.com" },
-      products: [
-        {
-          id: "1",
-          name: "Wireless Mouse",
-          price: 25,
-          quantity: 2,
-          image:
-            "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=200",
-        },
-      ],
-      isNew: true,
-    },
-    {
-      id: "ORD10002",
-      date: "2029-03-05",
-      status: "Confirmed",
-      customer: { name: "Anjali Nair", email: "anjali@gmail.com" },
-      products: [
-        {
-          id: "2",
-          name: "Mechanical Keyboard",
-          price: 80,
-          quantity: 1,
-          image:
-            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200",
-        },
-      ],
-      isNew: true,
-    },
-    {
-      id: "ORD10003",
-      date: "2029-03-07",
-      status: "Shipped",
-      customer: { name: "Arjun Das", email: "arjun@gmail.com" },
-      products: [
-        {
-          id: "3",
-          name: "Gaming Headset",
-          price: 60,
-          quantity: 1,
-          image:
-            "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?w=200",
-        },
-      ],
-      isNew: true,
-    },
-    {
-      id: "ORD10004",
-      date: "2029-03-08",
-      status: "Cancelled",
-      customer: { name: "Sneha Pillai", email: "sneha@gmail.com" },
-      products: [
-        {
-          id: "4",
-          name: "Laptop Stand",
-          price: 35,
-          quantity: 1,
-          image:
-            "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=200",
-        },
-      ],
-      isNew: true,
-    },
-    {
-      id: "ORD10005",
-      date: "2029-03-10",
-      status: "Delivered",
-      customer: { name: "Vishnu Raj", email: "vishnu@gmail.com" },
-      products: [
-        {
-          id: "5",
-          name: "Wireless Mouse",
-          price: 25,
-          quantity: 3,
-          image:
-            "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=200",
-        },
-      ],
-      isNew: true,
-    },
-    {
-      id: "ORD10006",
-      date: "2029-03-12",
-      status: "Placed",
-      customer: { name: "Meera Nair", email: "meera@gmail.com" },
-      products: [
-        {
-          id: "6",
-          name: "Mechanical Keyboard",
-          price: 80,
-          quantity: 1,
-          image:
-            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200",
-        },
-        {
-          id: "7",
-          name: "Gaming Headset",
-          price: 60,
-          quantity: 1,
-          image:
-            "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?w=200",
-        },
-      ],
-      isNew: true,
-    },
-    {
-      id: "ORD10007",
-      date: "2029-03-14",
-      status: "Shipped",
-      customer: { name: "Aditya Menon", email: "aditya@gmail.com" },
-      products: [
-        {
-          id: "8",
-          name: "Laptop Stand",
-          price: 35,
-          quantity: 2,
-          image:
-            "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=200",
-        },
-      ],
-      isNew: true,
-    },
-    {
-      id: "ORD10008",
-      date: "2029-03-15",
-      status: "Delivered",
-      customer: { name: "Kiran Das", email: "kiran@gmail.com" },
-      products: [
-        {
-          id: "9",
-          name: "Gaming Headset",
-          price: 60,
-          quantity: 1,
-          image:
-            "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?w=200",
-        },
-      ],
-      isNew: true,
-    },
-    {
-      id: "ORD10009",
-      date: "2029-03-16",
-      status: "Cancelled",
-      customer: { name: "Anu Joseph", email: "anu@gmail.com" },
-      products: [
-        {
-          id: "10",
-          name: "Mechanical Keyboard",
-          price: 80,
-          quantity: 1,
-          image:
-            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200",
-        },
-      ],
-      isNew: true,
-    },
-    {
-      id: "ORD10010",
-      date: "2029-03-17",
-      status: "Placed",
-      customer: { name: "Rohit Nair", email: "rohit@gmail.com" },
-      products: [
-        {
-          id: "11",
-          name: "Wireless Mouse",
-          price: 25,
-          quantity: 1,
-          image:
-            "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=200",
-        },
-      ],
-      isNew: true,
-    },
-
-    // 🔥 Remaining 10 (shorter but same pattern)
-    ...Array.from({ length: 10 }, (_, i) => ({
-      id: `ORD100${11 + i}`,
-      date: `2029-03-${18 + i}`,
-      isNew: i % 2 === 0,
-      status: ["Delivered", "Confirmed", "Shipped", "Cancelled", "Placed"][
-        i % 4
-      ],
-      customer: {
-        name: `Customer ${i + 11}`,
-        email: `user${i + 11}@gmail.com`,
-      },
-      products: [
-        {
-          id: `${i + 20}`,
-          name: ["Wireless Mouse", "Keyboard", "Headset", "Laptop Stand"][
-            i % 4
-          ],
-          price: [25, 80, 60, 35][i % 4],
-          quantity: (i % 3) + 1,
-          image: [
-            "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=200",
-            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200",
-            "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?w=200",
-            "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=200",
-          ][i % 4],
-        },
-      ],
-    })),
-  ];
 
   const statusColor = (status: string) => {
     switch (status) {
@@ -271,6 +47,8 @@ const SellerOrders: React.FC = () => {
         return "bg-black text-white border-black";
       case "Shipped":
         return "bg-blue-100 text-blue-600 border-blue-300";
+      case "Cancelled":
+        return "bg-red-100 text-red-600 border-red-300";
       default:
         return "bg-red-100 text-red-600 border-red-300";
     }
@@ -285,26 +63,43 @@ const SellerOrders: React.FC = () => {
         return <FaShippingFast />;
       case "Placed":
         return <FaCheck />;
+      case "Cancelled":
+        return <FaTimes />;
       default:
         return <FaBox />;
     }
   };
-  const filteredOrders = [...orders]
+  const filteredOrders = [...(orderdetails || [])]
     .filter((order) => {
+      const formattedDate = new Date(order.createdAt).toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+
       const matchSearch =
-        order.id.toLowerCase().includes(search.toLowerCase()) ||
-        order.customer.name.toLowerCase().includes(search.toLowerCase()) ||
-        order.customer.email.toLowerCase().includes(search.toLowerCase()) ||
-        order.products.some((product) =>
-          product.name.toLowerCase().includes(search.toLowerCase()),
+        order.orderId.toLowerCase().includes(search.toLowerCase()) ||
+        order.userId.name.toLowerCase().includes(search.toLowerCase()) ||
+        order.userId.email.toLowerCase().includes(search.toLowerCase()) ||
+        formattedDate.toLowerCase().includes(search.toLowerCase()) ||
+        order.orderItems.some((product: any) =>
+          product.product.name.toLowerCase().includes(search.toLowerCase()),
         );
 
       const matchStatus =
-        statusFilter === "All" || order.status === statusFilter;
+        statusFilter === "All" || order.orderStatus === statusFilter;
 
       return matchSearch && matchStatus;
     })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+
+
   return (
     <div className="min-h-screen bg-gray-100 md:p-6 p-3">
       {/* TITLE */}
@@ -323,7 +118,7 @@ const SellerOrders: React.FC = () => {
 
             <input
               type="text"
-              placeholder="Search by order, name, email, product..."
+              placeholder="Search by order, name, email, product, date..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className=" focus:ring-2 focus:ring-black border border-gray-500  pl-10 pr-3 py-2 rounded-lg text-sm w-full "
@@ -368,127 +163,155 @@ const SellerOrders: React.FC = () => {
         </div>
       </div>
       <div className="space-y-5">
-        {filteredOrders.map((order) => {
-          const total = order.products.reduce(
-            (sum, p) => sum + p.price * p.quantity,
-            0,
-          );
+        {isLoading ? (
+          <SellerOrdersSkeleton />
+        ) : filteredOrders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center border border-dashed border-gray-400 rounded-xl p-8 bg-white text-center">
+            {/* ICON */}
+            <div className="bg-gray-100 p-4 rounded-full ">
+              <FaBox className="text-2xl text-gray-600" />
+            </div>
 
-          const itemCount = order.products.reduce(
-            (sum, p) => sum + p.quantity,
-            0,
-          );
+            {/* TITLE */}
+            <h2 className="text-lg font-semibold mb-1">No Orders Found</h2>
 
-          return (
-            <motion.div
-              key={order.id}
-              onClick={() => navigate(`/seller/orders/${order.id}`)}
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              whileHover={{ scale: 1.02 }}
-              className="bg-white rounded-xl p-5 shadow-sm  hover:shadow-lg transition cursor-pointer group"
-            >
-              {/* HEADER */}
-              <div className=" flex justify-between items-start text-sm mb-2 text-black">
-                <div className="font-medium space-y-0.5 text-sm">
-                  <p
-                    className="group-hover:animate-[wave_0.5s_ease-in-out]"
-                    style={{ animationDelay: "0ms" }}
-                  >
-                    <FaBox className="inline mr-2" /> #{order.id}
-                  </p>
-
-                  <p
-                    className="group-hover:animate-[wave_0.5s_ease-in-out]"
-                    style={{ animationDelay: "80ms" }}
-                  >
-                    <FaRegCalendarAlt className="inline mr-2" /> {order.date}
-                  </p>
-
-                  <p
-                    className="group-hover:animate-[wave_0.5s_ease-in-out]"
-                    style={{ animationDelay: "140ms" }}
-                  >
-                    <FaUser className="inline mr-2" /> {order.customer.name}
-                  </p>
-
-                  <p
-                    className="group-hover:animate-[wave_0.5s_ease-in-out]"
-                    style={{ animationDelay: "200ms" }}
-                  >
-                    <FaEnvelope className="inline mr-2" />{" "}
-                    {order.customer.email}
-                  </p>
-                </div>
-
-                {/* 🔥 INLINE STATUS + NEW */}
-                <div className="flex items-center gap-2">
-                  {order.isNew == true && (
-                    <span
-                      style={{ animationDelay: "260ms" }}
-                      className="group-hover:animate-[wave_0.5s_ease-in-out] px-1 py-0.5 text-[10px] font-semibold text-white rounded bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.9)] animate-[pulse_1s_infinite]"
+            {/* SUBTEXT */}
+            <p className="text-sm text-gray-700 ">
+              Looks like you don't have any orders yet.
+            </p>
+            <p className="text-sm text-gray-700">OR</p>
+            <p className="text-sm text-gray-700 ">
+              Try changing filters or search
+            </p>
+          </div>
+        ) : (
+          filteredOrders.map((order) => {
+            return (
+              <motion.div
+                key={order._id}
+                onClick={() => navigate(`/seller/orders/${order._id}`)}
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ scale: 1.02 }}
+                className="bg-white rounded-xl p-5 shadow-sm  hover:shadow-lg transition cursor-pointer group"
+              >
+                {/* HEADER */}
+                <div className=" flex justify-between items-start text-sm mb-2 text-black">
+                  <div className="font-medium space-y-0.5 text-sm">
+                    <p
+                      className="group-hover:animate-[wave_0.5s_ease-in-out]"
+                      style={{ animationDelay: "0ms" }}
                     >
-                      NEW
+                      <FaBox className="inline mr-2" /> {order.orderId}
+                    </p>
+
+                    <p
+                      className="group-hover:animate-[wave_0.5s_ease-in-out]"
+                      style={{ animationDelay: "80ms" }}
+                    >
+                      <FaRegCalendarAlt className="inline mr-2" />{" "}
+                      {new Date(order.createdAt).toLocaleString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </p>
+
+                    <p
+                      className="group-hover:animate-[wave_0.5s_ease-in-out]"
+                      style={{ animationDelay: "140ms" }}
+                    >
+                      <FaUser className="inline mr-2" /> {order.userId.name}
+                    </p>
+
+                    <p
+                      className="group-hover:animate-[wave_0.5s_ease-in-out]"
+                      style={{ animationDelay: "200ms" }}
+                    >
+                      <FaEnvelope className="inline mr-2" />{" "}
+                      {order.userId.email}
+                    </p>
+                  </div>
+
+                  {/* 🔥 INLINE STATUS + NEW */}
+                  <div className="flex items-center gap-2">
+                    {order.isNew == true && (
+                      <span
+                        style={{ animationDelay: "260ms" }}
+                        className="group-hover:animate-[wave_0.5s_ease-in-out] px-1 py-0.5 text-[10px] font-semibold text-white rounded bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.9)] animate-[pulse_1s_infinite]"
+                      >
+                        NEW
+                      </span>
+                    )}
+
+                    <span
+                      className={`px-2 py-0.5 text-lg rounded-full font-semibold flex items-center gap-1.5 text-[12.5px] border group-hover:animate-[wave_0.5s_ease-in-out] ${statusColor(
+                        order.orderStatus,
+                      )}`}
+                      style={{ animationDelay: "260ms" }}
+                    >
+                      {statusIcon(order.orderStatus)}
+                      {order.orderStatus}
                     </span>
-                  )}
-
-                  <span
-                    className={`px-2 py-0.5 text-lg rounded-full font-semibold flex items-center gap-1.5 text-[12.5px] border group-hover:animate-[wave_0.5s_ease-in-out] ${statusColor(
-                      order.status,
-                    )}`}
-                    style={{ animationDelay: "260ms" }}
-                  >
-                    {statusIcon(order.status)}
-                    {order.status}
-                  </span>
+                  </div>
                 </div>
-              </div>
-              {/* PRODUCTS */}
-              <div className="border-t pt-3 space-y-3">
-                {order.products.map((product, i) => (
-                  <div
-                    key={product.id}
-                    className="flex items-center justify-between bg-gray-100 border-gray-200 p-3 rounded-lg border group-hover:animate-[wave_0.5s_ease-in-out]"
-                    style={{ animationDelay: `${i * 100 + 300}ms` }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-14 h-14 rounded-md object-cover"
-                      />
+                {/* PRODUCTS */}
+                <div className="border-t pt-3 space-y-3">
+                  {order.orderItems.map((product: any, i: number) => (
+                    <div
+                      key={product.product._id}
+                      className="flex items-center justify-between bg-gray-100 border-gray-200 p-3 rounded-lg border group-hover:animate-[wave_0.5s_ease-in-out]"
+                      style={{ animationDelay: `${i * 100 + 300}ms` }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={`${BASE_URL}${product.product.image[0]}`}
+                          alt={product.product.name}
+                          className="w-14 h-14 rounded-md object-cover"
+                        />
 
-                      <div>
-                        <p className="font-medium text-sm">{product.name}</p>
-                        <p className="text-xs text-gray-500">
-                          Qty: {product.quantity}
-                        </p>
+                        <div>
+                          <p className="font-medium text-sm">
+                            {product.product.name}
+                          </p>
+                          <p className="font-medium text-green-500 text-xs">
+                            {product.product.sellingPrice}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Qty: {product.quantity}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="font-semibold text-gray-900 text-sm">
+                        ${product.totalSellingPrice}
                       </div>
                     </div>
+                  ))}
+                </div>
 
-                    <div className="font-semibold text-gray-700 text-sm">
-                      ${product.price * product.quantity}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                {/* FOOTER */}
+                <div
+                  className="border-t mt-3 pt-3 flex justify-between text-sm group-hover:animate-[wave_0.5s_ease-in-out]"
+                  style={{
+                    animationDelay: `${order.orderItems.length * 100 + 350}ms`,
+                  }}
+                >
+                  <span className="text-gray-500">
+                    {order.totalItems} items
+                  </span>
 
-              {/* FOOTER */}
-              <div
-                className="border-t mt-3 pt-3 flex justify-between text-sm group-hover:animate-[wave_0.5s_ease-in-out]"
-                style={{
-                  animationDelay: `${order.products.length * 100 + 350}ms`,
-                }}
-              >
-                <span className="text-gray-500">{itemCount} items</span>
-
-                <span className="font-semibold text-black">
-                  Total: ${total}
-                </span>
-              </div>
-            </motion.div>
-          );
-        })}
+                  <span className="font-semibold text-black">
+                    Total: ${order.totalSellingPrice}
+                  </span>
+                </div>
+              </motion.div>
+            );
+          })
+        )}
       </div>
       <style>
         {`

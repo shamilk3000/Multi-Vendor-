@@ -244,6 +244,22 @@ const userResetPassword = async (email, password, sellerId) => {
   }
 };
 
+const userResetPasswordSlider = async (password, userId) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    user.password = hashedPassword;
+    await user.save();
+    return { message: "Password reset successfully" };
+  } catch (error) {
+    console.error("userResetPasswordSlider Service Error:", error);
+    throw new Error(`Password reset failed: ${error.message}`);
+  }
+};
+
 const getUserProfileById = async (id) => {
   try {
     const user = await getUserById(id);
@@ -387,4 +403,5 @@ module.exports = {
   deleteAddress,
   getAllUsers,
   updateUserStatus,
+  userResetPasswordSlider,
 };

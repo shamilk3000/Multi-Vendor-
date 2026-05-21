@@ -14,7 +14,6 @@ import { Routes, Route } from "react-router-dom";
 import Sidebar from "./user/components/dashboardSlider/DashboardSlider";
 import Dashboard from "./user/pages/dashboard/Dashboard";
 import ChangePassword from "./user/pages/changePassword/ChangePassword";
-import Logout from "./user/pages/logout/Logout";
 import Orders from "./user/pages/orders/Orders";
 import OrderDetails from "./user/pages/orderDetails/OrderDetails";
 import Cart from "./user/pages/cart/Cart";
@@ -60,15 +59,14 @@ function App() {
   return (
     <ThemeProvider theme={customTheme}>
       <Routes>
-        <Route path="/dashboard" element={<Sidebar />}>
+        <Route path="/:sellerId/:shopName/dashboard" element={<Sidebar />}>
           <Route index element={<Dashboard />} />
-          <Route path="/dashboard/orders" element={<Orders />} />
-          <Route path="/dashboard/orders/:id" element={<OrderDetails />} />
+          <Route path="/:sellerId/:shopName/dashboard/orders" element={<Orders />} />
+          <Route path="/:sellerId/:shopName/dashboard/orders/:orderId" element={<OrderDetails />} />
           <Route
-            path="/dashboard/change-password"
+            path="/:sellerId/:shopName/dashboard/change-password"
             element={<ChangePassword />}
           />
-          <Route path="/dashboard/logout" element={<Logout />} />
         </Route>
 
         <Route
@@ -131,7 +129,7 @@ function App() {
           />
           <Route path="/seller/category" element={<SellerCategoryList />} />
           <Route path="/seller/orders/" element={<SellerOrders />} />
-          <Route path="/seller/orders/:id" element={<SellerOrderDetails />} />
+          <Route path="/seller/orders/:orderId" element={<SellerOrderDetails />} />
           <Route
             path="/seller/change-password"
             element={<SellerChangePassword />}

@@ -255,6 +255,8 @@ useEffect(() => {
         },
       );
       const order = res.data.order;
+      
+      
       let filteredItems = order.orderItems.filter(
         (item: any) =>
           !(
@@ -296,7 +298,7 @@ useEffect(() => {
       }
       
     } catch (error: any) {
-      console.log("ORDER PLACING ERROR 👉", error?.response?.data);
+      console.log("ORDER PLACING ERROR 👉", error);
     }
   };
 

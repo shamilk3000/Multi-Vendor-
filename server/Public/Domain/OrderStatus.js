@@ -1,10 +1,10 @@
 const OrderStatus = Object.freeze({
-  PENDING: "pending",
-  PLACED: "placed",
-  CONFIRMED: "confirmed",
-  SHIPPED: "shipped",
-  DELIVERED: "delivered",
-  CANCELLED: "cancelled",
+  PENDING: "Pending",
+  PLACED: "Placed",
+  CONFIRMED: "Confirmed",
+  SHIPPED: "Shipped",
+  DELIVERED: "Delivered",
+  CANCELLED: "Cancelled",
 });
 
 module.exports = OrderStatus;

@@ -15,8 +15,9 @@ router.post("/:sellerId/:shopName/user-login", userController.userLogin);       
 router.post("/:sellerId/:shopName/user-forget-password-otp-send", userController.userForgetPasswordOtpSend);                       //using
 router.post("/:sellerId/:shopName/user-forget-password-otp-verify", userController.userForgetPasswordOtpVerify);                     //using
 router.post("/:sellerId/:shopName/user-reset-password", userController.userResetPassword);                                          //using
+router.post("/user-reset-password-slider",userAuth, userController.userResetPasswordSlider);                                          //using
 
-router.get("/:sellerId/:shopName/get-user-profile", userAuth, userController.getUserProfile);
+router.get("/get-user-profile", userAuth, userController.getUserProfile);
 router.get("/get-user-address", userAuth, userController.getUserAddress);
 router.put("/:sellerId/:shopName/update-user", userAuth, userController.updateUser);
 router.post("/:sellerId/:shopName/add-address", userAuth, userController.addAddress);
@@ -38,11 +39,11 @@ router.put("/update-cart-item-quantity/:cartItemId/:action", userAuth, cartContr
 
 router.post("/create-order", userAuth, orderController.createOrder);                                                  //using
 router.post("/customize-order", userAuth, orderController.customize);                                                  //using
-router.get("/get-order-by-id/:orderId", userAuth, orderController.getOrderById);
-router.get("/:sellerId/:shopName/all-orders-of-user", userAuth, orderController.allOrdersOfUser);
+router.get("/get-order-by-id/:orderId", userAuth, orderController.getOrderById);                                      //using
+router.get("/all-orders-of-user", userAuth, orderController.allOrdersOfUser);                                       //using
 router.put("/:sellerId/:shopName/cancel-order/:orderId", userAuth, orderController.cancelOrder);
 router.get("/:sellerId/:shopName/get-order-item-by-id/:orderId/:itemId", userAuth, orderController.getOderItemById);
-
+router.post("/logout", userAuth, userController.logout);
 router.post("/create-checkout-session", userAuth, paymentController.paymentHandler);
 
 module.exports = router;

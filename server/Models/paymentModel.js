@@ -7,6 +7,10 @@ const paymentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    sellerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Seller",
+    },
     amount: {
       type: Number,
       required: true,
@@ -19,10 +23,10 @@ const paymentSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      default: "RAZORPAY",
+      default: "STRIPE",
       required: true,
     },
-    paymentLinkId: {
+    paymentIntentId: {
       type: String,
     },
     orderId: {

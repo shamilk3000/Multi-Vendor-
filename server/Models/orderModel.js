@@ -14,10 +14,20 @@ const orderSchema = new mongoose.Schema(
       ref: "Seller",
       required: true,
     },
+    orderId: {
+      type: String,
+    },
     orderItems: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "OrderItem",
+        default: null,
+      },
+    ],
+    cartDeleteItemIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CartItem",
         default: null,
       },
     ],
@@ -61,16 +71,6 @@ const orderSchema = new mongoose.Schema(
         enum:Object.values(PaymentStatus),
         default: PaymentStatus.PENDING,
     },
-    orderDate: {
-      type: Date,
-      default: Date.now,
-    },
-    deliveryDate: {
-        type: Date,
-        default: function() {
-            return new Date(this.orderDate.getTime() + 7*24*60*60*1000);
-        },
-    },
     additionalNotes: {
       type: String,
     },
@@ -79,7 +79,10 @@ const orderSchema = new mongoose.Schema(
       ref: "Payment",
       default: null,
     },
-    
+    isNew: {
+      type: Boolean,
+      default: true,
+    }
   },
   { timestamps: true }
 );

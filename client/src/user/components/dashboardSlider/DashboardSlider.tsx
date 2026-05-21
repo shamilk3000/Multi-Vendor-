@@ -20,21 +20,25 @@ import {
   PersonOutline,
   ChevronLeft,
 } from "@mui/icons-material";
-
+import api from "../../../features/axios";
 import { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import Footer from "@/user/pages/footer/Footer";
 import Navbar from "@/user/pages/navbar/Navbar";
+import { useParams } from "react-router-dom";
+import toast from "react-hot-toast";
+import { logoutUser } from "@/redux/authSlice";
+import { store } from "@/redux/store";
 
 const EXPANDED_WIDTH = 260;
 const COLLAPSED_WIDTH = 80;
 
-
-
 const Sidebar = () => {
   const theme = useTheme();
+  const { sellerId, shopName } = useParams();
+
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [collapsed, setCollapsed] = useState(false);
@@ -44,16 +48,57 @@ const Sidebar = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+const handleLogout = async () => {
+  try {
+    const promise = api.post("/logout");
 
+    await toast.promise(
+      promise,
+      {
+        loading: "Logging out...",
+        success: "Logged out successfully 👋",
+
+        error: (err) =>
+          err.response?.data?.message || "Logout failed",
+      },
+      {
+        style: {
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+        },
+        duration: 3500,
+      }
+    );
+
+    store.dispatch(logoutUser());
+    sessionStorage.clear();
+
+    navigate(`/${sellerId}/${shopName}`);
+  } catch (error: any) {
+    console.log("LOGOUT ERROR 👉", error?.response?.data);
+  }
+};
   const menu = [
-    { label: "Dashboard", icon: <HomeOutlined />, path: "/dashboard" },
-    { label: "Orders", icon: <ReceiptLongOutlined />, path: "/dashboard/orders" },
+    {
+      label: "Dashboard",
+      icon: <HomeOutlined />,
+      path: `/${sellerId}/${shopName}/dashboard`,
+    },
+    {
+      label: "Orders",
+      icon: <ReceiptLongOutlined />,
+      path: `/${sellerId}/${shopName}/dashboard/orders`,
+    },
     {
       label: "Change Password",
       icon: <LockOutlined />,
-      path: "/dashboard/change-password",
+      path: `/${sellerId}/${shopName}/dashboard/change-password`,
     },
-    { label: "Log out", icon: <LogoutOutlined />, path: "/dashboard/logout" },
+    {
+      label: "Log out",
+      icon: <LogoutOutlined />,
+    },
   ];
 
   const drawerContent = (
@@ -94,8 +139,13 @@ const Sidebar = () => {
             <ListItem key={label} disablePadding>
               <ListItemButton
                 onClick={() => {
-                  navigate(path);
-                  if (isMobile) setMobileOpen(false);
+                   if (label === "Log out") {
+                    handleLogout();
+                  } else {
+                    navigate(path!);
+
+                    if (isMobile) setMobileOpen(false);
+                  }
                 }}
                 sx={{
                   justifyContent: collapsed ? "center" : "flex-start",
@@ -133,7 +183,7 @@ const Sidebar = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 p-0">
       <div className="fixed top-0 left-0 w-full z-50">
-        <Navbar />
+        <Navbar shopName={shopName!} sellerId={sellerId!} />
       </div>
 
       <div className="mt-[64px] bg-gray-100 px-0 p-0">
@@ -216,7 +266,7 @@ const Sidebar = () => {
               p: 0,
             }}
           >
-         <Outlet />
+            <Outlet />
           </Box>
         </Box>
       </div>

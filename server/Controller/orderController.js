@@ -3,6 +3,7 @@ const cartService = require("../Service/cartService");
 const paymentService = require("../Service/paymentService");
 const { createMulterUpload } = require("../Utils/multerUtil");
 const userOrderUpload = createMulterUpload("User/OrderCustomizations");
+const Order = require("../Models/orderModel");
 
 const createOrder = async (req, res) => {
   try {
@@ -10,24 +11,17 @@ const createOrder = async (req, res) => {
     const shippingAddress = req.body.shippingAddress;
     const isBuyNow = req.body.isBuyNow;
     const cart = req.body.cart;
-    // const paymentMethod = req.query.paymentMethod;
-    // const cart = cartService.getUserCart(user);
+
     const order = await orderService.createOrder(
       user,
       cart,
       shippingAddress,
       isBuyNow,
     );
-    // const payment = await paymentService.createPaymentOrder(user, order);
+
     const response = {};
-    // if (paymentMethod === "RAZORPAY") {
-    //   const paymentLink = await paymentService.createPaymentLink(user, order);
-    //   response.paymentLinkUrl = paymentLink.short_url;
-    //   payment.paymentLinkId = paymentLink.id;
-    //   await payment.save();
-    // }
+
     response.order = order;
-    // response.payment = payment;
     return res.status(200).json(response);
   } catch (error) {
     console.error("createOrder Controller Error:", error);
@@ -68,17 +62,45 @@ const getOrderById = async (req, res) => {
   try {
     const { orderId } = req.params;
     const order = await orderService.getOrderById(orderId);
-    return res.status(200).json(order);
+    return res.status(200).json({order});
   } catch (error) {
     console.error("getOrderById Controller Error:", error);
     return res.status(500).json({ message: error.message });
   }
 };
 
+const getOrderByIdForSeller = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const order = await orderService.getOrderByIdForSeller(orderId);
+    return res.status(200).json(order);
+  } catch (error) {
+    console.error("getOrderByIdForSeller Controller Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 const allOrdersOfSeller = async (req, res) => {
   try {
-    const sellerId = req?.params?.sellerId || req?.seller?._id;
-    const orders = await orderService.allOrdersOfSeller(sellerId);
+    const sellerId = req?.seller?._id;
+    const orders = await Order.find({
+      sellerId: sellerId,
+      paymentStatus: "success",
+    })
+      .populate("userId")
+      .populate("sellerId")
+      .populate({
+        path: "orderItems",
+        populate: {
+          path: "product",
+          populate: [{ path: "category" }, { path: "subCategory" }],
+        },
+      });
+    for (const order of orders) {
+      order.orderItems.sort((a, b) =>
+        a.product.name.localeCompare(b.product.name),
+      );
+    }
     return res.status(200).json(orders);
   } catch (error) {
     console.error("allOrdersOfSeller Controller Error:", error);
@@ -90,7 +112,9 @@ const allOrdersOfUser = async (req, res) => {
   try {
     const userId = req.user._id;
     const orders = await orderService.allOrdersOfUser(userId);
-    return res.status(200).json(orders);
+    return res.status(200).json({
+      orders,
+    });
   } catch (error) {
     console.error("allOrdersOfUser Controller Error:", error);
     return res.status(500).json({ message: error.message });
@@ -130,6 +154,7 @@ const getOderItemById = async (req, res) => {
   }
 };
 
+
 module.exports = {
   createOrder,
   customize,
@@ -139,4 +164,5 @@ module.exports = {
   updateOrderStatus,
   cancelOrder,
   getOderItemById,
+  getOrderByIdForSeller,
 };

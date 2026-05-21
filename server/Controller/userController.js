@@ -1,5 +1,6 @@
 const userService = require("../Service/userService");
 const Address = require("../Models/addressModel");
+const User = require("../Models/userModel");
 
 const googleAuthController = async (req, res) => {
   try {
@@ -107,6 +108,7 @@ const userForgetPasswordOtpVerify = async (req, res) => {
   }
 };
 
+
 const userResetPassword = async (req, res) => {
   try {
     const { sellerId } = req.params;
@@ -123,11 +125,26 @@ const userResetPassword = async (req, res) => {
   }
 };
 
+const userResetPasswordSlider = async (req, res) => {
+  try {
+    const userId = req.user?._id;
+    const { password } = req.body;
+    const result = await userService.userResetPasswordSlider(
+      password,
+      userId,
+    );
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("userResetPasswordSlider Controller Error:", error);
+    return res.status(400).json({ message: error.message });
+  }
+};
+
 const getUserProfile = async (req, res) => {
   try {
     const user = await req.user;
-
-    return res.status(200).json({ user });
+const userProfile = await User.findById(user._id).populate("address");
+    return res.status(200).json({ userProfile });
   } catch (error) {
     console.error("getUserProfile Controller Error:", error);
     return res.status(500).json({ message: error.message });
@@ -244,6 +261,34 @@ const getUserAddress = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  try {
+    // clear cookie
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.COOKIE_SECURE === "true",
+      sameSite: process.env.COOKIE_SAMESITE,
+    });
+
+    // clear request values
+    req.user = null;
+    req.tokenSellerId = null;
+    req.tokenShopName = null;
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    console.error("Logout Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   googleAuthController,
   userSignup,
@@ -252,6 +297,7 @@ module.exports = {
   userForgetPasswordOtpSend,
   userForgetPasswordOtpVerify,
   userResetPassword,
+  userResetPasswordSlider,
   getUserProfile,
   getUserProfileById,
   updateUser,
@@ -261,4 +307,5 @@ module.exports = {
   getAllUsers,
   updateUserStatus,
   getUserAddress,
+  logout,
 };

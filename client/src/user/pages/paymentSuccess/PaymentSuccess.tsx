@@ -6,12 +6,15 @@ import {
   FaShoppingBag,
   FaRegCreditCard,
 } from "react-icons/fa";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Footer from "../footer/Footer";
 import Navbar from "../navbar/Navbar";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
+   const [searchParams] = useSearchParams();
+    const orderId = searchParams.get("orderId");
+    const products = searchParams.get("products");
   const { sellerId, shopName } = useParams();
   
   return (
@@ -59,7 +62,7 @@ const PaymentSuccess = () => {
               </span>
 
               <span className="font-medium group-hover:text-black transition">
-                #ORD-23841
+              #ORD-{orderId}
               </span>
             </div>
 
@@ -70,7 +73,7 @@ const PaymentSuccess = () => {
               </span>
 
               <span className="font-medium group-hover:text-black transition">
-                3 Products
+                {products} Products
               </span>
             </div>
 

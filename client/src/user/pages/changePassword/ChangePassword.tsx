@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from "../../../features/axios";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaEye,
@@ -7,7 +8,9 @@ import {
   FaTimesCircle,
   FaLock,
   FaEdit,
+  FaExclamationTriangle,
 } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 const ChangePassword: React.FC = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -42,14 +45,67 @@ const ChangePassword: React.FC = () => {
     }
   }, [passwordsMatch]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!minLengthValid) return alert("Password must be at least 6 characters");
-    if (!passwordsMatch) return alert("Passwords do not match");
+    if (!minLengthValid) {
+      toast.error("Password must be at least 6 characters", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
+      return;
+    }
 
-    alert("Password updated successfully!");
-    setNewPassword("");
+    if (!passwordsMatch) {
+      toast.error("Passwords do not match", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
+      return;
+    }
+ try {
+      const promise = api.post(
+        `/user-reset-password-slider`,
+        {
+          password : newPassword,
+        },
+      );
+
+      await toast.promise(
+        promise,
+        {
+          loading: "Changing password...",
+          success: (res) => res.data.message || "Password changed successfully",
+          error: (err) =>
+            err.response?.data?.message || "Failed to change password",
+        },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+          duration: 3500,
+        },
+      );
+      setNewPassword("");
     setConfirmPassword("");
+    } catch (error: any) {
+      console.log("PASSWORD CHANGING ERROR 👉", error?.response?.data);
+    }
   };
 
   const inputStyle =
