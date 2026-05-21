@@ -74,7 +74,7 @@ const handleLogout = async () => {
     store.dispatch(logoutUser());
     sessionStorage.clear();
 
-    navigate(`/${sellerId}/${shopName}`);
+    navigate(`/${sellerId}/${shopName}`, { replace: true });
   } catch (error: any) {
     console.log("LOGOUT ERROR 👉", error?.response?.data);
   }

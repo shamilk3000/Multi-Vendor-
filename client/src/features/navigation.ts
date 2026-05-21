@@ -8,6 +8,6 @@ export const setNavigate = (nav: NavigateFunction) => {
 
 export const navigateTo = (path: string) => {
   if (navigate) {
-    navigate(path);
+    navigate(path, { replace: true });
   }
 };
