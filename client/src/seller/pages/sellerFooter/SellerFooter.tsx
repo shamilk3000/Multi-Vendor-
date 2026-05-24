@@ -94,9 +94,7 @@ const Footer = () => {
       </div>
 
       {/* Copyright */}
-      <p className="text-center text-gray-400 text-sm">
-        © Started in 2026.
-      </p>
+      <p className="text-center text-gray-400 text-sm">© Started in 2026.</p>
 
       {/* Animations */}
       <style>
