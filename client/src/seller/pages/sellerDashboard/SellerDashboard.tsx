@@ -11,6 +11,9 @@ import {
   FaRegCopy,
   FaCheck,
   FaCheckCircle,
+  FaDownload,
+  FaLink,
+  FaQrcode,
 } from "react-icons/fa";
 
 import {
@@ -25,12 +28,14 @@ import {
 } from "chart.js";
 
 import { Line } from "react-chartjs-2";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { logout, setSeller } from "@/redux/authSlice";
 import { useDispatch } from "react-redux";
+import QRCode from "react-qr-code";
+import QRCodeGenerator from "qrcode";
 // import api from "../../../features/axios";
 
 ChartJS.register(
@@ -50,6 +55,8 @@ const SellerDashboard = () => {
   const [sellerSubStatus, setSellerSubStatus] = useState(false);
   const navigate = useNavigate();
 
+  const qrRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const statusSub = searchParams.get("statusSub");
 
@@ -58,6 +65,7 @@ const SellerDashboard = () => {
         const res = await axios.get("/api/seller/coockie-test", {
           withCredentials: true,
         });
+
         if (res.data.success == true) {
           dispatch(setSeller(res.data.seller));
           setSellerSubStatus(true);
@@ -75,10 +83,12 @@ const SellerDashboard = () => {
         navigate("/seller/login");
       }
     };
+
     checkSession();
 
     if (statusSub === "true" && sellerSubStatus == true) {
       toast.dismiss();
+
       toast.success("Subscription activated successfully", {
         icon: <FaCheckCircle className="text-green-500" />,
         style: {
@@ -90,9 +100,11 @@ const SellerDashboard = () => {
         },
         duration: 3500,
       });
+
       navigate("/seller", { replace: true });
     }
   }, [searchParams, sellerSubStatus]);
+
   const handleCopy = async () => {
     try {
       const textToCopy = webURL ?? "";
@@ -103,21 +115,112 @@ const SellerDashboard = () => {
         await navigator.clipboard.writeText(textToCopy);
       } else {
         const textArea = document.createElement("textarea");
+
         textArea.value = textToCopy;
 
         document.body.appendChild(textArea);
         textArea.select();
+
         document.execCommand("copy");
+
         document.body.removeChild(textArea);
       }
 
       setCopied(true);
+
       setTimeout(() => setCopied(false), 1500);
     } catch (err) {
       console.log("Copy failed:", err);
     }
   };
 
+  const handleDownloadQR = async () => {
+    try {
+      // QR Canvas
+      const qrCanvas = document.createElement("canvas");
+
+      await QRCodeGenerator.toCanvas(qrCanvas, webURL, {
+        width: 1000,
+        margin: 2,
+        color: {
+          dark: "#000000",
+          light: "#ffffff",
+        },
+      });
+
+      // Final Canvas
+      const finalCanvas = document.createElement("canvas");
+
+      const ctx = finalCanvas.getContext("2d");
+
+      if (!ctx) return;
+
+      finalCanvas.width = 1200;
+      finalCanvas.height = 1500;
+
+      // Background
+      ctx.fillStyle = "#f3f4f6";
+      ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+      // 🔥 Top Title
+      ctx.fillStyle = "#000000";
+      ctx.font = "bold 72px Arial";
+      ctx.textAlign = "center";
+
+      ctx.fillText("Dummy Shop", 600, 120);
+
+      // Subtitle
+      ctx.fillStyle = "#444444";
+      ctx.font = "36px Arial";
+
+      ctx.fillText("Scan this QR code to visit our online store", 600, 190);
+
+      // QR White Area ONLY
+      ctx.fillStyle = "#ffffff";
+
+      ctx.beginPath();
+      ctx.roundRect(180, 260, 840, 840, 40);
+      ctx.fill();
+
+      // QR
+      ctx.drawImage(qrCanvas, 230, 310, 740, 740);
+
+      // Main Text
+      ctx.fillStyle = "#111111";
+      ctx.font = "bold 46px Arial";
+
+      ctx.fillText("Scan Me", 600, 1190);
+
+      // Description
+      ctx.fillStyle = "#666666";
+      ctx.font = "30px Arial";
+
+      ctx.fillText(
+        "You can view products, prices and shop details easily",
+        600,
+        1260,
+      );
+
+      ctx.fillText("through our online store using this QR code.", 600, 1310);
+
+      // Bottom URL
+      ctx.fillStyle = "#000000";
+      ctx.font = "bold 24px Arial";
+
+      ctx.fillText(webURL, 600, 1410);
+
+      // Download
+      const link = document.createElement("a");
+
+      link.href = finalCanvas.toDataURL("image/png", 1.0);
+
+      link.download = "MyShop-online-store-qrcode.png";
+
+      link.click();
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const stats = [
     { title: "Total Revenue", value: "₹45,000", icon: <FaRupeeSign /> },
     { title: "Total Orders", value: "120", icon: <FaShoppingCart /> },
@@ -163,6 +266,7 @@ const SellerDashboard = () => {
 
   const chartData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+
     datasets: [
       {
         data: [12, 19, 15, 25, 22, 30, 28, 35],
@@ -178,7 +282,7 @@ const SellerDashboard = () => {
     ],
   };
 
-  const webURL = "https://www.dummy.com";
+  const webURL = " http://192.168.31.97:5173/6a05f01e58620d7a7e6349f6/SML";
 
   const chartOptions: any = {
     responsive: true,
@@ -199,7 +303,7 @@ const SellerDashboard = () => {
         {stats.map((item, index) => (
           <div
             key={index}
-            className="bg-white p-4 pb-2 rounded-xl shadow-sm hover:shadow-xl transition  hover:scale-[1.01]"
+            className="bg-white p-4 pb-2 rounded-xl shadow-sm hover:shadow-xl transition hover:scale-[1.01]"
           >
             {/* Top Row */}
             <div className="flex items-center justify-between mb-2">
@@ -218,7 +322,8 @@ const SellerDashboard = () => {
           </div>
         ))}
       </div>
-      <div className="bg-white rounded-2xl p-2.5 md:p-5 pt-4 shadow-sm mb-6 hover:shadow-xl transition  hover:scale-[1.01]">
+
+      <div className="bg-white rounded-2xl p-2.5 md:p-5 pt-4 shadow-sm mb-6 hover:shadow-xl transition hover:scale-[1.01]">
         {/* 🔥 FIXED HEADER */}
         <div className="flex items-center justify-between mb-4">
           {/* Title + Icon together */}
@@ -236,8 +341,8 @@ const SellerDashboard = () => {
 
       {/* GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 ">
-        {/* 🔥 Top Products (FIXED HEIGHT + SCROLL) */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-xl transition  hover:scale-[1.01]">
+        {/* 🔥 Top Products */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-xl transition hover:scale-[1.01]">
           <h2 className="font-semibold mb-4 flex items-center gap-2">
             <FaBox /> Top Products
           </h2>
@@ -247,6 +352,7 @@ const SellerDashboard = () => {
               <div key={index}>
                 <div className="flex justify-between mb-1">
                   <span className="text-sm">{product.name}</span>
+
                   <span className="text-sm font-medium">
                     {product.sales} sales
                   </span>
@@ -263,8 +369,8 @@ const SellerDashboard = () => {
           </div>
         </div>
 
-        {/* 🔥 Top Categories (FIXED HEIGHT + SCROLL) */}
-        <div className="bg-white rounded-2xl p-5 hover:shadow-xl transition  hover:scale-[1.01]">
+        {/* 🔥 Top Categories */}
+        <div className="bg-white rounded-2xl p-5 hover:shadow-xl transition hover:scale-[1.01]">
           <h2 className="font-semibold mb-4 flex items-center gap-2">
             <FaTags /> Top Categories
           </h2>
@@ -274,6 +380,7 @@ const SellerDashboard = () => {
               <div key={index} className="border-b pb-3">
                 <div className="flex justify-between mb-1">
                   <span className="font-medium">{cat.name}</span>
+
                   <span className="text-sm">{cat.sales}%</span>
                 </div>
 
@@ -288,7 +395,7 @@ const SellerDashboard = () => {
                   {cat.children.map((child, i) => (
                     <span
                       key={i}
-                      className="text-xs bg-gray-200 hover:bg-black hover:text-white  px-2 py-1 rounded-full"
+                      className="text-xs bg-gray-200 hover:bg-black hover:text-white px-2 py-1 rounded-full"
                     >
                       {child}
                     </span>
@@ -299,28 +406,96 @@ const SellerDashboard = () => {
           </div>
         </div>
       </div>
-      <div className="mt-5">
-        <label className="font-bold">Website URL</label>
-        <div className="flex font-bold mt-2 items-center rounded-xl overflow-hidden bg-black border border-black">
-          <input
-            type="text"
-            value={webURL}
-            readOnly
-            className="w-full px-3 py-2 bg-white text-gray-800 outline-none"
-          />
+
+      <div className="border rounded-xl p-5 mb-5 bg-white hover:shadow-2xl transition mt-6">
+        {/* HEADER */}
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
+            <FaLink className="text-black" />
+            Website URL
+          </h2>
 
           <button
             onClick={handleCopy}
-            className="cursor-pointer px-3 py-2 bg-black text-white hover:bg-gray-800 transition flex items-center gap-2"
+            className="cursor-pointer px-3 py-2 rounded-lg bg-black text-white hover:bg-white hover:text-black border border-black transition flex items-center gap-2"
           >
             {copied ? <FaCheck /> : <FaRegCopy />}
-            <span className="text-sm p-0 m-0">
-              {copied ? "Copied" : "Copy"}
-            </span>
+            <span className="text-sm">{copied ? "Copied" : "Copy"}</span>
           </button>
         </div>
+
+        {/* URL BOX */}
+        <div className="border rounded-xl md:p-4 p-2 bg-gray-50 flex items-start gap-3">
+          <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center shrink-0">
+            <FaLink />
+          </div>
+
+          <div className="overflow-hidden">
+            <p className="text-xs text-gray-500 mb-1">Online Store Link</p>
+
+            <p
+              onClick={() => window.open(webURL, "_blank")}
+              className="font-medium text-sm break-all text-black cursor-pointer hover:underline hover:text-blue-600 transition"
+            >
+              {webURL}
+            </p>
+          </div>
+        </div>
       </div>
-      {/* <Toaster containerStyle={{ top: 75 }} position="top-right" /> */}
+
+      {/* QR CODE SECTION */}
+      <div className="mt-6 bg-white rounded-2xl p-5 shadow-sm hover:shadow-xl transition hover:scale-[1.01] flex flex-col items-center">
+        <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
+          <FaQrcode className="text-black" />
+          Scan To Visit Our Online Store
+        </h2>
+
+        <div
+          ref={qrRef}
+          style={{
+            background: "linear-gradient(135deg, #000000 0%, #1f1f1f 100%)",
+            color: "#ffffff",
+          }}
+          className="p-6 rounded-3xl flex flex-col items-center text-center"
+        >
+          {/* SHOP NAME */}
+          <h2 className="text-2xl font-bold tracking-wide">Dummy Store</h2>
+
+          {/* SUB TEXT */}
+          <p className="text-sm text-gray-300 mt-2 max-w-[300px] leading-relaxed">
+            Scan this QR code to visit our online store
+          </p>
+
+          {/* QR CODE BOX */}
+          <div className="bg-white p-4 rounded-2xl mt-5 shadow-xl">
+            <QRCode value={webURL} size={240} />
+          </div>
+
+          {/* SCAN TEXT */}
+          <p className="mt-5 text-xl font-semibold tracking-wide">Scan Me</p>
+
+          <p className="text-sm text-gray-300 mt-1">
+            You can view products, prices and shop details easily through our
+            online store using this QR code.
+          </p>
+
+          {/* WEBSITE LINK */}
+          <p
+            className="mt-5 text-xs text-gray-200 break-all max-w-[280px] cursor-pointer hover:underline hover:text-blue-600 transition"
+            onClick={() => window.open(webURL, "_blank")}
+          >
+            {webURL}
+          </p>
+        </div>
+
+        <button
+          onClick={handleDownloadQR}
+          className="mt-5 bg-black text-white border border-black px-5 py-2 rounded-xl flex items-center gap-2 hover:bg-white hover:text-black transition"
+        >
+          <FaDownload />
+          Download QR Code
+        </button>
+      </div>
     </div>
   );
 };
