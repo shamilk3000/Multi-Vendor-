@@ -19,9 +19,11 @@ const getAllSellers = async (req, res) => {
 
 const getSellerProfile = async (req, res) => {
   try {
-    const seller = await req.seller;
-
-    return res.status(200).json({ seller });
+    const sellerId = await req.seller;
+    const seller = await Seller.findById(sellerId)
+      .populate("address")
+      .populate("businessDetails.businessAddress");
+    return res.status(200).json( seller );
   } catch (error) {
     console.error("getSellerProfile Controller Error:", error);
     return res.status(500).json({ message: error.message });
@@ -54,13 +56,11 @@ const createSellerDetails = (req, res) => {
           .json({ message: "File upload failed", error: err.message });
 
       const result = await sellerService.createSellerDetails(req, res);
-      return res
-        .status(201)
-        .json({
-          seller: result.seller,
-          onboardingUrl: result.onboardingUrl,
-          message: "Seller profile completed. Please choose a plan",
-        });
+      return res.status(201).json({
+        seller: result.seller,
+        onboardingUrl: result.onboardingUrl,
+        message: "Seller profile completed. Please choose a plan",
+      });
     } catch (error) {
       console.error("createSellerDetails Controller Error:", error);
       return res.status(500).json({ message: error.message });
@@ -91,7 +91,7 @@ const checkStripeSellerStatus = async (req, res) => {
       account.details_submitted &&
       account.charges_enabled &&
       account.payouts_enabled;
-      
+
     return res.status(200).json({
       isReady,
       status: {
@@ -170,25 +170,20 @@ const retryStripeOnboarding = async (req, res) => {
 //   }
 // };
 
-const updateSeller = (req, res) => {
-  sellerUpload.fields([
-    { name: "personalImage", maxCount: 1 },
-    { name: "idProof", maxCount: 3 },
-  ])(req, res, async (err) => {
+const updateSeller = async (req, res) => {
     try {
-      if (err)
-        return res
-          .status(400)
-          .json({ message: "File upload failed", error: err.message });
-
-      const seller = await sellerService.updateSeller(req);
+      const sellerData = req.body;
+      const existingSeller = await req.seller;
+      if (!existingSeller) {
+        return res.status(404).json({ message: "Seller not found" });
+      }
+      const seller = await sellerService.updateSeller(existingSeller, sellerData);
       return res.status(200).json({ seller });
     } catch (error) {
       console.error("updateSeller Controller Error:", error);
       return res.status(500).json({ message: error.message });
     }
-  });
-};
+  };
 
 // const deleteSeller = async (req, res) => {
 //   try {
@@ -249,14 +244,12 @@ const sellerLogin = async (req, res) => {
       res,
     );
 
-    return res
-      .status(200)
-      .json({
-        seller,
-        message: isComplete
-          ? "Please complete your profile to continue"
-          : "Login successful",
-      });
+    return res.status(200).json({
+      seller,
+      message: isComplete
+        ? "Please complete your profile to continue"
+        : "Login successful",
+    });
   } catch (error) {
     console.error("sellerLogin Controller Error:", error);
     return res.status(500).json({ message: error.message });
@@ -360,6 +353,34 @@ const sellerSubscription = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  try {
+    // clear cookie
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.COOKIE_SECURE === "true",
+      sameSite: process.env.COOKIE_SAMESITE,
+    });
+
+    // clear request values
+    req.seller = null;
+    req.tokenSellerId = null;
+    req.tokenShopName = null;
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    console.error("Logout Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAllSellers,
   getSellerProfile,
@@ -379,4 +400,5 @@ module.exports = {
   sellerResetPassword,
   sellerResetPasswordDashboard,
   sellerSubscription,
+  logout,
 };

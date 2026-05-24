@@ -7,6 +7,7 @@ import {
   FaMapMarkerAlt,
   FaGlobe,
   FaCity,
+  FaUserTie,
 } from "react-icons/fa";
 import { useUserProfile } from "../../../hooks/user/profile/useProfile";
 import ProfileSkeleton from "../../components/skeletons/profile";
@@ -43,7 +44,7 @@ if (isLoading) {
           </div>
 
           <h1 className="text-2xl font-bold mt-3 flex items-center justify-center gap-2">
-            <FaUser />
+            <FaUserTie />
             {user.name}
           </h1>
 

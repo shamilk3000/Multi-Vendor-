@@ -168,131 +168,62 @@ const getSellerById = async (id) => {
   }
 };
 
-const updateSeller = async (req) => {
+const updateSeller = async (existingSeller, sellerData) => {
   try {
-    // ✅ Parse all stringified objects coming from form-data
-    if (typeof req.body.address === "string") {
-      req.body.address = JSON.parse(req.body.address);
-    }
-    if (typeof req.body.pickupAddress === "string") {
-      req.body.pickupAddress = JSON.parse(req.body.pickupAddress);
-    }
-    if (typeof req.body.businessDetails === "string") {
-      req.body.businessDetails = JSON.parse(req.body.businessDetails);
-    }
-    if (typeof req.body.bankingDetails === "string") {
-      req.body.bankingDetails = JSON.parse(req.body.bankingDetails);
-    }
-    if (typeof req.body.idProofDlt === "string") {
-      req.body.idProofDlt = JSON.parse(req.body.idProofDlt);
-    }
-    if (typeof req.body.personalImageDlt === "string") {
-      req.body.personalImageDlt = JSON.parse(req.body.personalImageDlt);
-    }
-
-    const sellerData = req.body;
-    const idProofFiles = req.files?.idProof || [];
-    const personalImageFile = req.files?.personalImage?.[0] || null;
-
-    const existingSeller = await req.seller;
-    if (!existingSeller) {
-      throw new Error("Seller not found");
-    }
-
     // Update seller details
     const existingAddress = await Address.findById(existingSeller.address);
+    if (!existingAddress) {
+      throw new Error("Address not found");
+    }
+    existingAddress.phone = sellerData.phone;
+    existingAddress.flatNoOrVillaNo = sellerData.address.flatNoOrVillaNo;
+    existingAddress.street = sellerData.address.street;
+    existingAddress.area = sellerData.address.area;
+    existingAddress.city = sellerData.address.city;
+    existingAddress.emirate = sellerData.address.emirate;
+    existingAddress.landmark = sellerData.address.landmark;
+    existingAddress.postalCode = sellerData.address.postalCode;
+    await existingAddress.save();
 
-    ((existingAddress.name = sellerData.name),
-      (existingAddress.phone = sellerData.phone),
-      (existingAddress.email = existingSeller.email),
-      (existingAddress.flatNoOrVillaNo = sellerData.address.flatNoOrVillaNo),
-      (existingAddress.street = sellerData.address.street),
-      (existingAddress.area = sellerData.address.area),
-      (existingAddress.city = sellerData.address.city),
-      (existingAddress.emirate = sellerData.address.emirate),
-      (existingAddress.landmark = sellerData.address.landmark),
-      (existingAddress.postalCode = sellerData.address.postalCode),
-      await existingAddress.save());
-
-    const existingPickupAddress = await Address.findById(
-      existingSeller.pickupAddress,
-    );
-
-    ((existingPickupAddress.name = sellerData.name),
-      (existingPickupAddress.phone = sellerData.phone),
-      (existingPickupAddress.email = existingSeller.email),
-      (existingPickupAddress.flatNoOrVillaNo =
-        sellerData.pickupAddress.flatNoOrVillaNo),
-      (existingPickupAddress.street = sellerData.pickupAddress.street),
-      (existingPickupAddress.area = sellerData.pickupAddress.area),
-      (existingPickupAddress.city = sellerData.pickupAddress.city),
-      (existingPickupAddress.emirate = sellerData.pickupAddress.emirate),
-      (existingPickupAddress.landmark = sellerData.pickupAddress.landmark),
-      (existingPickupAddress.postalCode = sellerData.pickupAddress.postalCode),
-      await existingPickupAddress.save());
-
-    const existingBussinessAddress = await Address.findById(
+    const existingBusinessAddress = await Address.findById(
       existingSeller.businessDetails.businessAddress,
     );
+    if (!existingBusinessAddress) {
+      throw new Error("Business address not found");
+    }
+    existingBusinessAddress.name = sellerData.businessDetails.bussinessName;
+    existingBusinessAddress.phone = sellerData.businessDetails.bussinessPhone;
+    existingBusinessAddress.email = sellerData.businessDetails.businessEmail;
+    existingBusinessAddress.flatNoOrVillaNo =
+      sellerData.businessDetails.businessAddress.flatNoOrVillaNo;
+    existingBusinessAddress.street =
+      sellerData.businessDetails.businessAddress.street;
+    existingBusinessAddress.area =
+      sellerData.businessDetails.businessAddress.area;
+    existingBusinessAddress.city =
+      sellerData.businessDetails.businessAddress.city;
+    existingBusinessAddress.emirate =
+      sellerData.businessDetails.businessAddress.emirate;
+    existingBusinessAddress.landmark =
+      sellerData.businessDetails.businessAddress.landmark;
+    existingBusinessAddress.postalCode =
+      sellerData.businessDetails.businessAddress.postalCode;
+    await existingBusinessAddress.save();
 
-    ((existingBussinessAddress.name = sellerData.businessDetails.bussinessName),
-      (existingBussinessAddress.phone =
-        sellerData.businessDetails.bussinessPhone),
-      (existingBussinessAddress.email =
-        sellerData.businessDetails.businessEmail),
-      (existingBussinessAddress.flatNoOrVillaNo =
-        sellerData.businessDetails.businessAddress.flatNoOrVillaNo),
-      (existingBussinessAddress.street =
-        sellerData.businessDetails.businessAddress.street),
-      (existingBussinessAddress.area =
-        sellerData.businessDetails.businessAddress.area),
-      (existingBussinessAddress.city =
-        sellerData.businessDetails.businessAddress.city),
-      (existingBussinessAddress.emirate =
-        sellerData.businessDetails.businessAddress.emirate),
-      (existingBussinessAddress.landmark =
-        sellerData.businessDetails.businessAddress.landmark),
-      (existingBussinessAddress.postalCode =
-        sellerData.businessDetails.businessAddress.postalCode),
-      await existingBussinessAddress.save());
-
-    existingSeller.name = sellerData.name;
     existingSeller.phone = sellerData.phone;
-    // If new files are uploaded, delete old files
-    if (sellerData.personalImageDlt.length > 0) {
-      await deleteFiles(sellerData.personalImageDlt);
-      existingSeller.personalImage = personalImageFile
-        ? `/Uploads/Seller/PersonalImages/${personalImageFile.filename}`
-        : "";
-    }
-    if (sellerData.idProofDlt.length > 0) {
-      await deleteFiles(sellerData.idProofDlt);
-      existingSeller.idProof = existingSeller.idProof.filter(
-        (file) => !sellerData.idProofDlt.includes(file),
-      );
-    }
-    if (idProofFiles.length > 0) {
-      const newProofs = idProofFiles.map(
-        (file) => `/Uploads/Seller/IdProofs/${file.filename}`,
-      );
-      existingSeller.idProof = [...existingSeller.idProof, ...newProofs];
-    }
+
     existingSeller.businessDetails.bussinessName =
       sellerData.businessDetails.bussinessName;
     existingSeller.businessDetails.businessEmail =
       sellerData.businessDetails.businessEmail;
     existingSeller.businessDetails.bussinessPhone =
       sellerData.businessDetails.bussinessPhone;
-    existingSeller.bankingDetails.accountNumber =
-      sellerData.bankingDetails.accountNumber;
-    existingSeller.bankingDetails.accountHolderName =
-      sellerData.bankingDetails.accountHolderName;
-    existingSeller.bankingDetails.IBANnumber =
-      sellerData.bankingDetails.IBANnumber;
-    existingSeller.bankingDetails.SWIFTcode =
-      sellerData.bankingDetails.SWIFTcode;
-    existingSeller.bankingDetails.bankName = sellerData.bankingDetails.bankName;
-    existingSeller.bankingDetails.upiId = sellerData.bankingDetails.upiId;
+    existingSeller.businessDetails.bussinessWhatsapp =
+      sellerData.businessDetails.bussinessWhatsapp;
+    existingSeller.businessDetails.bussinessFacebook =
+      sellerData.businessDetails.bussinessFacebook;
+    existingSeller.businessDetails.bussinessInstagram =
+      sellerData.businessDetails.bussinessInstagram;
 
     await existingSeller.save();
 

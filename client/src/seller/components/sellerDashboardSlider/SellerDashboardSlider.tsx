@@ -30,6 +30,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import Footer from "../../pages/sellerFooter/SellerFooter";
 import Navbar from "../../pages/sellerNavbar/SellerNavbar";
+import { store } from "@/redux/store";
+import { logout } from "@/redux/authSlice";
+import api from "@/features/axios";
+import toast from "react-hot-toast";
 
 const EXPANDED_WIDTH = 260;
 const COLLAPSED_WIDTH = 80;
@@ -76,8 +80,40 @@ const sellerDashboard = () => {
       icon: <LockOutlined />,
       path: "/seller/change-password",
     },
-    { label: "Log out", icon: <LogoutOutlined />, path: "/logout" },
+    { label: "Log out", icon: <LogoutOutlined /> },
   ];
+
+  const handleLogout = async () => {
+    try {
+      const promise = api.post("/seller/logout");
+
+      await toast.promise(
+        promise,
+        {
+          loading: "Logging out...",
+          success: "Logged out successfully 👋",
+          error: (err) => err.response?.data?.message || "Logout failed",
+        },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+          duration: 3500,
+        },
+      );
+
+      store.dispatch(logout());
+      sessionStorage.clear();
+
+      navigate("/seller/login", {
+        replace: true,
+      });
+    } catch (error: any) {
+      console.log("LOGOUT ERROR 👉", error?.response?.data);
+    }
+  };
 
   const drawerContent = (
     <>
@@ -117,7 +153,12 @@ const sellerDashboard = () => {
             <ListItem key={label} disablePadding>
               <ListItemButton
                 onClick={() => {
-                  navigate(path);
+                  if (label === "Log out") {
+                    handleLogout();
+                  } else {
+                    navigate(path!);
+                  }
+
                   if (isMobile) setMobileOpen(false);
                 }}
                 sx={{

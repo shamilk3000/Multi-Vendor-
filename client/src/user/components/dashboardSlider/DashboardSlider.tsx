@@ -48,37 +48,36 @@ const Sidebar = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-const handleLogout = async () => {
-  try {
-    const promise = api.post("/logout");
+  const handleLogout = async () => {
+    try {
+      const promise = api.post("/logout");
 
-    await toast.promise(
-      promise,
-      {
-        loading: "Logging out...",
-        success: "Logged out successfully 👋",
+      await toast.promise(
+        promise,
+        {
+          loading: "Logging out...",
+          success: "Logged out successfully 👋",
 
-        error: (err) =>
-          err.response?.data?.message || "Logout failed",
-      },
-      {
-        style: {
-          background: "#111",
-          color: "#fff",
-          border: "1px solid #333",
+          error: (err) => err.response?.data?.message || "Logout failed",
         },
-        duration: 3500,
-      }
-    );
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+          duration: 3500,
+        },
+      );
 
-    store.dispatch(logoutUser());
-    sessionStorage.clear();
+      store.dispatch(logoutUser());
+      sessionStorage.clear();
 
-    navigate(`/${sellerId}/${shopName}`, { replace: true });
-  } catch (error: any) {
-    console.log("LOGOUT ERROR 👉", error?.response?.data);
-  }
-};
+      navigate(`/${sellerId}/${shopName}`, { replace: true });
+    } catch (error: any) {
+      console.log("LOGOUT ERROR 👉", error?.response?.data);
+    }
+  };
   const menu = [
     {
       label: "Dashboard",
@@ -139,7 +138,7 @@ const handleLogout = async () => {
             <ListItem key={label} disablePadding>
               <ListItemButton
                 onClick={() => {
-                   if (label === "Log out") {
+                  if (label === "Log out") {
                     handleLogout();
                   } else {
                     navigate(path!);

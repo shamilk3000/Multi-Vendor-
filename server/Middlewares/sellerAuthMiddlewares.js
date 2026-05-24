@@ -10,9 +10,15 @@ const coockieTest = async (req, res, next) => {
         .json({ success: false, message: "Unauthorized access" });
     }
 
-    const decoded = jwtProvider.verifyJwt(token);
-
-    if (!decoded) {
+    try {
+      const decoded = jwtProvider.verifyJwt(token);
+      if (!decoded) {
+        return res.status(401).json({
+          success: false,
+          message: "Invalid token. Authorization failed",
+        });
+      }
+    } catch (err) {
       return res.status(401).json({
         success: false,
         message: "Invalid token. Authorization failed",
@@ -44,7 +50,7 @@ const coockieTest = async (req, res, next) => {
     next();
   } catch (error) {
     console.error("sellerAuth Error:", error.message);
-    res.status(401).json({ success: false, message: error.message });
+    return res.status(401).json({ success: false, message: error.message });
   }
 };
 

@@ -17,7 +17,7 @@ router.post("/:sellerId/:shopName/user-forget-password-otp-verify", userControll
 router.post("/:sellerId/:shopName/user-reset-password", userController.userResetPassword);                                          //using
 router.post("/user-reset-password-slider",userAuth, userController.userResetPasswordSlider);                                          //using
 
-router.get("/get-user-profile", userAuth, userController.getUserProfile);
+router.get("/get-user-profile", userAuth, userController.getUserProfile);                            //using
 router.get("/get-user-address", userAuth, userController.getUserAddress);
 router.put("/:sellerId/:shopName/update-user", userAuth, userController.updateUser);
 router.post("/:sellerId/:shopName/add-address", userAuth, userController.addAddress);
@@ -43,7 +43,7 @@ router.get("/get-order-by-id/:orderId", userAuth, orderController.getOrderById);
 router.get("/all-orders-of-user", userAuth, orderController.allOrdersOfUser);                                       //using
 router.put("/:sellerId/:shopName/cancel-order/:orderId", userAuth, orderController.cancelOrder);
 router.get("/:sellerId/:shopName/get-order-item-by-id/:orderId/:itemId", userAuth, orderController.getOderItemById);
-router.post("/logout", userAuth, userController.logout);
-router.post("/create-checkout-session", userAuth, paymentController.paymentHandler);
+router.post("/logout", userAuth, userController.logout);                                       //using
+router.post("/create-checkout-session", userAuth, paymentController.paymentHandler);                //using
 
 module.exports = router;

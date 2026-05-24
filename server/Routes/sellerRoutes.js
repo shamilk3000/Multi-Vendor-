@@ -16,14 +16,15 @@ router.post("/create-seller-details", sellerController.createSellerDetails);    
 router.post("/stripe-check", sellerController.checkStripeSellerStatus );                                       //using
 router.post("/stripe-retry-onboarding", sellerController.retryStripeOnboarding);                                       //using
 router.post("/seller-login", sellerController.sellerLogin);                                                         //using
+router.post("/logout", sellerAuth, sellerController.logout);                                       //using
 
 router.post("/seller-forget-password-otp-send", sellerController.sellerForgetPasswordOtpSend);                       //using
 router.post("/seller-forget-password-otp-verify", sellerController.sellerForgetPasswordOtpVerify);                  //using
 router.post("/seller-reset-password", sellerController.sellerResetPassword);                                         //using
 router.post("/seller-reset-password-dashboard", sellerAuth, sellerController.sellerResetPasswordDashboard);                                         //using
 
-router.get("/get-seller-profile", sellerAuth, sellerController.getSellerProfile);
-router.put("/update-seller", sellerAuth, sellerController.updateSeller);
+router.get("/get-seller-profile", sellerAuth, sellerController.getSellerProfile);                                //using
+router.put("/update-seller-profile", sellerAuth, sellerController.updateSeller);                                //using
 router.post("/subscribe-session", sellerController.sellerSubscription);                                  //using
 router.get("/coockie-test", coockieTest, (req, res) => {
   res.json({ success: true, message: "Seller authentication successful", seller: req.seller });

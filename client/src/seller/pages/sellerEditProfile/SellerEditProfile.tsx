@@ -1,7 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import * as IBAN from "iban";
-
+import { useSellerProfile } from "../../../hooks/seller/profile/useProfile";
 import {
   FaUser,
   FaPhone,
@@ -14,7 +14,13 @@ import {
   FaGlobe,
   FaEdit,
   FaRegCreditCard,
+  FaFacebook,
+  FaInstagram,
+  FaWhatsapp,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import SellerEditProfileSkeleton from "@/seller/components/skeletons/editProfileSkeleton";
+import { ultrateUpdateProfile } from "../../../hooks/seller/profile/ultrateProfile";
 
 const emirates = [
   "Dubai",
@@ -25,46 +31,6 @@ const emirates = [
   "Fujairah",
   "Umm Al Quwain",
 ];
-
-const initialData = {
-  name: "Ayaan Mohammed",
-  phone: "+971501234567",
-  sellerEmail: "ayaan@example.com",
-
-  address: {
-    flatNoOrVillaNo: "Villa 12",
-    street: "Palm Street",
-    area: "Al Barsha",
-    city: "Dubai",
-    emirate: "Dubai",
-    landmark: "Near Mall",
-    postalCode: "00000",
-  },
-
-  businessDetails: {
-    bussinessName: "Ayaan Traders",
-    businessEmail: "business@ayaan.com",
-    bussinessPhone: "+971502223334",
-
-    businessAddress: {
-      flatNoOrVillaNo: "Shop 5",
-      street: "Market Road",
-      area: "Deira",
-      city: "Dubai",
-      emirate: "Dubai",
-      landmark: "Gold Souk",
-      postalCode: "11111",
-    },
-  },
-
-  bankingDetails: {
-    accountHolder: "Ayaan Mohammed",
-    accountNumber: "123456789012",
-    bankName: "Emirates NBD",
-    iban: "AE070331234567890123456",
-    stripeAccountId: "acct_123456789",
-  },
-};
 
 const Input = ({ label, value, onChange, icon, readOnly }: any) => (
   <div className="mb-3">
@@ -87,7 +53,20 @@ const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 const isPhone = (v: string) => /^(?:\+971|971|0)?5[0-9]{8}$/.test(v);
 
 const SellerEditPage = () => {
-  const [form, setForm] = useState(initialData);
+  const { data: seller, isLoading } = useSellerProfile();
+  const { mutateAsync: updateProfile } = ultrateUpdateProfile();
+
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    ...seller,
+    businessDetails: {
+      ...seller.businessDetails,
+      bussinessWhatsapp: seller.businessDetails.bussinessWhatsapp.replace(
+        "https://wa.me/",
+        "",
+      ),
+    },
+  });
 
   const handleChange = (path: string[], value: string) => {
     setForm((prev: any) => {
@@ -104,26 +83,56 @@ const SellerEditPage = () => {
   };
 
   const validate = () => {
-    if (!form.name || !form.phone || !form.sellerEmail)
+    if (!form.name || !form.phone || !form.email)
       return "Fill all personal fields";
 
-    if (!isEmail(form.sellerEmail)) return "Invalid email";
+    if (!isEmail(form.email)) return "Invalid email";
     if (!isPhone(form.phone)) return "Invalid phone number";
 
     // ADDRESS
-    if (Object.values(form.address).some((v) => !v))
+    const {
+      flatNoOrVillaNo,
+      street,
+      area,
+      city,
+      emirate,
+      landmark,
+      postalCode,
+    } = form.address;
+    if (
+      !flatNoOrVillaNo ||
+      !street ||
+      !area ||
+      !city ||
+      !emirate ||
+      !landmark ||
+      !postalCode
+    ) {
       return "Fill all address fields";
+    }
 
     // BUSINESS
     const b = form.businessDetails;
     const a = b.businessAddress;
 
-    if (!b.bussinessName || !b.businessEmail || !b.bussinessPhone) {
+    if (
+      !b.bussinessName ||
+      !b.businessEmail ||
+      !b.bussinessPhone ||
+      !b.bussinessWhatsapp ||
+      !b.bussinessInstagram ||
+      !b.bussinessFacebook
+    ) {
       return "Fill all business basic fields";
     }
 
     if (!isEmail(b.businessEmail)) return "Invalid business email";
     if (!isPhone(b.bussinessPhone)) return "Invalid business phone";
+    if (b.bussinessInstagram && !b.bussinessInstagram.includes("instagram.com"))
+      return "Invalid Instagram link";
+
+    if (b.bussinessFacebook && !b.bussinessFacebook.includes("facebook.com"))
+      return "Invalid Facebook link";
 
     // BUSINESS ADDRESS (FULL CHECK)
     if (
@@ -137,19 +146,6 @@ const SellerEditPage = () => {
     ) {
       return "Fill all business address fields";
     }
-
-    // BANK
-    const bank = form.bankingDetails;
-
-    if (Object.values(bank).some((v) => !v)) return "Fill all banking fields";
-
-    if (!/^acct_[a-zA-Z0-9]+$/.test(bank.stripeAccountId))
-      return "Invalid Stripe Account ID";
-
-    if (!/^[0-9]{9,18}$/.test(bank.accountNumber))
-      return "Invalid account number";
-
-    if (!IBAN.isValid(bank.iban)) return "Invalid IBAN";
 
     return null;
   };
@@ -170,11 +166,17 @@ const SellerEditPage = () => {
         duration: 3500,
       });
     }
-
-    console.log("Updated Seller Data:", form);
+    const formattedData = {
+      ...form,
+      businessDetails: {
+        ...form.businessDetails,
+        bussinessWhatsapp: `https://wa.me/${form.businessDetails.bussinessWhatsapp}`,
+      },
+    };
+    console.log("Updated Seller Data:", formattedData);
 
     toast.promise(
-      new Promise((resolve) => setTimeout(resolve, 1000)),
+      updateProfile(formattedData),
       {
         loading: "Updating profile...",
         success: "Profile updated successfully",
@@ -188,7 +190,12 @@ const SellerEditPage = () => {
         },
       },
     );
+    navigate("/seller/profile");
   };
+
+  if (isLoading) {
+    return <SellerEditProfileSkeleton />;
+  }
 
   return (
     <>
@@ -219,47 +226,88 @@ const SellerEditPage = () => {
           <Input
             label="Email"
             icon={<FaEnvelope />}
-            value={form.sellerEmail}
+            value={form.email}
             readOnly
-            // onChange={(e: any) => handleChange(["sellerEmail"], e.target.value)}
+            // onChange={(e: any) => handleChange(["email"], e.target.value)}
           />
         </div>
 
         {/* ADDRESS */}
         <div className="border p-4 rounded-xl mb-4 bg-white hover:shadow-2xl">
           <h2 className="font-semibold mb-3">Address</h2>
+          <Input
+            label="Flat / Villa No"
+            icon={<FaMapMarkerAlt />}
+            value={form.address.flatNoOrVillaNo}
+            onChange={(e: any) =>
+              handleChange(["address", "flatNoOrVillaNo"], e.target.value)
+            }
+          />
 
-          {Object.keys(form.address).map((key) =>
-            key === "emirate" ? (
-              <div key={key} className="mb-3">
-                <p className="text-xs text-gray-400 mb-1 flex items-center gap-1">
-                  <FaGlobe /> Emirate
-                </p>
-                <select
-                  value={form.address.emirate}
-                  onChange={(e) =>
-                    handleChange(["address", "emirate"], e.target.value)
-                  }
-                  className="w-full border p-2 rounded-lg cursor-pointer"
-                >
-                  <option value="">Select Emirate</option>
-                  {emirates.map((e) => (
-                    <option key={e}>{e}</option>
-                  ))}
-                </select>
-              </div>
-            ) : (
-              <Input
-                key={key}
-                label={key}
-                icon={<FaMapMarkerAlt />}
-                value={(form.address as any)[key]}
-                onChange={(e: any) =>
-                  handleChange(["address", key], e.target.value)
-                }
-              />
-            ),
-          )}
+          <Input
+            label="Street"
+            icon={<FaMapMarkerAlt />}
+            value={form.address.street}
+            onChange={(e: any) =>
+              handleChange(["address", "street"], e.target.value)
+            }
+          />
+
+          <Input
+            label="Area"
+            icon={<FaMapMarkerAlt />}
+            value={form.address.area}
+            onChange={(e: any) =>
+              handleChange(["address", "area"], e.target.value)
+            }
+          />
+
+          <Input
+            label="City"
+            icon={<FaMapMarkerAlt />}
+            value={form.address.city}
+            onChange={(e: any) =>
+              handleChange(["address", "city"], e.target.value)
+            }
+          />
+
+          <div className="mb-3">
+            <p className="text-xs text-gray-400 mb-1 flex items-center gap-1">
+              <FaGlobe /> Emirate
+            </p>
+
+            <select
+              value={form.address.emirate}
+              onChange={(e) =>
+                handleChange(["address", "emirate"], e.target.value)
+              }
+              className="w-full border p-2 rounded-lg cursor-pointer"
+            >
+              <option value="">Select Emirate</option>
+
+              {emirates.map((e) => (
+                <option key={e}>{e}</option>
+              ))}
+            </select>
+          </div>
+
+          <Input
+            label="Landmark"
+            icon={<FaMapMarkerAlt />}
+            value={form.address.landmark}
+            onChange={(e: any) =>
+              handleChange(["address", "landmark"], e.target.value)
+            }
+          />
+
+          <Input
+            label="Postal Code"
+            icon={<FaMapMarkerAlt />}
+            value={form.address.postalCode}
+            onChange={(e: any) =>
+              handleChange(["address", "postalCode"], e.target.value)
+            }
+          />
         </div>
 
         {/* BUSINESS */}
@@ -291,6 +339,42 @@ const SellerEditPage = () => {
             onChange={(e: any) =>
               handleChange(
                 ["businessDetails", "bussinessPhone"],
+                e.target.value,
+              )
+            }
+          />
+
+          <Input
+            label="Business WhatsApp"
+            icon={<FaWhatsapp />}
+            value={form.businessDetails.bussinessWhatsapp}
+            onChange={(e: any) =>
+              handleChange(
+                ["businessDetails", "bussinessWhatsapp"],
+                e.target.value,
+              )
+            }
+          />
+
+          <Input
+            label="Business Instagram"
+            icon={<FaInstagram />}
+            value={form.businessDetails.bussinessInstagram}
+            onChange={(e: any) =>
+              handleChange(
+                ["businessDetails", "bussinessInstagram"],
+                e.target.value,
+              )
+            }
+          />
+
+          <Input
+            label="Business Facebook"
+            icon={<FaFacebook />}
+            value={form.businessDetails.bussinessFacebook}
+            onChange={(e: any) =>
+              handleChange(
+                ["businessDetails", "bussinessFacebook"],
                 e.target.value,
               )
             }
@@ -400,10 +484,11 @@ const SellerEditPage = () => {
           <Input
             label="Account Holder"
             icon={<FaUser />}
-            value={form.bankingDetails.accountHolder}
-            onChange={(e: any) =>
-              handleChange(["bankingDetails", "accountHolder"], e.target.value)
-            }
+            value={form.bankingDetails.accountHolderName}
+            readOnly
+            // onChange={(e: any) =>
+            //   handleChange(["bankingDetails", "accountHolder"], e.target.value)
+            // }
           />
           <Input
             label="Account Number"
@@ -426,7 +511,7 @@ const SellerEditPage = () => {
           <Input
             label="IBAN"
             icon={<FaCreditCard />}
-            value={form.bankingDetails.iban}
+            value={form.bankingDetails.IBANnumber}
             readOnly
             // onChange={(e: any) =>
             //   handleChange(["bankingDetails", "iban"], e.target.value)
@@ -451,8 +536,6 @@ const SellerEditPage = () => {
           Save Changes
         </button>
       </div>
-
-      {/* <Toaster containerStyle={{ top: 75 }} position="top-right" /> */}
     </>
   );
 };

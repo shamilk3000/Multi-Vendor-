@@ -11,47 +11,12 @@ import {
   FaCreditCard,
   FaUser,
   FaRegCreditCard,
+  FaWhatsapp,
+  FaFacebook,
+  FaInstagram,
 } from "react-icons/fa";
-
-const seller = {
-  name: "Ayaan Mohammed",
-  phone: "+971 501234567",
-  sellerEmail: "ayaan@example.com",
-
-  address: {
-    flatNoOrVillaNo: "Villa 12",
-    street: "Palm Street",
-    area: "Al Barsha",
-    city: "Dubai",
-    emirate: "Dubai",
-    landmark: "Near Mall",
-    postalCode: "00000",
-  },
-
-  businessDetails: {
-    bussinessName: "Ayaan Traders",
-    businessEmail: "business@ayaan.com",
-    bussinessPhone: "+971 502223334",
-
-    businessAddress: {
-      flatNoOrVillaNo: "Shop 5",
-      street: "Market Road",
-      area: "Deira",
-      city: "Dubai",
-      emirate: "Dubai",
-      landmark: "Near Gold Souk",
-      postalCode: "11111",
-    },
-  },
-
-  bankingDetails: {
-    accountHolder: "Ayaan Mohammed",
-    accountNumber: "123456789012",
-    bankName: "Emirates NBD",
-    iban: "AE070331234567890123456",
-    stripeAccountId: "acct_123456789",
-  },
-};
+import { useSellerProfile } from "../../../hooks/seller/profile/useProfile";
+import SellerProfileSkeleton from "@/seller/components/skeletons/profileSkeleton";
 
 const Row = ({ icon, label, value }: any) => (
   <div className="flex items-start gap-3 text-sm py-1">
@@ -64,6 +29,10 @@ const Row = ({ icon, label, value }: any) => (
 );
 const SellerFullProfile = () => {
   const navigate = useNavigate();
+  const { data: seller, isLoading } = useSellerProfile();
+
+  if (isLoading) return <SellerProfileSkeleton />;
+
   return (
     <>
       <div className=" flex justify-center">
@@ -94,11 +63,7 @@ const SellerFullProfile = () => {
               label="Phone"
               value={seller.phone}
             />
-            <Row
-              icon={<FaEnvelope />}
-              label="Email"
-              value={seller.sellerEmail}
-            />
+            <Row icon={<FaEnvelope />} label="Email" value={seller.email} />
           </div>
 
           {/* ADDRESS */}
@@ -143,15 +108,62 @@ const SellerFullProfile = () => {
               label="Business Name"
               value={seller.businessDetails.bussinessName}
             />
+
             <Row
               icon={<FaEnvelope />}
               label="Business Email"
               value={seller.businessDetails.businessEmail}
             />
+
             <Row
-              icon={<FaPhone className="rotate-90 " />}
+              icon={<FaPhone className="rotate-90" />}
               label="Business Phone"
               value={seller.businessDetails.bussinessPhone}
+            />
+
+            <Row
+              icon={<FaInstagram />}
+              label="Instagram"
+              value={
+                <a
+                  href={`https://${seller.businessDetails.bussinessInstagram}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-pink-500 hover:underline font-medium text-sm"
+                >
+                  Open Instagram
+                </a>
+              }
+            />
+
+            <Row
+              icon={<FaFacebook />}
+              label="Facebook"
+              value={
+                <a
+                  href={`https://${seller.businessDetails.bussinessFacebook}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline font-medium text-sm"
+                >
+                  Open Facebook
+                </a>
+              }
+            />
+
+            <Row
+              icon={<FaWhatsapp />}
+              label="WhatsApp"
+              value={
+                <a
+                  href={`${seller.businessDetails.bussinessWhatsapp}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-500 hover:underline font-medium text-sm"
+                >
+                  Chat on WhatsApp
+                </a>
+              }
             />
 
             <div className="mt-4 border-t pt-3">
@@ -202,7 +214,7 @@ const SellerFullProfile = () => {
             <Row
               icon={<FaUserTie />}
               label="Account Holder"
-              value={seller.bankingDetails.accountHolder}
+              value={seller.bankingDetails.accountHolderName}
             />
             <Row
               icon={<FaCreditCard />}
@@ -217,7 +229,7 @@ const SellerFullProfile = () => {
             <Row
               icon={<FaCreditCard />}
               label="IBAN"
-              value={seller.bankingDetails.iban}
+              value={seller.bankingDetails.IBANnumber}
             />
             <Row
               icon={<FaRegCreditCard />}
@@ -230,8 +242,14 @@ const SellerFullProfile = () => {
           <div className="border rounded-xl p-5 mt-5 bg-white hover:shadow-2xl">
             <h2 className="font-semibold mb-1">Documents</h2>
 
-            <p className="text-sm text-gray-500">Personal Image: Uploaded</p>
-            <p className="text-sm text-gray-500">ID Proofs: 2 files uploaded</p>
+            <p className="text-sm text-gray-500">
+              Personal Image:{" "}
+              {seller.personalImage ? "Uploaded" : "Not Uploaded"}
+            </p>
+
+            <p className="text-sm text-gray-500">
+              ID Proofs: {seller.idProof?.length || 0} files uploaded
+            </p>
           </div>
           <button
             onClick={() => navigate("/seller/edit-profile")}

@@ -91,13 +91,9 @@ const sellerSchema = new mongoose.Schema(
     accountStatus: {
       type: String,
       enum: [
-        // AccountStatus.PENDING_VERIFICATION,
         AccountStatus.PENDING_PAYMENT,
         AccountStatus.ACTIVE,
         AccountStatus.SUSPENDED,
-        // AccountStatus.DEACTIVATED,
-        // AccountStatus.BANNED,
-        // AccountStatus.CLOSED,
       ],
       default: AccountStatus.PENDING_PAYMENT,
     },
