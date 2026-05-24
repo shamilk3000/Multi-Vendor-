@@ -311,7 +311,7 @@ const OTPVerification: React.FC = () => {
           </form>
         </motion.div>
       </div>
-      <Footer />
+      <Footer  sellerId={sellerId!} />
     </div>
   );
 };

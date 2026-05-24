@@ -95,7 +95,7 @@ function ShopPage() {
         filters={filters}
       />
 
-      <Footer />
+       <Footer  sellerId={sellerId!} />
     </div>
   );
 }

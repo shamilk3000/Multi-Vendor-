@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import {
   FaBox,
   FaBoxOpen,
@@ -7,6 +7,7 @@ import {
   FaRegCalendarAlt,
   FaShippingFast,
   FaTimes,
+  FaSearch,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +20,8 @@ const Orders: React.FC = () => {
   const { data: orderdetails, isLoading } = useAllOrderForUser();
   const { sellerId, shopName } = useParams();
   const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
+
+  const [search, setSearch] = useState("");
 
   const statusColor = (status: string) => {
     switch (status) {
@@ -36,6 +39,7 @@ const Orders: React.FC = () => {
         return "bg-red-100 text-red-600 border-red-300";
     }
   };
+
   const statusIcon = (status: string) => {
     switch (status) {
       case "Delivered":
@@ -53,15 +57,43 @@ const Orders: React.FC = () => {
     }
   };
 
-  const sortedOrders = [...(orderdetails?.orders || [])].sort(
-    (a: any, b: any) =>
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
+  const sortedOrders = useMemo(() => {
+    const orders = [...(orderdetails?.orders || [])].sort(
+      (a: any, b: any) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+
+    if (!search.trim()) return orders;
+
+    return orders.filter((order: any) => {
+      const formattedDate = new Date(order.createdAt).toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+
+      const matchOrderId = order.orderId
+        ?.toLowerCase()
+        .includes(search.toLowerCase());
+
+      const matchDate = formattedDate
+        .toLowerCase()
+        .includes(search.toLowerCase());
+
+      const matchProduct = order.orderItems.some((product: any) =>
+        product.product.name?.toLowerCase().includes(search.toLowerCase()),
+      );
+
+      return matchOrderId || matchDate || matchProduct;
+    });
+  }, [orderdetails, search]);
 
   return (
     <div className="min-h-screen bg-gray-100 md:p-6 p-3">
       {/* Title */}
-
       <motion.h1
         className="text-2xl font-semibold mb-6 flex items-center gap-2 ms-13 mt-2 md:mt-0 md:ms-0
              group hover:animate-[wave_0.5s_ease-in-out]"
@@ -74,156 +106,192 @@ const Orders: React.FC = () => {
         {isLoading ? (
           <OrdersSkeleton />
         ) : sortedOrders.length === 0 ? (
-          <div className="flex flex-col items-center justify-center border border-dashed border-gray-400 rounded-xl p-8 bg-white text-center">
-            {/* ICON */}
-            <div className="bg-gray-100 p-4 rounded-full ">
-              <FaBox className="text-2xl text-gray-600" />
+          <>
+            {/* Search */}
+            <div className="relative transition-all duration-300 hover:scale-[1.01] w-full md:flex-1">
+              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-700" />
+
+              <input
+                type="text"
+                placeholder="Search by order, name, email, product, date..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className=" focus:ring-2 focus:ring-black border border-gray-500  pl-10 pr-3 py-2 rounded-lg text-sm w-full "
+              />
             </div>
+            <div className="flex flex-col items-center justify-center border border-dashed border-gray-400 rounded-xl p-8 bg-white text-center">
+              {/* ICON */}
 
-            {/* TITLE */}
-            <h2 className="text-lg font-semibold mb-1">No Orders Yet</h2>
+              <div className="bg-gray-100 p-4 rounded-full ">
+                <FaBox className="text-2xl text-gray-600" />
+              </div>
 
-            {/* SUBTEXT */}
-            <p className="text-sm text-gray-700 ">
-              Your order list is feeling lonely.
-            </p>
-            <p className="text-sm text-gray-700 ">
-              Discover amazing products and place your first order today!
-            </p>
-          </div>
+              {/* TITLE */}
+              <h2 className="text-lg font-semibold mb-1">No Orders Yet</h2>
+
+              {/* SUBTEXT */}
+              <p className="text-sm text-gray-700 ">
+                Your order list is feeling lonely.
+              </p>
+              <p className="text-sm text-gray-700 ">
+                Discover amazing products and place your first order today!
+              </p>
+            </div>
+          </>
         ) : (
-          sortedOrders.map((order) => {
-            return (
-              <motion.div
-                key={order._id}
-                onClick={() =>
-                  navigate(
-                    `/${sellerId}/${shopName}/dashboard/orders/${order._id}`,
-                  )
-                }
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{ scale: 1.02 }}
-                className="bg-white rounded-xl shadow-sm p-5 hover:shadow-lg transition cursor-pointer group"
-              >
-                {/* Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1 text-black">
-                      <FaBox
-                        size={15}
-                        className="group-hover:animate-[wave_0.5s_ease-in-out]"
-                        style={{ animationDelay: "0ms" }}
-                      />
-                      <p
-                        className="font-semibold text-sm group-hover:animate-[wave_0.5s_ease-in-out]"
-                        style={{ animationDelay: "80ms" }}
-                      >
-                        Order {order.orderId}
-                      </p>
-                    </div>
+          <>
+            {/* Search */}
+            <div className="relative transition-all duration-300 hover:scale-[1.01] w-full md:flex-1">
+              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-700" />
 
-                    <div className="flex items-center gap-2 text-black">
-                      <FaRegCalendarAlt
-                        size={15}
-                        className="group-hover:animate-[wave_0.5s_ease-in-out]"
-                        style={{ animationDelay: "140ms" }}
-                      />
-                      <p
-                        className="text-xs font-medium group-hover:animate-[wave_0.5s_ease-in-out]"
-                        style={{ animationDelay: "200ms" }}
-                      >
-                        {new Date(order.createdAt).toLocaleString("en-GB", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: true,
-                        })}
-                      </p>
-                    </div>
-                  </div>
-
-                  <span
-                    className={`px-2 py-0.5 text-sm rounded-full font-semibold flex items-center gap-1.5 text-[12.5px] border ${statusColor(
-                      order.orderStatus,
-                    )} group-hover:animate-[wave_0.5s_ease-in-out]`}
-                    style={{ animationDelay: "260ms" }}
-                  >
-                    {statusIcon(order.orderStatus)}
-                    {order.orderStatus}
-                  </span>
-                </div>
-
-                {/* Products */}
-                <div className="border-t pt-3 space-y-3">
-                  {order.orderItems.map((product: any, i: number) => (
-                    <motion.div
-                      key={product.product._id}
-                      className="flex items-center justify-between bg-gray-100 border-gray-200 p-3 rounded-lg border"
-                    >
-                      <div className="flex items-center gap-3">
-                        <motion.img
-                          whileHover={{ scale: 1.1 }}
-                          src={`${BASE_URL}${product.product.image[0]}`}
-                          alt={product.product.name}
-                          className="w-14 h-14 rounded-md object-cover
-              group-hover:animate-[wave_0.5s_ease-in-out]"
-                          style={{ animationDelay: `${i * 120}ms` }}
+              <input
+                type="text"
+                placeholder="Search by order, name, email, product, date..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className=" focus:ring-2 focus:ring-black border border-gray-500  pl-10 pr-3 py-2 rounded-lg text-sm w-full "
+              />
+            </div>
+            {sortedOrders.map((order: any) => {
+              return (
+                <motion.div
+                  key={order._id}
+                  onClick={() =>
+                    navigate(
+                      `/${sellerId}/${shopName}/dashboard/orders/${order._id}`,
+                    )
+                  }
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-white rounded-xl shadow-sm p-5 hover:shadow-lg transition cursor-pointer group"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1 text-black">
+                        <FaBox
+                          size={15}
+                          className="group-hover:animate-[wave_0.5s_ease-in-out]"
+                          style={{ animationDelay: "0ms" }}
                         />
 
-                        <div>
-                          <p
-                            className="font-medium text-sm group-hover:animate-[wave_0.5s_ease-in-out]"
-                            style={{ animationDelay: `${i * 140}ms` }}
-                          >
-                            {product.product.name}
-                          </p>
-                          <p className="font-medium text-green-500 text-xs group-hover:animate-[wave_0.5s_ease-in-out]"
-                            style={{ animationDelay: `${i * 160}ms` }} >
-                            {product.product.sellingPrice}
-                          </p>
-                          <p
-                            className="text-xs text-gray-500 group-hover:animate-[wave_0.5s_ease-in-out]"
-                            style={{ animationDelay: `${i * 180}ms` }}
-                          >
-                            Qty: {product.quantity}
-                          </p>
-                        </div>
+                        <p
+                          className="font-semibold text-sm group-hover:animate-[wave_0.5s_ease-in-out]"
+                          style={{ animationDelay: "80ms" }}
+                        >
+                          Order {order.orderId}
+                        </p>
                       </div>
 
-                      <div
-                        className="font-semibold text-gray-700 text-sm group-hover:animate-[wave_0.5s_ease-in-out]"
-                        style={{ animationDelay: `${i * 200}ms` }}
+                      <div className="flex items-center gap-2 text-black">
+                        <FaRegCalendarAlt
+                          size={15}
+                          className="group-hover:animate-[wave_0.5s_ease-in-out]"
+                          style={{ animationDelay: "140ms" }}
+                        />
+
+                        <p
+                          className="text-xs font-medium group-hover:animate-[wave_0.5s_ease-in-out]"
+                          style={{ animationDelay: "200ms" }}
+                        >
+                          {new Date(order.createdAt).toLocaleString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          })}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span
+                      className={`px-2 py-0.5 text-sm rounded-full font-semibold flex items-center gap-1.5 text-[12.5px] border ${statusColor(
+                        order.orderStatus,
+                      )} group-hover:animate-[wave_0.5s_ease-in-out]`}
+                      style={{ animationDelay: "260ms" }}
+                    >
+                      {statusIcon(order.orderStatus)}
+                      {order.orderStatus}
+                    </span>
+                  </div>
+
+                  {/* Products */}
+                  <div className="border-t pt-3 space-y-3">
+                    {order.orderItems.map((product: any, i: number) => (
+                      <motion.div
+                        key={product.product._id}
+                        className="flex items-center justify-between bg-gray-100 border-gray-200 p-3 rounded-lg border"
                       >
-                        ${product.totalSellingPrice}
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
+                        <div className="flex items-center gap-3">
+                          <motion.img
+                            whileHover={{ scale: 1.1 }}
+                            src={`${BASE_URL}${product.product.image[0]}`}
+                            alt={product.product.name}
+                            className="w-14 h-14 rounded-md object-cover
+              group-hover:animate-[wave_0.5s_ease-in-out]"
+                            style={{ animationDelay: `${i * 120}ms` }}
+                          />
 
-                {/* Total */}
-                <div className="border-t mt-3 pt-3 flex justify-between text-sm">
-                  <span
-                    className="text-gray-500 group-hover:animate-[wave_0.5s_ease-in-out]"
-                    style={{ animationDelay: "100ms" }}
-                  >
-                    {order.totalItems} items
-                  </span>
+                          <div>
+                            <p
+                              className="font-medium text-sm group-hover:animate-[wave_0.5s_ease-in-out]"
+                              style={{ animationDelay: `${i * 140}ms` }}
+                            >
+                              {product.product.name}
+                            </p>
 
-                  <span
-                    className="font-semibold text-black group-hover:animate-[wave_0.5s_ease-in-out]"
-                    style={{ animationDelay: "160ms" }}
-                  >
-                    Total: ${order.totalSellingPrice}
-                  </span>
-                </div>
-              </motion.div>
-            );
-          })
+                            <p
+                              className="font-medium text-green-500 text-xs group-hover:animate-[wave_0.5s_ease-in-out]"
+                              style={{ animationDelay: `${i * 160}ms` }}
+                            >
+                              {product.product.sellingPrice}
+                            </p>
+
+                            <p
+                              className="text-xs text-gray-500 group-hover:animate-[wave_0.5s_ease-in-out]"
+                              style={{ animationDelay: `${i * 180}ms` }}
+                            >
+                              Qty: {product.quantity}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div
+                          className="font-semibold text-gray-700 text-sm group-hover:animate-[wave_0.5s_ease-in-out]"
+                          style={{ animationDelay: `${i * 200}ms` }}
+                        >
+                          ${product.totalSellingPrice}
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Total */}
+                  <div className="border-t mt-3 pt-3 flex justify-between text-sm">
+                    <span
+                      className="text-gray-500 group-hover:animate-[wave_0.5s_ease-in-out]"
+                      style={{ animationDelay: "100ms" }}
+                    >
+                      {order.totalItems} items
+                    </span>
+
+                    <span
+                      className="font-semibold text-black group-hover:animate-[wave_0.5s_ease-in-out]"
+                      style={{ animationDelay: "160ms" }}
+                    >
+                      Total: ${order.totalSellingPrice}
+                    </span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </>
         )}
       </div>
+
       {/* Wave animation */}
       <style>
         {`

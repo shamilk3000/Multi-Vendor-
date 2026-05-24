@@ -78,7 +78,7 @@ if (isLoading) {
           <Reviews productId={product._id} />
         </div>
       </div>
-      <Footer />
+      <Footer  sellerId={sellerId!} />
     </div>
   );
 };

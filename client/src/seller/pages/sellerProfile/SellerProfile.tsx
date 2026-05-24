@@ -38,7 +38,7 @@ const SellerFullProfile = () => {
       <div className=" flex justify-center">
         <div className="w-full border rounded-2xl shadow-md p-6 md:p-10">
           {/* Header */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-4">
             <div className="w-20 h-20 bg-black text-white rounded-full flex items-center justify-center text-2xl mx-auto">
               {seller.name.charAt(0)}
             </div>

@@ -79,7 +79,7 @@ const ProductGrid: React.FC<{
   return (
     <section
       className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 
-  grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6"
+  grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-3"
     >
       {paginatedProducts.map((product) => {
         const index = imageIndex[product._id] ?? 0;

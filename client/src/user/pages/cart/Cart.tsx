@@ -308,7 +308,7 @@ const Cart: React.FC = () => {
           </motion.div>
         </div>
       </div>
-      <Footer />
+      <Footer  sellerId={sellerId!} />
     </div>
   );
 };

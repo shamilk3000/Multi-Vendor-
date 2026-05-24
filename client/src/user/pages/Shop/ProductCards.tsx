@@ -79,7 +79,8 @@ const ProductGrid: React.FC<{
     img.startsWith("http") ? img : `${BASE_URL}${img}`;
 
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+    <section className="md:min-h-[300px] min-h-[400px] ">
+    <div className="mx-auto max-w-7xl px-4 lg:px-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-3">
       {paginatedProducts.map((product) => {
         const index = imageIndex[product._id] ?? 0;
 
@@ -145,6 +146,7 @@ const ProductGrid: React.FC<{
           </div>
         );
       })}
+      </div>
     </section>
   );
 };
@@ -234,7 +236,7 @@ const ProductCardsWithPagination: React.FC<{
     <>
       {/* EMPTY STATE */}
       {!isLoading && sortedProducts.length === 0 ? (
-        <div className="min-h-[300px] flex flex-col items-center justify-center text-center">
+        <div className="md:min-h-[300px] min-h-[500px] flex flex-col items-center justify-center text-center">
           <h2 className="text-xl font-semibold">No products found 😕</h2>
           <p className="text-sm text-gray-500">
             Try changing filters or search

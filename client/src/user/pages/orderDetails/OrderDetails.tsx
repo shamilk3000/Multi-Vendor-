@@ -488,7 +488,7 @@ console.log(orderdetails);
 
             {/* IMAGES */}
             <div className="grid grid-cols-2 gap-3 mb-4">
-                {selectedProduct.customImages.map((img, i) => (
+                {selectedProduct.customImages?.map((img, i) => (
                   <div
                     key={i}
                     className="relative group overflow-hidden rounded-lg border"

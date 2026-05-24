@@ -141,192 +141,211 @@ const CategoryList = () => {
         <AddCategoryModal onAdd={handleAdd} />
       </div>
 
-      {/* SEARCH */}
-      <div className="relative mb-6 transition-all duration-300 hover:scale-[1.01]">
-        <FaSearch className="absolute left-3 top-3 text-gray-700" />
-        <input
-          placeholder="Search category..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full  rounded-lg pl-9 p-2 text-sm focus:ring-2 focus:ring-black border border-gray-500 "
-        />
-      </div>
-
       {/* LIST */}
       <div className="flex flex-col gap-4">
         {isLoading ? (
           <CategoryPageSkeleton />
         ) : parents.length === 0 ? (
-          <div className="flex flex-col items-center justify-center border border-dashed border-gray-400 rounded-xl p-8 bg-white text-center">
-            {/* ICON */}
-            <div className="bg-gray-100 p-4 rounded-full mb-4">
-              <FaLayerGroup className="text-2xl text-gray-600" />
+          <>
+            {/* SEARCH */}
+            <div className="relative mb-2 transition-all duration-300 hover:scale-[1.01]">
+              <FaSearch className="absolute left-3 top-3 text-gray-700" />
+              <input
+                placeholder="Search category..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full  rounded-lg pl-9 p-2 text-sm focus:ring-2 focus:ring-black border border-gray-500 "
+              />
             </div>
+            <div className="flex flex-col items-center justify-center border border-dashed border-gray-400 rounded-xl p-8 bg-white text-center">
+              {/* ICON */}
+              <div className="bg-gray-100 p-4 rounded-full mb-4">
+                <FaLayerGroup className="text-2xl text-gray-600" />
+              </div>
 
-            {/* TITLE */}
-            <h2 className="text-lg font-semibold mb-1">No Categories Found</h2>
+              {/* TITLE */}
+              <h2 className="text-lg font-semibold mb-1">
+                No Categories Found
+              </h2>
 
-            {/* SUBTEXT */}
-            <p className="text-sm text-gray-500 mb-4">
-              Looks like you haven’t added any categories yet.
-            </p>
+              {/* SUBTEXT */}
+              <p className="text-sm text-gray-500 mb-4">
+                Looks like you haven’t added any categories yet.
+              </p>
 
-            {/* BUTTON */}
-            <AddCategoryModal onAdd={handleAdd} />
-          </div>
+              {/* BUTTON */}
+              <AddCategoryModal onAdd={handleAdd} />
+            </div>
+          </>
         ) : (
-          parents.map((parent: Category) => {
-            return (
-              <motion.div
-                key={parent._id}
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={!modalOpen ? { scale: 1.02 } : {}}
-                className={`border rounded-xl p-4  hover:shadow-lg ${
-                  parent.isActive
-                    ? "bg-white border-gray-300"
-                    : "bg-red-100 border-red-400 opacity-90"
-                }`}
-              >
-                <div className="group">
-                  {/* PARENT */}
-                  <div className="flex justify-between items-center">
-                    <div>
-                      {/* TITLE */}
-                      <div className="flex items-start gap-3">
-                        <FaFolderOpen
-                          className="text-lg mt-1 shrink-0 group-hover:animate-[wave_0.5s_ease-in-out]"
-                          style={{ animationDelay: "0ms" }}
-                        />
-
-                        <h2
-                          className="font-semibold text-lg flex items-center gap-1 group-hover:animate-[wave_0.5s_ease-in-out]"
-                          style={{ animationDelay: "80ms" }}
-                        >
-                          {parent.name}
-                          {!parent.isActive && (
-                            <span className="text-xs text-red-500">
-                              (Deleted)
-                            </span>
-                          )}
-                        </h2>
-                      </div>
-
-                      {/* META */}
-                      <p
-                        className="text-xs text-gray-500 md:whitespace-nowrap group-hover:animate-[wave_0.5s_ease-in-out]"
-                        style={{ animationDelay: "140ms" }}
-                      >
-                        <span>{parent.childrenCount} subcategories</span>
-                        <span className="block md:inline">
-                          <span className="hidden md:inline"> • </span>
-                          {parent.totalProductCount} products
-                        </span>
-                      </p>
-                    </div>
-
-                    {/* ACTIONS */}
-                    <div
-                      className="flex flex-nowrap gap-2  "
-                      style={{ animationDelay: "200ms" }}
-                    >
-                      {parent.isActive ? (
-                        <>
-                          <EditCategoryModal
-                            category={parent}
-                            setGlobalModalOpen={setModalOpen}
+          <>
+            {/* SEARCH */}
+            <div className="relative mb-2 transition-all duration-300 hover:scale-[1.01]">
+              <FaSearch className="absolute left-3 top-3 text-gray-700" />
+              <input
+                placeholder="Search category..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full  rounded-lg pl-9 p-2 text-sm focus:ring-2 focus:ring-black border border-gray-500 "
+              />
+            </div>
+            {parents.map((parent: Category) => {
+              return (
+                <motion.div
+                  key={parent._id}
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={!modalOpen ? { scale: 1.02 } : {}}
+                  className={`border rounded-xl p-4  hover:shadow-lg ${
+                    parent.isActive
+                      ? "bg-white border-gray-300"
+                      : "bg-red-100 border-red-400 opacity-90"
+                  }`}
+                >
+                  <div className="group">
+                    {/* PARENT */}
+                    <div className="flex justify-between items-center">
+                      <div>
+                        {/* TITLE */}
+                        <div className="flex items-start gap-3">
+                          <FaFolderOpen
+                            className="text-lg mt-1 shrink-0 group-hover:animate-[wave_0.5s_ease-in-out]"
+                            style={{ animationDelay: "0ms" }}
                           />
 
-                          <button
-                            onClick={() => handleDelete(parent._id)}
-                            className={`${btn} bg-red-500 text-white cursor-pointer`}
+                          <h2
+                            className="font-semibold text-lg flex items-center gap-1 group-hover:animate-[wave_0.5s_ease-in-out]"
+                            style={{ animationDelay: "80ms" }}
                           >
-                            <FaTrash /> Delete
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          onClick={() => handleRestore(parent._id)}
-                          className={`${btn} bg-green-700 text-white cursor-pointer`}
-                        >
-                          <FaUndo /> Restore
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* SUB */}
-                  <div className="flex flex-col gap-2 mt-3">
-                    {parent.children?.map((sub, i) => {
-                      return (
-                        <div
-                          key={sub._id}
-                          className={`flex justify-between items-center border p-2 rounded-lg ${
-                            sub.isActive
-                              ? "bg-gray-100 border-gray-300"
-                              : "bg-red-100 border-red-400 opacity-70"
-                          }`}
-                        >
-                          {/* LEFT */}
-                          <div>
-                            <div className="flex items-center gap-3">
-                              <FaFolder
-                                className="group-hover:animate-[wave_0.5s_ease-in-out]"
-                                style={{ animationDelay: `${i * 80 + 260}ms` }}
-                              />
-
-                              <span
-                                className="text-sm group-hover:animate-[wave_0.5s_ease-in-out]"
-                                style={{ animationDelay: `${i * 80 + 320}ms` }}
-                              >
-                                {sub.name}
+                            {parent.name}
+                            {!parent.isActive && (
+                              <span className="text-xs text-red-500">
+                                (Deleted)
                               </span>
-                            </div>
+                            )}
+                          </h2>
+                        </div>
 
-                            <p
-                              className="text-xs text-gray-500 group-hover:animate-[wave_0.5s_ease-in-out]"
-                              style={{ animationDelay: `${i * 80 + 380}ms` }}
+                        {/* META */}
+                        <p
+                          className="text-xs text-gray-500 md:whitespace-nowrap group-hover:animate-[wave_0.5s_ease-in-out]"
+                          style={{ animationDelay: "140ms" }}
+                        >
+                          <span>{parent.childrenCount} subcategories</span>
+                          <span className="block md:inline">
+                            <span className="hidden md:inline"> • </span>
+                            {parent.totalProductCount} products
+                          </span>
+                        </p>
+                      </div>
+
+                      {/* ACTIONS */}
+                      <div
+                        className="flex flex-nowrap gap-2  "
+                        style={{ animationDelay: "200ms" }}
+                      >
+                        {parent.isActive ? (
+                          <>
+                            <EditCategoryModal
+                              category={parent}
+                              setGlobalModalOpen={setModalOpen}
+                            />
+
+                            <button
+                              onClick={() => handleDelete(parent._id)}
+                              className={`${btn} bg-red-500 text-white cursor-pointer`}
                             >
-                              {sub.productCount} products
-                            </p>
-                          </div>
-
-                          {/* RIGHT */}
-                          <div
-                            className="flex flex-nowrap gap-2 "
-                            style={{ animationDelay: `${i * 80 + 440}ms` }}
+                              <FaTrash /> Delete
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={() => handleRestore(parent._id)}
+                            className={`${btn} bg-green-700 text-white cursor-pointer`}
                           >
-                            {sub.isActive ? (
-                              <>
-                                <EditCategoryModal
-                                  category={sub}
-                                  setGlobalModalOpen={setModalOpen}
+                            <FaUndo /> Restore
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* SUB */}
+                    <div className="flex flex-col gap-2 mt-3">
+                      {parent.children?.map((sub, i) => {
+                        return (
+                          <div
+                            key={sub._id}
+                            className={`flex justify-between items-center border p-2 rounded-lg ${
+                              sub.isActive
+                                ? "bg-gray-100 border-gray-300"
+                                : "bg-red-100 border-red-400 opacity-70"
+                            }`}
+                          >
+                            {/* LEFT */}
+                            <div>
+                              <div className="flex items-center gap-3">
+                                <FaFolder
+                                  className="group-hover:animate-[wave_0.5s_ease-in-out]"
+                                  style={{
+                                    animationDelay: `${i * 80 + 260}ms`,
+                                  }}
                                 />
 
-                                <button
-                                  onClick={() => handleDelete(sub._id)}
-                                  className={`${btn} bg-red-500 text-white cursor-pointer`}
+                                <span
+                                  className="text-sm group-hover:animate-[wave_0.5s_ease-in-out]"
+                                  style={{
+                                    animationDelay: `${i * 80 + 320}ms`,
+                                  }}
                                 >
-                                  <FaTrash /> Delete
-                                </button>
-                              </>
-                            ) : (
-                              <button
-                                onClick={() => handleRestore(sub._id)}
-                                className={`${btn} bg-green-700 text-white cursor-pointer`}
+                                  {sub.name}
+                                </span>
+                              </div>
+
+                              <p
+                                className="text-xs text-gray-500 group-hover:animate-[wave_0.5s_ease-in-out]"
+                                style={{ animationDelay: `${i * 80 + 380}ms` }}
                               >
-                                <FaUndo /> Restore
-                              </button>
-                            )}
+                                {sub.productCount} products
+                              </p>
+                            </div>
+
+                            {/* RIGHT */}
+                            <div
+                              className="flex flex-nowrap gap-2 "
+                              style={{ animationDelay: `${i * 80 + 440}ms` }}
+                            >
+                              {sub.isActive ? (
+                                <>
+                                  <EditCategoryModal
+                                    category={sub}
+                                    setGlobalModalOpen={setModalOpen}
+                                  />
+
+                                  <button
+                                    onClick={() => handleDelete(sub._id)}
+                                    className={`${btn} bg-red-500 text-white cursor-pointer`}
+                                  >
+                                    <FaTrash /> Delete
+                                  </button>
+                                </>
+                              ) : (
+                                <button
+                                  onClick={() => handleRestore(sub._id)}
+                                  className={`${btn} bg-green-700 text-white cursor-pointer`}
+                                >
+                                  <FaUndo /> Restore
+                                </button>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            );
-          })
+                </motion.div>
+              );
+            })}
+          </>
         )}
       </div>
 

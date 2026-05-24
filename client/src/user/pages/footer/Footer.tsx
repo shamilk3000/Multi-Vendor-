@@ -1,10 +1,17 @@
 // import React from "react";
+import FooterSkeleton from "@/user/components/skeletons/footer";
+import { useUserFooter } from "../../../hooks/user/profile/useProfile";
+type FooterProps = {
+  sellerId: string;
+};
 
-const Footer = () => {
+const Footer = ({ sellerId }: FooterProps) => {
+  const { data: footerData, isLoading } = useUserFooter(sellerId);
+  if (isLoading) return <FooterSkeleton />;
   return (
     <footer className="bg-black text-white py-8 overflow-hidden">
       {/* Navigation */}
-      <nav className="flex justify-center flex-wrap gap-6 font-medium mb-12">
+      {/* <nav className="flex justify-center flex-wrap gap-6 font-medium mb-12">
         {["Home", "About", "Services", "Contact"].map((item) => (
           <a
             key={item}
@@ -15,19 +22,51 @@ const Footer = () => {
             <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-white group-hover:w-full transition-all duration-300" />
           </a>
         ))}
-      </nav>
+      </nav> */}
 
       {/* Social Icons */}
       <div className="flex justify-center gap-6 mb-12">
         {[
-          { name: "Instagram", icon: "instagram-new" },
-          { name: "Phone", icon: "phone" },
-          { name: "WhatsApp", icon: "whatsapp" },
-          { name: "Facebook", icon: "facebook-new" },
-          //   { name: 'LinkedIn', icon: 'linkedin' },
+          {
+            name: "Instagram",
+            icon: "instagram-new",
+            link: footerData.footerData.bussinessInstagram,
+          },
+          {
+            name: "Phone",
+            icon: "phone",
+            link: `tel:${footerData.footerData.businessPhone}`,
+          },
+          {
+            name: "WhatsApp",
+            icon: "whatsapp",
+            link: footerData.footerData.businessWhatsapp,
+          },
+          {
+            name: "Facebook",
+            icon: "facebook-new",
+            link: footerData.footerData.bussinessFacebook,
+          },
         ].map((social, i) => (
           <button
             key={social.name}
+            onClick={() => {
+  if (!social.link) return;
+
+  // PHONE
+  if (social.link.startsWith("tel:")) {
+    window.location.href = social.link;
+    return;
+  }
+
+  // NORMAL LINKS
+  window.open(
+    social.link.startsWith("http")
+      ? social.link
+      : `https://${social.link}`,
+    "_blank",
+  );
+}}
             className="relative group"
             style={{ animationDelay: `${i * 0.15}s` }}
           >
@@ -37,19 +76,19 @@ const Footer = () => {
             {/* Icon Container */}
             <div
               className="
-                w-12 h-12
-                flex items-center justify-center
-                rounded-full
-                bg-white text-black
-                border border-white
-                transition-all duration-300
-                animate-float
+        w-12 h-12
+        flex items-center justify-center
+        rounded-full
+        bg-white text-black
+        border border-white
+        transition-all duration-300
+        animate-float
 
-                group-hover:bg-black
-                group-hover:rotate-12
-                group-hover:shadow-[0_0_20px_rgba(255,255,255,0.8)]
-                group-hover:scale-110
-              "
+        group-hover:bg-black
+        group-hover:rotate-12
+        group-hover:shadow-[0_0_20px_rgba(255,255,255,0.8)]
+        group-hover:scale-110
+      "
             >
               <img
                 src={`https://img.icons8.com/ios-filled/24/000000/${social.icon}.png`}
@@ -62,9 +101,7 @@ const Footer = () => {
       </div>
 
       {/* Copyright */}
-      <p className="text-center text-gray-400 text-sm">
-        © 2025 Company Ltd. All rights reserved.
-      </p>
+      <p className="text-center text-gray-400 text-sm">© Started in 2026.</p>
 
       {/* Animations */}
       <style>

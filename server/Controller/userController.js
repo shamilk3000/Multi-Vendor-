@@ -1,6 +1,7 @@
 const userService = require("../Service/userService");
 const Address = require("../Models/addressModel");
 const User = require("../Models/userModel");
+const Seller = require("../Models/sellerModel");
 
 const googleAuthController = async (req, res) => {
   try {
@@ -147,6 +148,26 @@ const userProfile = await User.findById(user._id).populate("address");
     return res.status(200).json({ userProfile });
   } catch (error) {
     console.error("getUserProfile Controller Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getUserFooter = async (req, res) => {
+  try { 
+    const sellerId = req.params.sellerId;
+    const seller = await Seller.findById(sellerId)
+    if (!seller) {
+      return res.status(404).json({ message: "Seller not found" });
+    }
+    const footerData = {
+      bussinessInstagram: seller.businessDetails?.bussinessInstagram || "instagram.com",
+      businessPhone: seller.businessDetails?.bussinessPhone || "",
+      businessWhatsapp: seller.businessDetails?.bussinessWhatsapp || "whatsapp.com",
+      bussinessFacebook: seller.businessDetails?.bussinessFacebook || "facebook.com",
+    };
+    return res.status(200).json({ footerData });
+  } catch (error) {
+    console.error("getUserFooter Controller Error:", error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -307,5 +328,6 @@ module.exports = {
   getAllUsers,
   updateUserStatus,
   getUserAddress,
+  getUserFooter,
   logout,
 };

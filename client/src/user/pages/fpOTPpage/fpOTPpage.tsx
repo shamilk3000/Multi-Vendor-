@@ -308,7 +308,7 @@ const OTPVerification: React.FC = () => {
       </div>
       {/* <Toaster containerStyle={{ top: 75 }} position="top-right" /> */}
 
-      <Footer />
+     <Footer  sellerId={sellerId!} />
     </div>
   );
 };

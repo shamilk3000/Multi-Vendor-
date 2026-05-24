@@ -22,7 +22,7 @@ function Home() {
         <ProductList  sellerId={sellerId!}  shopName={shopName!}/>
       </section>
       <section>
-        <Footer />
+        <Footer  sellerId={sellerId!} />
       </section>
     </div>
   );

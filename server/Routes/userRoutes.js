@@ -18,6 +18,7 @@ router.post("/:sellerId/:shopName/user-reset-password", userController.userReset
 router.post("/user-reset-password-slider",userAuth, userController.userResetPasswordSlider);                                          //using
 
 router.get("/get-user-profile", userAuth, userController.getUserProfile);                            //using
+router.get("/get-user-footer/:sellerId", userController.getUserFooter);                            //using
 router.get("/get-user-address", userAuth, userController.getUserAddress);
 router.put("/:sellerId/:shopName/update-user", userAuth, userController.updateUser);
 router.post("/:sellerId/:shopName/add-address", userAuth, userController.addAddress);

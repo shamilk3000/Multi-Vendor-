@@ -30,15 +30,15 @@ const Dashboard: React.FC = () => {
       </div>
     </div>
   );
-  
-if (isLoading) {
-  return <ProfileSkeleton />;
-}
+
+  if (isLoading) {
+    return <ProfileSkeleton />;
+  }
   return (
     <div className="flex justify-center">
-      <div className="w-full rounded-2xl border shadow-md p-6 md:p-10 bg-white">
+      <div className="w-full border shadow-md p-6 md:p-10 bg-white">
         {/* HEADER */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-4">
           <div className="w-20 h-20 bg-black text-white rounded-full flex items-center justify-center text-2xl mx-auto">
             {user.name.charAt(0)}
           </div>

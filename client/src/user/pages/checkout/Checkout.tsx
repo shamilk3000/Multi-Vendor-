@@ -594,7 +594,7 @@ useEffect(() => {
         {/* TOASTER */}
         {/* <Toaster position="top-right" containerStyle={{ top: 75 }} /> */}
       </div>
-      <Footer />
+       <Footer  sellerId={sellerId!} />
     </div>
   );
 };

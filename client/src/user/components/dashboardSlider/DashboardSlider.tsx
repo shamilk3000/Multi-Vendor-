@@ -270,7 +270,7 @@ const Sidebar = () => {
         </Box>
       </div>
 
-      <Footer />
+      <Footer  sellerId={sellerId!} />
     </div>
   );
 };

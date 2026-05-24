@@ -136,7 +136,7 @@ const PaymentSuccess = () => {
       </div>
 
       {/* FOOTER */}
-      <Footer />
+     <Footer  sellerId={sellerId!} />
     </div>
   );
 };

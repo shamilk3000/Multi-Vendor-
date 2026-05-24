@@ -480,7 +480,7 @@ const Login = () => {
           </p>
         </motion.div>
       </div>
-      <Footer />
+       <Footer  sellerId={sellerId!} />
     </div>
   );
 };

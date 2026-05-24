@@ -255,7 +255,7 @@ const ChangePassword: React.FC = () => {
       </div>
 
       {/* ✅ FOOTER */}
-      <Footer />
+     <Footer  sellerId={sellerId!} />
       {/* <Toaster containerStyle={{ top: 75 }} position="top-right" /> */}
 
       {/* 🎯 WAVE ANIMATION */}

@@ -330,9 +330,7 @@ const SellerDetailsPage = () => {
       promise,
       {
         loading: "Creating seller...",
-        success: (res) =>
-          res?.data?.message ||
-          "Seller profile completed.",
+        success: (res) => res?.data?.message || "Seller profile completed.",
         error: (err) =>
           err?.response?.data?.message || "Failed to create seller",
       },
@@ -347,9 +345,9 @@ const SellerDetailsPage = () => {
 
     dispatch(setSeller(res.data.seller));
     if (res.data.onboardingUrl) {
-  window.location.href = res.data.onboardingUrl;
-  return;
-}
+      window.location.href = res.data.onboardingUrl;
+      return;
+    }
     navigate("/seller/subscription");
   };
 

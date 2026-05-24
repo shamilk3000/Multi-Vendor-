@@ -4,6 +4,11 @@ import "react-loading-skeleton/dist/skeleton.css";
 const OrdersSkeleton = () => {
   return (
     <div className="space-y-4">
+      {/* SEARCH */}
+      <div className="relative mb-5 ">
+        <Skeleton height={35} borderRadius={8} />
+      </div>
+
       {Array.from({ length: 3 }).map((_, index) => (
         <div
           key={index}
@@ -15,7 +20,7 @@ const OrdersSkeleton = () => {
               <div className="w-[80%] sm:w-[240px]">
                 <Skeleton height={16} />
               </div>
-              
+
               <div className="w-[50%] sm:w-[160px]">
                 <Skeleton height={16} />
               </div>

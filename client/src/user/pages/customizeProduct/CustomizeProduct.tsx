@@ -392,7 +392,7 @@ const CustomizeProducts: React.FC = () => {
           </motion.button>
         </div>
       </div>
-      <Footer />
+      <Footer  sellerId={sellerId!} />
     </div>
   );
 };

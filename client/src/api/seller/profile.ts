@@ -1,7 +1,7 @@
 import api from "../../features/axios";
 
 export const getSellerProfile = async () => {
-  const res = await api.get( `/seller/get-seller-profile`);
+  const res = await api.get(`/seller/get-seller-profile`);
   return res.data;
 };
 

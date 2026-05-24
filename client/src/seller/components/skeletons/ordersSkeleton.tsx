@@ -4,6 +4,20 @@ import "react-loading-skeleton/dist/skeleton.css";
 const SellerOrdersSkeleton = () => {
   return (
     <div className="space-y-4">
+      {/* FILTER SKELETON */}
+      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 mb-5">
+        {/* SEARCH */}
+        <div className="w-full md:flex-1">
+          <Skeleton height={35} borderRadius={8} />
+        </div>
+
+        {/* FILTER DROPDOWN */}
+        <div className="w-full md:w-48">
+          <Skeleton height={35} borderRadius={8} />
+        </div>
+      </div>
+
+      {/* ORDER CARDS */}
       {Array.from({ length: 3 }).map((_, index) => (
         <div
           key={index}

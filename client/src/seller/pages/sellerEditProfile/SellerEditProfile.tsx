@@ -150,7 +150,7 @@ const SellerEditPage = () => {
     return null;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const err = validate();
 
     if (err) {
@@ -173,24 +173,28 @@ const SellerEditPage = () => {
         bussinessWhatsapp: `https://wa.me/${form.businessDetails.bussinessWhatsapp}`,
       },
     };
-    console.log("Updated Seller Data:", formattedData);
 
-    toast.promise(
-      updateProfile(formattedData),
-      {
-        loading: "Updating profile...",
-        success: "Profile updated successfully",
-        error: "Failed to update seller",
-      },
-      {
-        style: {
-          background: "#111",
-          color: "#fff",
-          border: "1px solid #333",
+    try {
+      await toast.promise(
+        updateProfile(formattedData),
+        {
+          loading: "Updating profile...",
+          success: "Profile updated successfully",
+          error: "Failed to update seller",
         },
-      },
-    );
-    navigate("/seller/profile");
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+        },
+      );
+
+      navigate("/seller/profile");
+    } catch (error) {
+      console.error("Update profile error:", error);
+    }
   };
 
   if (isLoading) {
