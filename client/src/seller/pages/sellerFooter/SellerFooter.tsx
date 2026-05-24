@@ -95,7 +95,7 @@ const Footer = () => {
 
       {/* Copyright */}
       <p className="text-center text-gray-400 text-sm">
-        © 2025 Company Ltd. All rights reserved.
+        © Started in 2026.
       </p>
 
       {/* Animations */}
