@@ -23,7 +23,7 @@ import {
   LinearScale,
   PointElement,
   Filler,
-  Tooltip,
+  Tooltip as ChartTooltip,
   Legend,
 } from "chart.js";
 
@@ -36,6 +36,11 @@ import { logout, setSeller } from "@/redux/authSlice";
 import { useDispatch } from "react-redux";
 import QRCode from "react-qr-code";
 import QRCodeGenerator from "qrcode";
+import Tooltip from "@mui/material/Tooltip";
+import Zoom from "@mui/material/Zoom";
+import { useSellerDashboard } from "../../../hooks/seller/profile/useProfile";
+import SellerDashboardSkeleton from "@/seller/components/skeletons/dashboardSkeleton";
+
 // import api from "../../../features/axios";
 
 ChartJS.register(
@@ -44,17 +49,21 @@ ChartJS.register(
   LinearScale,
   PointElement,
   Filler,
-  Tooltip,
+  ChartTooltip,
   Legend,
 );
 
 const SellerDashboard = () => {
+  const { data: dashboardData, isLoading } = useSellerDashboard();
   const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
   const [copied, setCopied] = useState(false);
   const [sellerSubStatus, setSellerSubStatus] = useState(false);
   const navigate = useNavigate();
+  const [openTooltip, setOpenTooltip] = useState<number | null>(null);
+  const BASE_URL = import.meta.env.VITE_SERVER_DAGHBOARD;
 
+  const isMobile = window.innerWidth <= 768;
   const qrRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -135,141 +144,159 @@ const SellerDashboard = () => {
   };
 
   const handleDownloadQR = async () => {
-    try {
-      // QR Canvas
-      const qrCanvas = document.createElement("canvas");
+    const downloadPromise = new Promise(async (resolve, reject) => {
+      try {
+        // QR Canvas
+        const qrCanvas = document.createElement("canvas");
 
-      await QRCodeGenerator.toCanvas(qrCanvas, webURL, {
-        width: 1000,
-        margin: 2,
-        color: {
-          dark: "#000000",
-          light: "#ffffff",
+        await QRCodeGenerator.toCanvas(qrCanvas, webURL, {
+          width: 1000,
+          margin: 2,
+          color: {
+            dark: "#000000",
+            light: "#ffffff",
+          },
+        });
+
+        // Final Canvas
+        const finalCanvas = document.createElement("canvas");
+        const ctx = finalCanvas.getContext("2d");
+
+        if (!ctx) {
+          reject(new Error("Canvas context not found"));
+          return;
+        }
+
+        finalCanvas.width = 1200;
+        finalCanvas.height = 1500;
+
+        // Background
+        ctx.fillStyle = "#f3f4f6";
+        ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+        // Title
+        ctx.fillStyle = "#000";
+        ctx.font = "bold 72px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(
+          `${dashboardData?.seller?.businessDetails?.bussinessName}`,
+          600,
+          120,
+        );
+
+        // Subtitle
+        ctx.fillStyle = "#444";
+        ctx.font = "36px Arial";
+        ctx.fillText("Scan this QR code to visit our online store", 600, 190);
+
+        // QR background
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.roundRect(180, 260, 840, 840, 40);
+        ctx.fill();
+
+        // QR
+        ctx.drawImage(qrCanvas, 230, 310, 740, 740);
+
+        // Text
+        ctx.fillStyle = "#111";
+        ctx.font = "bold 46px Arial";
+        ctx.fillText("Scan Me", 600, 1190);
+
+        ctx.fillStyle = "#666";
+        ctx.font = "30px Arial";
+        ctx.fillText(
+          "You can view products, prices and shop details easily",
+          600,
+          1260,
+        );
+        ctx.fillText("through our online store using this QR code.", 600, 1310);
+
+        // URL
+        ctx.fillStyle = "#000";
+        ctx.font = "bold 24px Arial";
+        ctx.fillText(webURL, 600, 1410);
+
+        // Download
+        const link = document.createElement("a");
+        link.href = finalCanvas.toDataURL("image/png", 1.0);
+        link.download = `${dashboardData?.seller?.businessDetails?.bussinessName}-online-store-qrcode.png`;
+        link.click();
+
+        resolve("Downloaded");
+      } catch (err) {
+        reject(err);
+      }
+    });
+
+    await toast.promise(
+      downloadPromise,
+      {
+        loading: "Generating QR code...",
+        success: "QR code downloaded successfully 🎉",
+        error: (err) => err.message || "Failed to download QR code",
+      },
+      {
+        style: {
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
         },
-      });
-
-      // Final Canvas
-      const finalCanvas = document.createElement("canvas");
-
-      const ctx = finalCanvas.getContext("2d");
-
-      if (!ctx) return;
-
-      finalCanvas.width = 1200;
-      finalCanvas.height = 1500;
-
-      // Background
-      ctx.fillStyle = "#f3f4f6";
-      ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
-
-      // 🔥 Top Title
-      ctx.fillStyle = "#000000";
-      ctx.font = "bold 72px Arial";
-      ctx.textAlign = "center";
-
-      ctx.fillText("Dummy Shop", 600, 120);
-
-      // Subtitle
-      ctx.fillStyle = "#444444";
-      ctx.font = "36px Arial";
-
-      ctx.fillText("Scan this QR code to visit our online store", 600, 190);
-
-      // QR White Area ONLY
-      ctx.fillStyle = "#ffffff";
-
-      ctx.beginPath();
-      ctx.roundRect(180, 260, 840, 840, 40);
-      ctx.fill();
-
-      // QR
-      ctx.drawImage(qrCanvas, 230, 310, 740, 740);
-
-      // Main Text
-      ctx.fillStyle = "#111111";
-      ctx.font = "bold 46px Arial";
-
-      ctx.fillText("Scan Me", 600, 1190);
-
-      // Description
-      ctx.fillStyle = "#666666";
-      ctx.font = "30px Arial";
-
-      ctx.fillText(
-        "You can view products, prices and shop details easily",
-        600,
-        1260,
-      );
-
-      ctx.fillText("through our online store using this QR code.", 600, 1310);
-
-      // Bottom URL
-      ctx.fillStyle = "#000000";
-      ctx.font = "bold 24px Arial";
-
-      ctx.fillText(webURL, 600, 1410);
-
-      // Download
-      const link = document.createElement("a");
-
-      link.href = finalCanvas.toDataURL("image/png", 1.0);
-
-      link.download = "MyShop-online-store-qrcode.png";
-
-      link.click();
-    } catch (err) {
-      console.log(err);
-    }
+        duration: 3500,
+      },
+    );
   };
+
+  if (isLoading) return <SellerDashboardSkeleton />;
+
   const stats = [
-    { title: "Total Revenue", value: "₹45,000", icon: <FaRupeeSign /> },
-    { title: "Total Orders", value: "120", icon: <FaShoppingCart /> },
-    { title: "Pending Orders", value: "18", icon: <FaClock /> },
-    { title: "Customers", value: "80", icon: <FaUsers /> },
-    { title: "Products", value: "35", icon: <FaBox /> },
-    { title: "Categories", value: "12", icon: <FaTags /> },
+    {
+      title: "Total Revenue",
+      value: dashboardData?.revenue,
+      icon: <FaRupeeSign />,
+      tooltip: "Total earnings generated from all orders",
+    },
+    {
+      title: "Total Orders",
+      value: dashboardData?.orderStats?.totalOrders,
+      icon: <FaShoppingCart />,
+      tooltip: ` ${dashboardData?.orderStats?.totalOrders} orders were placed in your store, and ${dashboardData?.orderStats?.cancelledOrders} were cancelled `,
+    },
+    {
+      title: "New Orders",
+      value: dashboardData?.orderStats?.pendingOrders,
+      icon: <FaClock />,
+      tooltip: "Orders waiting for confirmation",
+    },
+    {
+      title: "Customers",
+      value: dashboardData?.customers,
+      icon: <FaUsers />,
+      tooltip: "Total customers who purchased from your store",
+    },
+    {
+      title: "Products",
+      value: dashboardData?.productStats?.totalProducts,
+      icon: <FaBox />,
+      tooltip: `Your store currently has ${dashboardData?.productStats?.activeProducts} active products and ${dashboardData?.productStats?.deletedProducts} deleted products`,
+    },
+    {
+      title: "Categories",
+      value: dashboardData?.categoryStats?.totalCategories,
+      icon: <FaTags />,
+      tooltip: `Your store currently has ${dashboardData?.categoryStats?.parentCategories} parent categories and ${dashboardData?.categoryStats?.childCategories} child categories`,
+    },
   ];
+  const topProducts = dashboardData?.topProducts;
 
-  const topProducts = [
-    { name: "Wireless Mouse", sales: 40 },
-    { name: "Keyboard", sales: 30 },
-    { name: "Headphones", sales: 25 },
-    { name: "Laptop", sales: 20 },
-    { name: "Charger", sales: 15 },
-    { name: "Charger", sales: 15 },
-    { name: "Charger", sales: 15 },
-    { name: "Charger", sales: 15 },
-  ];
-
-  const categories = [
-    {
-      name: "Electronics",
-      sales: 60,
-      children: ["Mobiles", "Laptops", "Accessories"],
-    },
-    {
-      name: "Fashion",
-      sales: 45,
-      children: ["Men", "Women", "Kids"],
-    },
-    {
-      name: "Home",
-      sales: 30,
-      children: ["Furniture", "Kitchen"],
-    },
-    {
-      name: "Sports",
-      sales: 25,
-      children: ["Fitness", "Outdoor"],
-    },
-  ];
+  const categories = dashboardData?.categories;
 
   const chartData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+    labels: dashboardData?.chartData?.labels,
 
     datasets: [
       {
-        data: [12, 19, 15, 25, 22, 30, 28, 35],
+        data: dashboardData?.chartData?.datasets,
         borderColor: "black",
         backgroundColor: "rgba(1,6,148,0.15)",
         tension: 0.4,
@@ -282,7 +309,7 @@ const SellerDashboard = () => {
     ],
   };
 
-  const webURL = " http://192.168.31.97:5173/6a05f01e58620d7a7e6349f6/SML";
+  const webURL = `${BASE_URL}/${dashboardData?.seller?._id}/${dashboardData?.seller?.businessDetails?.bussinessName}`;
 
   const chartOptions: any = {
     responsive: true,
@@ -301,25 +328,52 @@ const SellerDashboard = () => {
       {/* ✅ PERFECT ICON ALIGNMENT */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
         {stats.map((item, index) => (
-          <div
+          <Tooltip
             key={index}
-            className="bg-white p-4 pb-2 rounded-xl shadow-sm hover:shadow-xl transition hover:scale-[1.01]"
+            arrow
+            title={item.tooltip}
+            open={isMobile ? openTooltip === index : undefined}
+            onClose={() => setOpenTooltip(null)}
+            disableHoverListener={isMobile}
+            disableTouchListener={!isMobile}
+            TransitionComponent={Zoom}
+            slotProps={{
+              popper: {
+                modifiers: [
+                  {
+                    name: "offset",
+                    options: {
+                      offset: [0, -8],
+                    },
+                  },
+                ],
+              },
+            }}
           >
-            {/* Top Row */}
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-black font-medium">{item.title}</p>
+            <div
+              onClick={() => {
+                if (isMobile) {
+                  setOpenTooltip(openTooltip === index ? null : index);
+                }
+              }}
+              className="bg-white p-4 pb-2 rounded-xl shadow-sm hover:shadow-xl transition hover:scale-[1.01] cursor-pointer"
+            >
+              {/* Top Row */}
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm text-black font-medium">{item.title}</p>
 
-              {/* 🔥 ICON FIX */}
-              <div className="w-9 h-9 flex items-center justify-center rounded-lg bg-black text-white">
-                {item.icon}
+                {/* ICON */}
+                <div className="w-9 h-9 flex items-center justify-center rounded-lg bg-black text-white">
+                  {item.icon}
+                </div>
               </div>
-            </div>
 
-            {/* Value */}
-            <h2 className="text-xl font-semibold text-gray-900">
-              {item.value}
-            </h2>
-          </div>
+              {/* Value */}
+              <h2 className="text-xl font-semibold text-gray-900">
+                {item.value}
+              </h2>
+            </div>
+          </Tooltip>
         ))}
       </div>
 
@@ -348,24 +402,34 @@ const SellerDashboard = () => {
           </h2>
 
           <div className="space-y-4 h-64 overflow-y-auto pr-2">
-            {topProducts.map((product, index) => (
-              <div key={index}>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm">{product.name}</span>
+            {topProducts.length > 0 ? (
+              topProducts.map((product: any, index: number) => (
+                <div
+                  key={index}
+                  onClick={() => navigate(`/seller/products/${product._id}`)}
+                  className="cursor-pointer border-b pb-3"
+                >
+                  <div className="flex justify-between mb-1">
+                    <span className="text-sm font-medium">{product.name}</span>
 
-                  <span className="text-sm font-medium">
-                    {product.sales} sales
-                  </span>
-                </div>
+                    <span className="text-sm font-medium">
+                      {product.sales} sales - {product.percentage}%
+                    </span>
+                  </div>
 
-                <div className="w-full bg-gray-200 h-2 rounded-full">
-                  <div
-                    className="bg-black h-2 rounded-full"
-                    style={{ width: `${product.sales}%` }}
-                  />
+                  <div className="w-full bg-gray-200 h-2 rounded-full">
+                    <div
+                      className="bg-black h-2 rounded-full"
+                      style={{ width: `${product.percentage}%` }}
+                    />
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="h-full flex items-center justify-center text-gray-500 text-sm">
+                No products added yet
               </div>
-            ))}
+            )}
           </div>
         </div>
 
@@ -376,33 +440,41 @@ const SellerDashboard = () => {
           </h2>
 
           <div className="space-y-4 h-64 overflow-y-auto pr-2">
-            {categories.map((cat, index) => (
-              <div key={index} className="border-b pb-3">
-                <div className="flex justify-between mb-1">
-                  <span className="font-medium">{cat.name}</span>
+            {categories.length > 0 ? (
+              categories.map((cat: any, index: number) => (
+                <div key={index} className="border-b pb-3">
+                  <div className="flex justify-between mb-1">
+                    <span className="font-medium">{cat.name}</span>
 
-                  <span className="text-sm">{cat.sales}%</span>
-                </div>
-
-                <div className="w-full bg-gray-200 h-2 rounded-full mb-2">
-                  <div
-                    className="bg-black h-2 rounded-full"
-                    style={{ width: `${cat.sales}%` }}
-                  />
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {cat.children.map((child, i) => (
-                    <span
-                      key={i}
-                      className="text-xs bg-gray-200 hover:bg-black hover:text-white px-2 py-1 rounded-full"
-                    >
-                      {child}
+                    <span className="text-sm font-medium">
+                      {cat.sales} sales - {cat.percentage}%
                     </span>
-                  ))}
+                  </div>
+
+                  <div className="w-full bg-gray-200 h-2 rounded-full mb-2">
+                    <div
+                      className="bg-black h-2 rounded-full"
+                      style={{ width: `${cat.percentage}%` }}
+                    />
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {cat.children.map((child: any, i: number) => (
+                      <span
+                        key={i}
+                        className="text-xs bg-gray-200 hover:bg-black hover:text-white px-2 py-1 rounded-full"
+                      >
+                        {child.name} - {child.sales}
+                      </span>
+                    ))}
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="h-full flex items-center justify-center text-gray-500 text-sm">
+                No categories added yet
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
@@ -459,7 +531,9 @@ const SellerDashboard = () => {
           className="p-6 rounded-3xl flex flex-col items-center text-center"
         >
           {/* SHOP NAME */}
-          <h2 className="text-2xl font-bold tracking-wide">Dummy Store</h2>
+          <h2 className="text-2xl font-bold tracking-wide">
+            {dashboardData?.seller?.businessDetails?.bussinessName}
+          </h2>
 
           {/* SUB TEXT */}
           <p className="text-sm text-gray-300 mt-2 max-w-[300px] leading-relaxed">

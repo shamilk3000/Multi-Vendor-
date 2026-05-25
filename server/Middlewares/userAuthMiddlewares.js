@@ -22,6 +22,13 @@ const userAuth = async (req, res, next) => {
     try {
       decoded = await jwtProvider.verifyJwt(token);
       console.log("worked decoding");
+       if (!decoded) {
+        return res.status(401).json({
+        success: false,
+        code: "TOKEN_EXPIRED_USER",
+        message: "Session expired",
+      });
+      }
     } catch (err) {
       console.log("No decode");
       return res.status(401).json({

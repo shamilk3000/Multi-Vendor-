@@ -29,53 +29,51 @@ const CustomizeProducts: React.FC = () => {
   const [imageWarning, setImageWarning] = useState<Record<number, string>>({});
   const { sellerId, shopName, orderId } = useParams();
   const { data: orderdetails, isLoading } = useOrderForUser(orderId!);
-  let order = orderdetails?._doc;
+  let order = orderdetails?.order;
   const filteredItems =
-  order?.orderItems?.filter(
-    (item: any) =>
-      !(
-        item.product?.needAttachment == false &&
-        item.product?.needMessage == false
-      ),
-  ) || [];
+    order?.orderItems?.filter(
+      (item: any) =>
+        !(
+          item.product?.needAttachment == false &&
+          item.product?.needMessage == false
+        ),
+    ) || [];
 
-  
- useEffect(() => {
-  const createIntentIfNeeded = async () => {
-    if (!order || !order.orderItems) return;
-    const shouldCreatePayment = filteredItems.length === 0;
-  
+  useEffect(() => {
+    const createIntentIfNeeded = async () => {
+      if (!order || !order.orderItems) return;
+      const shouldCreatePayment = filteredItems.length === 0;
 
-    if (shouldCreatePayment && orderId) {
-      try {
-        const res = await toast.promise(
-          api.post("/create-checkout-session", {
-            orderId,
-          }),
-          {
-            loading: "Redirecting to payment...",
-            success: "Opening secure payment page 💳",
-            error: "Failed to start payment session ❌",
-          },
-          {
-            style: {
-              background: "#111",
-              color: "#fff",
-              border: "1px solid #333",
+      if (shouldCreatePayment && orderId) {
+        try {
+          const res = await toast.promise(
+            api.post("/create-checkout-session", {
+              orderId,
+            }),
+            {
+              loading: "Redirecting to payment...",
+              success: "Opening secure payment page 💳",
+              error: "Failed to start payment session ❌",
             },
-            duration: 3500,
-          },
-        );
+            {
+              style: {
+                background: "#111",
+                color: "#fff",
+                border: "1px solid #333",
+              },
+              duration: 3500,
+            },
+          );
 
-        window.location.href = res.data.url;
-      } catch (err) {
-        console.log("Payment retry error:", err);
+          window.location.href = res.data.url;
+        } catch (err) {
+          console.log("Payment retry error:", err);
+        }
       }
-    }
-  };
+    };
 
-  createIntentIfNeeded();
-}, [order, orderId, filteredItems]);
+    createIntentIfNeeded();
+  }, [order, orderId, filteredItems]);
   const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
 
   const [customData, setCustomData] = useState<
@@ -232,7 +230,7 @@ const CustomizeProducts: React.FC = () => {
       console.log("ORDER PLACING ERROR 👉", error?.response?.data);
     }
   };
-  // console.log(order);
+  // console.log(orderdetails);
 
   if (isLoading) {
     return <Customize />;
@@ -392,7 +390,7 @@ const CustomizeProducts: React.FC = () => {
           </motion.button>
         </div>
       </div>
-      <Footer  sellerId={sellerId!} />
+      <Footer sellerId={sellerId!} />
     </div>
   );
 };

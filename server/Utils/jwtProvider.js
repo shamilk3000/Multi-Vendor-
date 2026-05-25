@@ -14,7 +14,8 @@ async function verifyJwt(token) {
     let decoded = await jwt.verify(token, process.env.JWT_SECRET);
     return decoded
   } catch (error) {
-    throw new Error("Invalid token. Authorization failed");
+    // throw new Error("Invalid token. Authorization failed");
+    return null
   }
 }
 
@@ -23,7 +24,8 @@ async function getSellerProfileByToken (jwt) {
     const email = await getEmailFromToken(jwt);
     return await getSellerByEmail(email);
   } catch (error) {;
-    throw new Error(`Unable to fetch seller profile`);
+    // throw new Error(`Unable to fetch seller profile`);
+    return null
   }
 };
 
@@ -32,7 +34,8 @@ async function getUserProfileByToken (jwt, sellerId) {
     const email = await getEmailFromToken(jwt);
     return await getUserByEmail(email , sellerId);
   } catch (error) {;
-    throw new Error(`Unable to fetch user profile`);
+    // throw new Error(`Unable to fetch user profile`);
+    return null
   }
 };
 

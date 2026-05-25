@@ -16,16 +16,17 @@ router.post("/create-seller-details", sellerController.createSellerDetails);    
 router.post("/stripe-check", sellerController.checkStripeSellerStatus );                                       //using
 router.post("/stripe-retry-onboarding", sellerController.retryStripeOnboarding);                                       //using
 router.post("/seller-login", sellerController.sellerLogin);                                                         //using
-router.post("/logout", sellerAuth, sellerController.logout);                                       //using
+router.post("/logout", sellerAuth, sellerController.logout);                                                        //using
 
 router.post("/seller-forget-password-otp-send", sellerController.sellerForgetPasswordOtpSend);                       //using
 router.post("/seller-forget-password-otp-verify", sellerController.sellerForgetPasswordOtpVerify);                  //using
 router.post("/seller-reset-password", sellerController.sellerResetPassword);                                         //using
-router.post("/seller-reset-password-dashboard", sellerAuth, sellerController.sellerResetPasswordDashboard);                                         //using
+router.post("/seller-reset-password-dashboard", sellerAuth, sellerController.sellerResetPasswordDashboard);           //using
 
 router.get("/get-seller-profile", sellerAuth, sellerController.getSellerProfile);                                //using
-router.put("/update-seller-profile", sellerAuth, sellerController.updateSeller);                                //using
-router.post("/subscribe-session", sellerController.sellerSubscription);                                  //using
+router.get("/get-seller-dashboard", sellerAuth, sellerController.getSellerDashboard);                                //using
+router.put("/update-seller-profile", sellerAuth, sellerController.updateSeller);                                   //using
+router.post("/subscribe-session", sellerController.sellerSubscription);                                            //using
 router.get("/coockie-test", coockieTest, (req, res) => {
   res.json({ success: true, message: "Seller authentication successful", seller: req.seller });
 });                                                                                                                    //using
@@ -36,24 +37,24 @@ router.get("/coockie-test", coockieTest, (req, res) => {
 
 router.post("/create-product", sellerAuth, productController.createProduct);                                             //using
 router.put("/update-product", sellerAuth, productController.updateProduct);                                             //using
-router.get("/get-product/:productId", sellerAuth, productController.getProductById);                                             //using
-router.put("/delete-product/:productId", sellerAuth, productController.deleteProduct);                                             //using
-router.put("/restore-product/:productId", sellerAuth, productController.restoreProduct);                                             //using
-router.get("/get-product-for-seller", sellerAuth, productController.getProductForSeller);                                             //using
+router.get("/get-product/:productId", sellerAuth, productController.getProductById);                                       //using
+router.put("/delete-product/:productId", sellerAuth, productController.deleteProduct);                                     //using
+router.put("/restore-product/:productId", sellerAuth, productController.restoreProduct);                                     //using
+router.get("/get-product-for-seller", sellerAuth, productController.getProductForSeller);                                 //using
 router.get("/search-products/:sellerId/:search", sellerAuth, productController.searchProducts);
 router.post("/create-category", sellerAuth, productController.createCategory);                                             //using
-router.put("/update-category/:categoryId", sellerAuth, productController.updateCategory);                                              //using
+router.put("/update-category/:categoryId", sellerAuth, productController.updateCategory);                                  //using
 // router.get("/get-all-parent-category", sellerAuth, productController.getAllParentCategories);         
 router.get("/get-category-by-id/:categoryId", sellerAuth, productController.getCategoryById);          
 router.get("/get-all-categories-of-seller", sellerAuth, productController.getAllCategoriesOfSeller);                        //using
-router.put("/delete-category/:categoryId", sellerAuth, productController.deleteCategory);                                               //using
-router.put("/restore-category/:categoryId", sellerAuth, productController.restoreCategory);                                             //using
-router.get("/get-product-by-id/:productId",sellerAuth, productController.getProductByIdForUser);                                          //using
-router.get("/get-reviews/:productId",sellerAuth, productController.getReviews);                                                  //using
+router.put("/delete-category/:categoryId", sellerAuth, productController.deleteCategory);                                   //using
+router.put("/restore-category/:categoryId", sellerAuth, productController.restoreCategory);                                 //using
+router.get("/get-product-by-id/:productId",sellerAuth, productController.getProductByIdForUser);                           //using
+router.get("/get-reviews/:productId",sellerAuth, productController.getReviews);                                             //using
 
-router.get("/all-orders-of-seller", sellerAuth, orderController.allOrdersOfSeller);                                              //using
-router.get("/get-order-by-id/:orderId", sellerAuth, orderController.getOrderByIdForSeller);                                              //using
-router.put("/update-order-status/:orderId/:status", sellerAuth, orderController.updateOrderStatus);                                       //using
+router.get("/all-orders-of-seller", sellerAuth, orderController.allOrdersOfSeller);                                          //using
+router.get("/get-order-by-id/:orderId", sellerAuth, orderController.getOrderByIdForSeller);                                  //using
+router.put("/update-order-status/:orderId/:status", sellerAuth, orderController.updateOrderStatus);                          //using
 
 router.get("/get-transaction-by-seller", sellerAuth, transactionController.getTransactionsBySellerId);
 

@@ -19,13 +19,24 @@ const getAllSellers = async (req, res) => {
 
 const getSellerProfile = async (req, res) => {
   try {
-    const sellerId = await req.seller;
+    const sellerId = await req.seller._id;
     const seller = await Seller.findById(sellerId)
       .populate("address")
       .populate("businessDetails.businessAddress");
-    return res.status(200).json( seller );
+    return res.status(200).json(seller);
   } catch (error) {
     console.error("getSellerProfile Controller Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getSellerDashboard = async (req, res) => {
+  try {
+    const seller = await req.seller;
+    const data = await sellerService.getSellerDashboard(seller);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error("getSellerDashboard Controller Error:", error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -171,19 +182,19 @@ const retryStripeOnboarding = async (req, res) => {
 // };
 
 const updateSeller = async (req, res) => {
-    try {
-      const sellerData = req.body;
-      const existingSeller = await req.seller;
-      if (!existingSeller) {
-        return res.status(404).json({ message: "Seller not found" });
-      }
-      const seller = await sellerService.updateSeller(existingSeller, sellerData);
-      return res.status(200).json({ seller });
-    } catch (error) {
-      console.error("updateSeller Controller Error:", error);
-      return res.status(500).json({ message: error.message });
+  try {
+    const sellerData = req.body;
+    const existingSeller = await req.seller;
+    if (!existingSeller) {
+      return res.status(404).json({ message: "Seller not found" });
     }
-  };
+    const seller = await sellerService.updateSeller(existingSeller, sellerData);
+    return res.status(200).json({ seller });
+  } catch (error) {
+    console.error("updateSeller Controller Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
 
 // const deleteSeller = async (req, res) => {
 //   try {
@@ -384,6 +395,7 @@ const logout = async (req, res) => {
 module.exports = {
   getAllSellers,
   getSellerProfile,
+  getSellerDashboard,
   getSellerProfileById,
   createSellerDetails,
   checkStripeSellerStatus,

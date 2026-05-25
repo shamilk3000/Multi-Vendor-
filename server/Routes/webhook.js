@@ -63,7 +63,7 @@ router.post(
             orderId: order._id,
             amount: order.totalSellingPrice,
             paymentStatus: "success",
-            paymentMethod: paymentIntent.payment_method,
+            paymentMethod: paymentIntent.payment_method_types[0],
             paymentIntentId: session.payment_intent,
           });
           await payment.save();

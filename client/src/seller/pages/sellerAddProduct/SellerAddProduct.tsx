@@ -27,7 +27,7 @@ import { Tooltip, Zoom } from "@mui/material";
 const AddProduct = () => {
   const { data: categories = [] } = useCategories({ onlyActive: true });
   const { mutateAsync: addProduct } = ultrateAddProduct();
- const navigate = useNavigate();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -186,22 +186,22 @@ const AddProduct = () => {
           },
         },
       );
-       // ✅ RESET FORM HERE
-  setFormData({
-    name: "",
-    description: "",
-    mrpPrice: "",
-    sellingPrice: "",
-    category: "",
-    subCategory: "",
-    stock: "0",
-    needAttachment: false,
-    needMessage: false,
-  });
+      // ✅ RESET FORM HERE
+      setFormData({
+        name: "",
+        description: "",
+        mrpPrice: "",
+        sellingPrice: "",
+        category: "",
+        subCategory: "",
+        stock: "0",
+        needAttachment: false,
+        needMessage: false,
+      });
 
-  setImage([]);
-  setSubCategories([]);
-   navigate("/seller/products");
+      setImage([]);
+      setSubCategories([]);
+      navigate("/seller/products");
     } catch (err) {
       console.error(err);
     }
@@ -254,7 +254,7 @@ const AddProduct = () => {
               type="text"
               name="name"
               placeholder="Product Name"
-               value={formData.name}
+              value={formData.name}
               className={`${inputStyle} peer`}
               onChange={handleChange}
             />

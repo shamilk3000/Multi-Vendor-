@@ -6,6 +6,7 @@ const Order = require("../Models/orderModel");
 const OrderStatus = require("../Public/Domain/OrderStatus");
 const productService = require("./productService");
 const Product = require("../Models/productModel");
+const Payment = require("../Models/paymentModel");
 const Category = require("../Models/categoryModel");
 const createOrder = async (user, cart, shippingAddress, isBuyNow) => {
   try {
@@ -258,6 +259,10 @@ const updateOrderStatus = async (orderId, newStatus) => {
         },
       });
     if (newStatus === "Cancelled") {
+      const payment = await Payment.findById(order.paymentId);
+      payment.paymentStatus = "cancelled"
+      await payment.save();
+      
       for (const item of order.orderItems) {
         const category = await Category.findById(item.product.category);
         const subCategory = await Category.findById(item.product.subCategory);
