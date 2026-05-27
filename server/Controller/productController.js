@@ -18,7 +18,7 @@ const createProduct = (req, res) => {
         console.error("createProduct Controller Error:", error);
         return res.status(400).json({ message: error.message });
       }
-    }
+    },
   );
 };
 
@@ -38,7 +38,7 @@ const updateProduct = (req, res) => {
         console.error("updateProduct Controller Error:", error);
         return res.status(400).json({ message: error.message });
       }
-    }
+    },
   );
 };
 
@@ -118,19 +118,8 @@ const getAllProducts = async (req, res) => {
   }
 };
 
-const searchProducts = async (req, res) => {
-  try {
-    const { sellerId, search } = req.params;
-    const products = await productService.searchProducts(search, sellerId);
-    return res.status(200).json(products);
-  } catch (error) {
-    console.error("searchProducts Controller Error:", error);
-    return res.status(400).json({ message: error.message });
-  }
-};
-
 const getAllProductsForCustomer = async (req, res) => {
-  try { 
+  try {
     const { sellerId } = req.params;
     const products = await productService.getAllProductsForCustomer(sellerId);
     return res.status(200).json(products);
@@ -143,9 +132,7 @@ const getAllProductsForCustomer = async (req, res) => {
 const getProductsInCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
-    const products = await productService.getProductsInCategory(
-      categoryId,
-    );
+    const products = await productService.getProductsInCategory(categoryId);
     return res.status(200).json(products);
   } catch (error) {
     console.error("getProductsInCategory Controller Error:", error);
@@ -164,17 +151,6 @@ const createCategory = async (req, res) => {
   }
 };
 
-// const getAllParentCategories = async (req, res) => {
-//   try {
-//     const seller = req.seller;
-//     const categories = await productService.getAllParentCategories(seller._id);
-//     return res.status(200).json(categories);
-//   } catch (error) {
-//     console.error("getAllParentCategories Controller Error:", error);
-//     return res.status(400).json({ message: error.message });
-//   }
-// };
-
 const updateCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
@@ -186,22 +162,14 @@ const updateCategory = async (req, res) => {
   }
 };
 
-const getCategoryById = async (req, res) => {
-  try {
-    const { categoryId } = req.params;
-    const category = await productService.getCategoryById(categoryId);
-    return res.status(200).json(category);
-  } catch (error) {
-    console.error("getCategoryById Controller Error:", error);
-    return res.status(400).json({ message: error.message });
-  }
-};
-
 const getAllCategoriesOfSeller = async (req, res) => {
   try {
     const sellerId = req?.user?.sellerId || req?.seller?._id;
     const { onlyActive } = req.query;
-    const categories = await productService.getAllCategoriesOfSeller(sellerId , onlyActive);
+    const categories = await productService.getAllCategoriesOfSeller(
+      sellerId,
+      onlyActive,
+    );
     return res.status(200).json(categories);
   } catch (error) {
     console.error("getAllCategoriesOfSeller Controller Error:", error);
@@ -209,11 +177,11 @@ const getAllCategoriesOfSeller = async (req, res) => {
   }
 };
 
-
 const getAllCategoriesOfSellerForUser = async (req, res) => {
   try {
     const sellerId = req?.user?.sellerId || req.params.sellerId;
-    const categories = await productService.getAllCategoriesOfSellerForUser(sellerId);
+    const categories =
+      await productService.getAllCategoriesOfSellerForUser(sellerId);
     return res.status(200).json(categories);
   } catch (error) {
     console.error("getAllCategoriesOfSeller Controller Error:", error);
@@ -266,7 +234,7 @@ const getReviews = async (req, res) => {
   }
 };
 
-module.exports = { 
+module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
@@ -276,14 +244,11 @@ module.exports = {
   getProductByIdForUser,
   getProductForSeller,
   getAllProducts,
-  searchProducts,
   getAllProductsForCustomer,
   getProductsInCategory,
   createCategory,
   updateCategory,
-  getCategoryById,
   getAllCategoriesOfSellerForUser,
-  // getAllParentCategories,
   getAllCategoriesOfSeller,
   deleteCategory,
   restoreCategory,

@@ -555,7 +555,7 @@ const SellerDashboard = () => {
 
           {/* WEBSITE LINK */}
           <p
-            className="mt-5 text-xs text-gray-200 break-all max-w-[280px] cursor-pointer hover:underline hover:text-blue-600 transition"
+            className="mt-5 text-xs text-gray-200 break-all cursor-pointer hover:underline hover:text-blue-600 transition"
             onClick={() => window.open(webURL, "_blank")}
           >
             {webURL}

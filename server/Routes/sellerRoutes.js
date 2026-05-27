@@ -5,8 +5,6 @@ const sellerController = require("../Controller/sellerController");
 const productController = require("../Controller/productController");
 const orderController = require("../Controller/orderController");
 const paymentController = require("../Controller/paymentController");
-const sellerReportController = require("../Controller/sellerReportController");
-const transactionController = require("../Controller/transactionController");
 
 
 router.post("/google-auth", sellerController.googleAuthController);                                                 //using
@@ -31,21 +29,14 @@ router.get("/coockie-test", coockieTest, (req, res) => {
   res.json({ success: true, message: "Seller authentication successful", seller: req.seller });
 });                                                                                                                    //using
 
-
-// router.post("/verify-sub-session",sellerController.verifySubSession);
-// router.delete("/delete-seller/:id", sellerController.deleteSeller);
-
 router.post("/create-product", sellerAuth, productController.createProduct);                                             //using
 router.put("/update-product", sellerAuth, productController.updateProduct);                                             //using
 router.get("/get-product/:productId", sellerAuth, productController.getProductById);                                       //using
 router.put("/delete-product/:productId", sellerAuth, productController.deleteProduct);                                     //using
 router.put("/restore-product/:productId", sellerAuth, productController.restoreProduct);                                     //using
 router.get("/get-product-for-seller", sellerAuth, productController.getProductForSeller);                                 //using
-router.get("/search-products/:sellerId/:search", sellerAuth, productController.searchProducts);
 router.post("/create-category", sellerAuth, productController.createCategory);                                             //using
 router.put("/update-category/:categoryId", sellerAuth, productController.updateCategory);                                  //using
-// router.get("/get-all-parent-category", sellerAuth, productController.getAllParentCategories);         
-router.get("/get-category-by-id/:categoryId", sellerAuth, productController.getCategoryById);          
 router.get("/get-all-categories-of-seller", sellerAuth, productController.getAllCategoriesOfSeller);                        //using
 router.put("/delete-category/:categoryId", sellerAuth, productController.deleteCategory);                                   //using
 router.put("/restore-category/:categoryId", sellerAuth, productController.restoreCategory);                                 //using
@@ -56,8 +47,5 @@ router.get("/all-orders-of-seller", sellerAuth, orderController.allOrdersOfSelle
 router.get("/get-order-by-id/:orderId", sellerAuth, orderController.getOrderByIdForSeller);                                  //using
 router.put("/update-order-status/:orderId/:status", sellerAuth, orderController.updateOrderStatus);                          //using
 
-router.get("/get-transaction-by-seller", sellerAuth, transactionController.getTransactionsBySellerId);
-
-router.get("/get-seller-report", sellerAuth, sellerReportController.getSellerReport);
 
 module.exports = router; 

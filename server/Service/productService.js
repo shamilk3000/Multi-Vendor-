@@ -234,23 +234,6 @@ const getProductByIdForUser = async (productId) => {
   }
 };
 
-const searchProducts = async (searchTerm, sellerId) => {
-  try {
-    const regex = new RegExp(searchTerm, "i"); // case-insensitive search
-    const products = await Product.find({
-      name: { $regex: regex },
-      seller: sellerId,
-      isActive: true,
-    });
-    return products;
-  } catch (error) {
-    console.error(`Error searching products with term "${searchTerm}":`, error);
-    throw new Error(
-      `Unable to search products with term "${searchTerm}": ${error.message}`,
-    );
-  }
-};
-
 const getAllProductsBySeller = async (sellerId) => {
   try {
     const products = await Product.find({ seller: sellerId })
@@ -329,20 +312,6 @@ const createCategory = async (categoryData, seller) => {
   }
 };
 
-// const getAllParentCategories = async (sellerId) => {
-//   try {
-//     const categories = await Category.find({
-//       sellerId: sellerId,
-//       parentCategory: null,
-//       // isActive: true,
-//     });
-//     return categories;
-//   } catch (error) {
-//     console.error("Error getting all parent categories:", error);
-//     throw new Error(`Unable to get all parent categories: ${error.message}`);
-//   }
-// };
-
 const updateCategory = async (categoryId, updateData) => {
   try {
     // 1️⃣ Get old category
@@ -394,19 +363,6 @@ const updateCategory = async (categoryId, updateData) => {
   } catch (error) {
     console.error("Error updating category:", error);
     throw new Error(`Unable to update category: ${error.message}`);
-  }
-};
-
-const getCategoryById = async (categoryId) => {
-  try {
-    const category = await Category.findById(categoryId);
-    if (!category) {
-      throw new Error("Category not found");
-    }
-    return category;
-  } catch (error) {
-    console.error("Error getting category:", error);
-    throw new Error(`Unable to get category: ${error.message}`);
   }
 };
 
@@ -729,16 +685,13 @@ module.exports = {
   restoreProduct,
   getProductById,
   getProductByIdForUser,
-  searchProducts,
   getAllProductsBySeller,
   getAllProducts,
   getAllProductsForCustomer,
   getProductsInCategory,
   createCategory,
   getAllCategoriesOfSellerForUser,
-  // getAllParentCategories,
   updateCategory,
-  getCategoryById,
   getAllCategoriesOfSeller,
   deleteCategory,
   restoreCategory,

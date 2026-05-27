@@ -23,17 +23,17 @@ const Footer = () => {
           {
             name: "Instagram",
             icon: "instagram-new",
-            link: "instagram.com",
+            link: "https://www.instagram.com/bazario.online.2026/",
           },
           {
             name: "Phone",
             icon: "phone",
-            link: `tel:9846132495`,
+            link: `tel:971543537899`,
           },
           {
             name: "WhatsApp",
             icon: "whatsapp",
-            link: "https://wa.me/971501234568",
+            link: "https://wa.me/971543537899",
           },
           {
             name: "Facebook",

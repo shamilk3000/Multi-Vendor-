@@ -1,6 +1,5 @@
 const orderService = require("../Service/orderService");
 const cartService = require("../Service/cartService");
-const paymentService = require("../Service/paymentService");
 const { createMulterUpload } = require("../Utils/multerUtil");
 const userOrderUpload = createMulterUpload("User/OrderCustomizations");
 const Order = require("../Models/orderModel");
@@ -62,7 +61,7 @@ const getOrderById = async (req, res) => {
   try {
     const { orderId } = req.params;
     const order = await orderService.getOrderById(orderId);
-    return res.status(200).json({order});
+    return res.status(200).json({ order });
   } catch (error) {
     console.error("getOrderById Controller Error:", error);
     return res.status(500).json({ message: error.message });
@@ -132,29 +131,6 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-const cancelOrder = async (req, res) => {
-  try {
-    const { orderId } = req.params;
-    const updatedOrder = await orderService.cancelOrder(orderId);
-    return res.status(200).json(updatedOrder);
-  } catch (error) {
-    console.error("cancelOrder Controller Error:", error);
-    return res.status(500).json({ message: error.message });
-  }
-};
-
-const getOderItemById = async (req, res) => {
-  try {
-    const { itemId } = req.params;
-    const orderItem = await orderService.getOderItemById(itemId);
-    return res.status(200).json(orderItem);
-  } catch (error) {
-    console.error("getOderItemById Controller Error:", error);
-    return res.status(500).json({ message: error.message });
-  }
-};
-
-
 module.exports = {
   createOrder,
   customize,
@@ -162,7 +138,5 @@ module.exports = {
   allOrdersOfSeller,
   allOrdersOfUser,
   updateOrderStatus,
-  cancelOrder,
-  getOderItemById,
   getOrderByIdForSeller,
 };

@@ -113,9 +113,9 @@ const verifyOtpAndCreateUser = async (userData, otp, sellerId, res) => {
     });
 
     const cart = new Cart({
-        userId: user._id,
-      });
-      await cart.save();
+      userId: user._id,
+    });
+    await cart.save();
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -283,82 +283,6 @@ const getUserById = async (id) => {
   }
 };
 
-const updateUser = async (existingUser, userData) => {
-  try {
-    existingUser.name = userData.name;
-    if (userData.phone) {
-      existingUser.phone = userData.phone;
-    }
-    existingUser.save();
-
-    return existingUser;
-  } catch (error) {
-    console.error("updateUser Service Error:", error);
-    throw new Error(`Unable to update user: ${error.message}`);
-  }
-};
-
-const addAddress = async (address, user) => {
-  try {
-    const newAddress = await Address.create({
-      name: user.name,
-      phone: address.phone,
-      email: user.email,
-      flatNoOrVillaNo: address.flatNoOrVillaNo,
-      street: address.street,
-      area: address.area,
-      city: address.city,
-      emirate: address.emirate,
-      landmark: address.landmark,
-      postalCode: address.postalCode,
-      addressType: "address",
-    });
-    if (!user.phone) {
-      user.phone = address.phone;
-    }
-
-    user.address.push(newAddress._id);
-    await user.save();
-    return user;
-  } catch (error) {
-    console.error("addAddress Service Error:", error);
-    throw new Error(`Unable to add address: ${error.message}`);
-  }
-};
-
-const updateAddress = async (addressId, address) => {
-  try {
-    const existingAddress = await Address.findById(addressId);
-    existingAddress.phone = address.phone;
-    existingAddress.flatNoOrVillaNo = address.flatNoOrVillaNo;
-    existingAddress.street = address.street;
-    existingAddress.area = address.area;
-    existingAddress.city = address.city;
-    existingAddress.emirate = address.emirate;
-    existingAddress.landmark = address.landmark;
-    existingAddress.postalCode = address.postalCode;
-    await existingAddress.save();
-    return existingAddress;
-  } catch (error) {
-    console.error("updateAddress Service Error:", error);
-    throw new Error(`Unable to update address: ${error.message}`);
-  }
-};
-
-const deleteAddress = async (addressId, user) => {
-  try {
-    const address = await Address.findById(addressId);
-    address.isDeleted = true;
-    await address.save();
-    user.address.pull(addressId);
-    await user.save();
-    return user;
-  } catch (error) {
-    console.error("deleteAddress Service Error:", error);
-    throw new Error(`Unable to delete address: ${error.message}`);
-  }
-};
-
 const getAllUsers = async (status, sellerId) => {
   try {
     const users = await User.find({
@@ -397,10 +321,6 @@ module.exports = {
   userResetPassword,
   getUserProfileById,
   getUserById,
-  updateUser,
-  addAddress,
-  updateAddress,
-  deleteAddress,
   getAllUsers,
   updateUserStatus,
   userResetPasswordSlider,

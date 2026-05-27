@@ -260,9 +260,9 @@ const updateOrderStatus = async (orderId, newStatus) => {
       });
     if (newStatus === "Cancelled") {
       const payment = await Payment.findById(order.paymentId);
-      payment.paymentStatus = "cancelled"
+      payment.paymentStatus = "cancelled";
       await payment.save();
-      
+
       for (const item of order.orderItems) {
         const category = await Category.findById(item.product.category);
         const subCategory = await Category.findById(item.product.subCategory);
@@ -283,43 +283,6 @@ const updateOrderStatus = async (orderId, newStatus) => {
   }
 };
 
-const cancelOrder = async (orderId) => {
-  try {
-    return await Order.findByIdAndUpdate(
-      orderId,
-      { orderStatus: OrderStatus.CANCELLED },
-      { new: true },
-    )
-      .populate("userId")
-      .populate("paymentId")
-      .populate("sellerId")
-      .populate("shippingAddress")
-      .populate({
-        path: "orderItems",
-        populate: {
-          path: "product",
-          populate: [{ path: "category" }, { path: "subCategory" }],
-        },
-      });
-  } catch (error) {
-    console.error(`Error cancelling order`, error);
-    throw new Error(`Unable to cancel order : ${error.message}`);
-  }
-};
-
-const getOderItemById = async (orderItemId) => {
-  try {
-    const orderItem = await OrderItem.findById(orderItemId).populate("product");
-    if (!orderItem) {
-      throw new Error("Order item not found");
-    }
-    return orderItem;
-  } catch (error) {
-    console.error(`Error finding order item`, error);
-    throw new Error(`Unable to find order item : ${error.message}`);
-  }
-};
-
 module.exports = {
   createOrder,
   customize,
@@ -327,7 +290,5 @@ module.exports = {
   allOrdersOfSeller,
   allOrdersOfUser,
   updateOrderStatus,
-  cancelOrder,
-  getOderItemById,
   getOrderByIdForSeller,
 };

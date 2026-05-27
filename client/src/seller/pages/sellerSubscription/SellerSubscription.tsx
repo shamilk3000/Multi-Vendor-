@@ -100,25 +100,24 @@ const SubscriptionPage: React.FC = () => {
     }
   }, [searchParams, sellerSubStatus]);
   const check = async () => {
-  
     try {
-      const res = await axios.post("/api/seller/stripe-check/",{
-         sellerId: seller._id,
-        });
+      const res = await axios.post("/api/seller/stripe-check/", {
+        sellerId: seller._id,
+      });
       const { isReady } = res.data;
       if (!isReady) {
         toast.dismiss();
-      toast.error("Retry onboarding", {
-        icon: <FaExclamationTriangle className="text-red-500" />,
-        style: {
-          borderRadius: "12px",
-          background: "#111",
-          color: "#fff",
-          border: "1px solid #333",
-          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
-        },
-        duration: 3500,
-      });
+        toast.error("Retry onboarding", {
+          icon: <FaExclamationTriangle className="text-red-500" />,
+          style: {
+            borderRadius: "12px",
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+            boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+          },
+          duration: 3500,
+        });
         retryOnboard();
       }
     } catch (err: any) {
@@ -127,9 +126,9 @@ const SubscriptionPage: React.FC = () => {
   };
   const retryOnboard = async () => {
     try {
-      const res = await axios.post("/api/seller/stripe-retry-onboarding",{
-         sellerId: seller._id
-        });
+      const res = await axios.post("/api/seller/stripe-retry-onboarding", {
+        sellerId: seller._id,
+      });
       window.location.href = res.data.onboardingUrl;
     } catch (err: any) {
       console.log(err?.response?.data);
@@ -224,12 +223,11 @@ const SubscriptionPage: React.FC = () => {
               className={`pointer-events-auto w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 bg-white text-black hover:bg-black hover:text-white`}
             >
               <FaFire />
-              "Unlock Premium"
+              "Subscribe Premium"
             </motion.button>
           </div>
         </motion.div>
       </div>
-      {/* <Toaster containerStyle={{ top: 75 }} position="top-right" /> */}
       <Footer />
     </div>
   );

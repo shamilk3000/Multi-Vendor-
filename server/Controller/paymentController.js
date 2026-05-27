@@ -1,15 +1,10 @@
-const paymentService = require("../Service/paymentService");
 const orderService = require("../Service/orderService");
 const Order = require("../Models/orderModel");
 const Seller = require("../Models/sellerModel");
-const sellerReportService = require("../Service/sellerReportService");
 const Cart = require("../Models/cartModel");
 const CartItem = require("../Models/cartItemModel");
-const transactionService = require("../Service/transactionService");
 const { stripe } = require("../Utils/stripe");
 require("dotenv").config();
-
-
 
 const paymentHandler = async (req, res) => {
   try {
@@ -32,13 +27,13 @@ const paymentHandler = async (req, res) => {
       mode: "payment",
 
       metadata: {
-          type: "ORDER_PAYMENT",
-          orderId: order._id.toString(),
-          userId: user._id.toString(),
-          userEmail: user.email,
-          sellerId: seller._id.toString(),
-          sellerEmail: seller.email,
-        },
+        type: "ORDER_PAYMENT",
+        orderId: order._id.toString(),
+        userId: user._id.toString(),
+        userEmail: user.email,
+        sellerId: seller._id.toString(),
+        sellerEmail: seller.email,
+      },
       // AUTOMATIC PAYMENT METHODS
       automatic_tax: {
         enabled: false,
@@ -47,7 +42,7 @@ const paymentHandler = async (req, res) => {
       billing_address_collection: "auto",
 
       // payment_method_collection: "always",
-customer_email: seller.email,
+      customer_email: seller.email,
       line_items: [
         {
           price_data: {
@@ -88,13 +83,11 @@ customer_email: seller.email,
       success: true,
       url: session.url,
     });
-
-    // return res.status(200).json({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
     console.error(`Error processing payment order`, error);
-     res.status(500).json({
+    res.status(500).json({
       success: false,
-       message: error.message,
+      message: error.message,
     });
   }
 };

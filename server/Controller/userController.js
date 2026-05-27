@@ -109,7 +109,6 @@ const userForgetPasswordOtpVerify = async (req, res) => {
   }
 };
 
-
 const userResetPassword = async (req, res) => {
   try {
     const { sellerId } = req.params;
@@ -130,10 +129,7 @@ const userResetPasswordSlider = async (req, res) => {
   try {
     const userId = req.user?._id;
     const { password } = req.body;
-    const result = await userService.userResetPasswordSlider(
-      password,
-      userId,
-    );
+    const result = await userService.userResetPasswordSlider(password, userId);
     return res.status(200).json(result);
   } catch (error) {
     console.error("userResetPasswordSlider Controller Error:", error);
@@ -144,7 +140,7 @@ const userResetPasswordSlider = async (req, res) => {
 const getUserProfile = async (req, res) => {
   try {
     const user = await req.user;
-const userProfile = await User.findById(user._id).populate("address");
+    const userProfile = await User.findById(user._id).populate("address");
     return res.status(200).json({ userProfile });
   } catch (error) {
     console.error("getUserProfile Controller Error:", error);
@@ -153,17 +149,20 @@ const userProfile = await User.findById(user._id).populate("address");
 };
 
 const getUserFooter = async (req, res) => {
-  try { 
+  try {
     const sellerId = req.params.sellerId;
-    const seller = await Seller.findById(sellerId)
+    const seller = await Seller.findById(sellerId);
     if (!seller) {
       return res.status(404).json({ message: "Seller not found" });
     }
     const footerData = {
-      bussinessInstagram: seller.businessDetails?.bussinessInstagram || "instagram.com",
+      bussinessInstagram:
+        seller.businessDetails?.bussinessInstagram || "instagram.com",
       businessPhone: seller.businessDetails?.bussinessPhone || "",
-      businessWhatsapp: seller.businessDetails?.bussinessWhatsapp || "whatsapp.com",
-      bussinessFacebook: seller.businessDetails?.bussinessFacebook || "facebook.com",
+      businessWhatsapp:
+        seller.businessDetails?.bussinessWhatsapp || "whatsapp.com",
+      bussinessFacebook:
+        seller.businessDetails?.bussinessFacebook || "facebook.com",
     };
     return res.status(200).json({ footerData });
   } catch (error) {
@@ -183,67 +182,6 @@ const getUserProfileById = async (req, res) => {
   } catch (error) {
     console.error("getUserProfileById Controller Error:", error);
     return res.status(500).json({ message: error.message });
-  }
-};
-
-const updateUser = async (req, res) => {
-  try {
-    if (!req.body || Object.keys(req.body).length === 0) {
-      return res.status(400).json({ message: "Request body cannot be empty" });
-    }
-
-    const existingUser = await req.user;
-    if (!existingUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const user = await userService.updateUser(existingUser, req.body);
-    return res.status(200).json({ user });
-  } catch (error) {
-    console.error("updateUser Controller Error:", error);
-    return res.status(500).json({ message: error.message });
-  }
-};
-
-const addAddress = async (req, res) => {
-  try {
-    const user = await req.user;
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    const address = req.body;
-    const result = await userService.addAddress(address, user);
-    return res.status(200).json(result);
-  } catch (error) {
-    console.error("addAddress Controller Error:", error);
-    return res.status(400).json({ message: error.message });
-  }
-};
-
-const updateAddress = async (req, res) => {
-  try {
-    const addressId = req.params.id;
-    const address = req.body;
-    const result = await userService.updateAddress(addressId, address);
-    return res.status(200).json(result);
-  } catch (error) {
-    console.error("updateAddress Controller Error:", error);
-    return res.status(400).json({ message: error.message });
-  }
-};
-
-const deleteAddress = async (req, res) => {
-  try {
-    const addressId = req.params.id;
-    const user = await req.user;
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    const result = await userService.deleteAddress(addressId, user);
-    return res.status(200).json(result);
-  } catch (error) {
-    console.error("deleteAddress Controller Error:", error);
-    return res.status(400).json({ message: error.message });
   }
 };
 
@@ -321,10 +259,6 @@ module.exports = {
   userResetPasswordSlider,
   getUserProfile,
   getUserProfileById,
-  updateUser,
-  addAddress,
-  updateAddress,
-  deleteAddress,
   getAllUsers,
   updateUserStatus,
   getUserAddress,
