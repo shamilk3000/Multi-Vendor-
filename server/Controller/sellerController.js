@@ -33,8 +33,8 @@ const getSellerProfile = async (req, res) => {
 const getSellerDashboard = async (req, res) => {
   try {
     const seller = await req.seller;
+    console.log(seller);
     const data = await sellerService.getSellerDashboard(seller);
-    console.log(data);
     
     return res.status(200).json(data);
   } catch (error) {
