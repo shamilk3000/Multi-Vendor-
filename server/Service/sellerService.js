@@ -302,7 +302,7 @@ const getSellerDashboard = async (seller) => {
       {
         $match: {
           sellerId: new mongoose.Types.ObjectId(sellerId),
-          paymentStatus: "SUCCESS",
+          paymentStatus: "success",
 
           createdAt: {
             $gte: startDate,
@@ -371,7 +371,7 @@ const getSellerDashboard = async (seller) => {
       {
         $match: {
           sellerId: new mongoose.Types.ObjectId(sellerId),
-          paymentStatus: "SUCCESS",
+          paymentStatus: "success",
         },
       },
 
@@ -414,7 +414,7 @@ const getSellerDashboard = async (seller) => {
           // 🔥 PENDING ORDERS
           pendingOrders: {
             $sum: {
-              $cond: [{ $eq: ["$orderStatus", "Pending"] }, 1, 0],
+              $cond: [{ $eq: ["$isNew", true] }, 1, 0],
             },
           },
 

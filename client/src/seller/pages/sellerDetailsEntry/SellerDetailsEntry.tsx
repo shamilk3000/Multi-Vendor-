@@ -256,7 +256,7 @@ const SellerDetailsPage = () => {
     if (step === 4) {
       const b = form.bankingDetails;
 
-      if (Object.values(b).some((v) => !v)) return "Fill all banking fields";
+      // if (Object.values(b).some((v) => !v)) return "Fill all banking fields";
 
       // ✅ Stripe validation
       // if (!/^acct_[a-zA-Z0-9]+$/.test(b.stripeAccountId))
