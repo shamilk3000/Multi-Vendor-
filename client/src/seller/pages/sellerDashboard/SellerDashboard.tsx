@@ -402,7 +402,7 @@ const SellerDashboard = () => {
           </h2>
 
           <div className="space-y-4 h-64 overflow-y-auto pr-2">
-            {topProducts.length > 0 ? (
+            {topProducts?.length > 0 ? (
               topProducts.map((product: any, index: number) => (
                 <div
                   key={index}
@@ -440,7 +440,7 @@ const SellerDashboard = () => {
           </h2>
 
           <div className="space-y-4 h-64 overflow-y-auto pr-2">
-            {categories.length > 0 ? (
+            {categories?.length > 0 ? (
               categories.map((cat: any, index: number) => (
                 <div key={index} className="border-b pb-3">
                   <div className="flex justify-between mb-1">
