@@ -13,9 +13,11 @@ require("./Utils/corn");
 const PORT = process.env.PORT || 3000;
 
 // ✅ Built-in JSON parser
-app.use("/webhook",express.raw({ type: "application/json" }));
+// app.use("/webhook",express.raw({ type: "application/json" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/api/webhook", webhookRoutes);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 
@@ -23,7 +25,7 @@ app.use(cookieParser());
 app.use("/api/seller", sellerRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api", userRoutes);
-app.use("/api/webhook",webhookRoutes);
+// app.use("/api/webhook",webhookRoutes);
 
 app.use(cors({
   origin: process.env.CORS_ORIGIN,

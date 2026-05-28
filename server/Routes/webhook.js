@@ -10,10 +10,7 @@ const Payment = require("../Models/paymentModel");
 const Product = require("../Models/productModel");
 const Category = require("../Models/categoryModel");
 
-router.post(
-  "/",
-  express.raw({ type: "application/json" }),
-  async (req, res) => {
+router.post("/", express.raw({ type: "application/json" }), async (req, res) => {
     console.log("✅ Webhook called");
     const sig = req.headers["stripe-signature"];
     let event;
