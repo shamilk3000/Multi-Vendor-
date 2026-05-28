@@ -35,7 +35,7 @@ const ChangePassword: React.FC = () => {
       navigate(location.pathname, { replace: true, state: {} });
     } else {
       // ❌ no data → redirect
-      navigate("/seller/login", { replace: true });
+      navigate("/", { replace: true });
     }
   }, []);
   const [showNewPassSuccess, setShowNewPassSuccess] = useState(true);
@@ -120,7 +120,7 @@ const ChangePassword: React.FC = () => {
         },
       );
 
-      navigate("/seller/login");
+      navigate("/");
     } catch (error: any) {
       console.log("PASSWORD CHANGING ERROR 👉", error?.response?.data);
     }

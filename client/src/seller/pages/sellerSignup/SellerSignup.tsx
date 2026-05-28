@@ -91,12 +91,11 @@ const Signup = () => {
             state: { sellerEmail: res.data.seller.email },
           });
         } else {
-          
           if (res.data.seller.accountStatus == "PENDING_PAYMENT") {
             dispatch(setSeller(res.data.seller));
             navigate("/seller/subscription");
           } else if (res.data.seller.accountStatus == "SUSPENDED") {
-            navigate("/seller/login");
+            navigate("/");
           } else {
             dispatch(setSeller(res.data.seller));
             navigate("/seller");
@@ -598,7 +597,7 @@ const Signup = () => {
             <p className="text-center text-xs text-gray-500 mt-4">
               Already have an account?{" "}
               <span
-                onClick={() => navigate("/seller/login")}
+                onClick={() => navigate("/")}
                 className="text-black relative cursor-pointer group "
               >
                 Login

@@ -38,12 +38,12 @@ const EmailOTPPage: React.FC = () => {
             navigate("/seller/subscription");
           } else {
             dispatch(logout());
-            navigate("/seller/login");
+            navigate("/");
           }
         }
       } catch (err) {
         dispatch(logout());
-        navigate("/seller/login");
+        navigate("/");
       }
     };
     checkSession();

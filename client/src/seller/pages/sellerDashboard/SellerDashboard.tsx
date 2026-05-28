@@ -84,12 +84,12 @@ const SellerDashboard = () => {
             navigate("/seller/subscription");
           } else {
             dispatch(logout());
-            navigate("/seller/login");
+            navigate("/");
           }
         }
       } catch (err) {
         dispatch(logout());
-        navigate("/seller/login");
+        navigate("/");
       }
     };
 

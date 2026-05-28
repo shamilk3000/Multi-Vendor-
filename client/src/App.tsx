@@ -117,7 +117,7 @@ function App() {
         <Route path="/seller/fp-otp-verification" element={<SellerFpOTPVerification />} />
         <Route path="/seller/forgot-password" element={<SellerPasswordEnter />} />
         <Route path="/seller/signup" element={<SellerSignup />} />
-        <Route path="/seller/login" element={<SellerLogin />} />
+        <Route path="/" element={<SellerLogin />} />
         <Route path="/seller/subscription" element={<SellerSubscription />} />
         <Route path="/seller/details-entry" element={<SellerDetailsEntry />} />
         <Route path="/seller/profile" element={<SellerProfile />} />

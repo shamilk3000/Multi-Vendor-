@@ -100,7 +100,7 @@ api.interceptors.response.use(
         duration: 3500,
       });
       store.dispatch(logout());
-      navigateTo("/seller/login");
+      navigateTo("/");
     }
 
     if (code === "USER_NOT_FOUND") {
@@ -116,7 +116,7 @@ api.interceptors.response.use(
         duration: 3500,
       });
       store.dispatch(logout());
-      navigateTo("/seller/login");
+      navigateTo("/");
     }
 
     if (code === "SERVER_ERROR") {
@@ -132,7 +132,7 @@ api.interceptors.response.use(
         duration: 3500,
       });
       store.dispatch(logout());
-      navigateTo("/seller/login");
+      navigateTo("/");
     }
 
     // user --------------

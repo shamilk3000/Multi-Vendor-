@@ -29,10 +29,8 @@ const ProductGrid: React.FC<{
   const [pausedIds, setPausedIds] = useState<string[]>([]);
   const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
 
-  const intervalsRef = useRef<Record<string, ReturnType<typeof setInterval>>>(
-    {},
-  );
-  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+ const intervalsRef = useRef<Record<string, number>>({});
+  const timeoutsRef = useRef<number[]>([]);
   const pausedRef = useRef<string[]>([]);
 
   useEffect(() => {

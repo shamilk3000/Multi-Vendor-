@@ -107,7 +107,7 @@ const sellerDashboard = () => {
       store.dispatch(logout());
       sessionStorage.clear();
 
-      navigate("/seller/login", {
+      navigate("/", {
         replace: true,
       });
     } catch (error: any) {

@@ -31,7 +31,7 @@ const OTPVerification: React.FC = () => {
       navigate(location.pathname, { replace: true, state: {} });
     } else {
       // ❌ no data → redirect
-      navigate("/seller/login", { replace: true });
+      navigate("/", { replace: true });
     }
   }, []);
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
@@ -123,8 +123,8 @@ const OTPVerification: React.FC = () => {
           },
           duration: 3500,
         },
-    );
-    navigate("/seller/forgot-password", {
+      );
+      navigate("/seller/forgot-password", {
         state: { FpData: sellerFpData },
       });
     } catch (error: any) {

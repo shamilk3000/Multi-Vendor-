@@ -94,7 +94,7 @@ const Login = () => {
             dispatch(setSeller(res.data.seller));
             navigate("/seller/subscription");
           } else if (res.data.seller.accountStatus == "SUSPENDED") {
-            navigate("/seller/login");
+            navigate("/");
           } else {
             dispatch(setSeller(res.data.seller));
             navigate("/seller");
@@ -290,7 +290,7 @@ const Login = () => {
           dispatch(setSeller(res.data.seller));
           navigate("/seller/subscription");
         } else if (res.data.seller.accountStatus == "SUSPENDED") {
-          navigate("/seller/login");
+          navigate("/");
         } else {
           dispatch(setSeller(res.data.seller));
           navigate("/seller");

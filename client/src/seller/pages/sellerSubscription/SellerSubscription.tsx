@@ -48,12 +48,12 @@ const SubscriptionPage: React.FC = () => {
             setSellerSubStatus(true);
           } else {
             dispatch(logout());
-            navigate("/seller/login");
+            navigate("/");
           }
         }
       } catch (err) {
         dispatch(logout());
-        navigate("/seller/login");
+        navigate("/");
       }
     };
     checkSession();
