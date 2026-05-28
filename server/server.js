@@ -12,6 +12,10 @@ const cors = require("cors");
 require("./Utils/corn");
 const PORT = process.env.PORT || 3000;
 
+app.use(cors({
+  origin: process.env.CORS_ORIGIN,
+  credentials: true
+}));
 // ✅ Built-in JSON parser
 // app.use("/webhook",express.raw({ type: "application/json" }));
 app.use("/api/webhook", webhookRoutes);
@@ -28,10 +32,6 @@ app.use("/api/admin", adminRoutes);
 app.use("/api", userRoutes);
 // app.use("/api/webhook",webhookRoutes);
 
-app.use(cors({
-  origin: process.env.CORS_ORIGIN,
-  credentials: true
-}));
 
 // ✅ 404 Handler
 app.use((req, res) => {

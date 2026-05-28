@@ -40,6 +40,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import { useSellerDashboard } from "../../../hooks/seller/profile/useProfile";
 import SellerDashboardSkeleton from "@/seller/components/skeletons/dashboardSkeleton";
+import { log } from "console";
 
 // import api from "../../../features/axios";
 
@@ -62,6 +63,7 @@ const SellerDashboard = () => {
   const navigate = useNavigate();
   const [openTooltip, setOpenTooltip] = useState<number | null>(null);
   const BASE_URL = import.meta.env.VITE_SERVER_DAGHBOARD;
+console.log(dashboardData);
 
   const isMobile = window.innerWidth <= 768;
   const qrRef = useRef<HTMLDivElement>(null);
