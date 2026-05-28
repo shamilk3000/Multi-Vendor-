@@ -31,7 +31,7 @@ import { Line } from "react-chartjs-2";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import axios from "axios";
+import api from "../../../features/axios";
 import { logout, setSeller } from "@/redux/authSlice";
 import { useDispatch } from "react-redux";
 import QRCode from "react-qr-code";
@@ -72,7 +72,7 @@ console.log(dashboardData);
 
     const checkSession = async () => {
       try {
-        const res = await axios.get("/api/seller/coockie-test", {
+        const res = await api.get("/seller/coockie-test", {
           withCredentials: true,
         });
 
@@ -293,23 +293,23 @@ console.log(dashboardData);
 
   const categories = dashboardData?.categories;
 
-  // const chartData = {
-  //   labels: dashboardData?.chartData?.labels,
+  const chartData = {
+    labels: dashboardData?.chartData?.labels,
 
-  //   datasets: [
-  //     {
-  //       data: dashboardData?.chartData?.datasets,
-  //       borderColor: "black",
-  //       backgroundColor: "rgba(1,6,148,0.15)",
-  //       tension: 0.4,
-  //       fill: true,
-  //       pointBackgroundColor: "gray",
-  //       pointBorderColor: "black",
-  //       pointBorderWidth: 3,
-  //       pointRadius: 5,
-  //     },
-  //   ],
-  // };
+    datasets: [
+      {
+        data: dashboardData?.chartData?.datasets,
+        borderColor: "black",
+        backgroundColor: "rgba(1,6,148,0.15)",
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: "gray",
+        pointBorderColor: "black",
+        pointBorderWidth: 3,
+        pointRadius: 5,
+      },
+    ],
+  };
 
   const webURL =
   BASE_URL &&
@@ -395,9 +395,9 @@ console.log(dashboardData);
         </div>
 
         {/* Chart */}
-        {/* <div className="h-64">
+        <div className="h-64">
           <Line data={chartData} options={chartOptions} />
-        </div> */}
+        </div>
       </div>
 
       {/* GRID */}
@@ -409,7 +409,7 @@ console.log(dashboardData);
           </h2>
 
           <div className="space-y-4 h-64 overflow-y-auto pr-2">
-            {/* {topProducts?.length > 0 ? (
+            {topProducts?.length > 0 ? (
               topProducts?.map((product: any, index: number) => (
                 <div
                   key={index}
@@ -436,7 +436,7 @@ console.log(dashboardData);
               <div className="h-full flex items-center justify-center text-gray-500 text-sm">
                 No products added yet
               </div>
-            )} */}
+            )}
           </div>
         </div>
 
@@ -447,7 +447,7 @@ console.log(dashboardData);
           </h2>
 
           <div className="space-y-4 h-64 overflow-y-auto pr-2">
-            {/* {categories?.length > 0 ? (
+            {categories?.length > 0 ? (
               categories?.map((cat: any, index: number) => (
                 <div key={index} className="border-b pb-3">
                   <div className="flex justify-between mb-1">
@@ -481,7 +481,7 @@ console.log(dashboardData);
               <div className="h-full flex items-center justify-center text-gray-500 text-sm">
                 No categories added yet
               </div>
-            )} */}
+            )}
           </div>
         </div>
       </div>
