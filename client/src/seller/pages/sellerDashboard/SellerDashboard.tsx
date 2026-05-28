@@ -405,7 +405,7 @@ console.log(dashboardData);
 
           <div className="space-y-4 h-64 overflow-y-auto pr-2">
             {topProducts?.length > 0 ? (
-              topProducts.map((product: any, index: number) => (
+              topProducts?.map((product: any, index: number) => (
                 <div
                   key={index}
                   onClick={() => navigate(`/seller/products/${product._id}`)}
