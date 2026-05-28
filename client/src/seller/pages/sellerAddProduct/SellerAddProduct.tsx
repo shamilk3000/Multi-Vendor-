@@ -176,7 +176,7 @@ const AddProduct = () => {
         {
           loading: "Adding product...",
           success: "Product added successfully 🚀",
-          error: "Failed to add product",
+          error: (err) => err.message || "Failed to add product",
         },
         {
           style: {
