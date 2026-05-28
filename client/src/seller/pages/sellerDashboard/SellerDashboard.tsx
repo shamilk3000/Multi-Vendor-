@@ -409,7 +409,7 @@ console.log(dashboardData);
           </h2>
 
           <div className="space-y-4 h-64 overflow-y-auto pr-2">
-            {topProducts?.length > 0 ? (
+            {/* {topProducts?.length > 0 ? (
               topProducts?.map((product: any, index: number) => (
                 <div
                   key={index}
@@ -436,7 +436,7 @@ console.log(dashboardData);
               <div className="h-full flex items-center justify-center text-gray-500 text-sm">
                 No products added yet
               </div>
-            )}
+            )} */}
           </div>
         </div>
 
@@ -447,7 +447,7 @@ console.log(dashboardData);
           </h2>
 
           <div className="space-y-4 h-64 overflow-y-auto pr-2">
-            {categories?.length > 0 ? (
+            {/* {categories?.length > 0 ? (
               categories?.map((cat: any, index: number) => (
                 <div key={index} className="border-b pb-3">
                   <div className="flex justify-between mb-1">
@@ -481,7 +481,7 @@ console.log(dashboardData);
               <div className="h-full flex items-center justify-center text-gray-500 text-sm">
                 No categories added yet
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>
