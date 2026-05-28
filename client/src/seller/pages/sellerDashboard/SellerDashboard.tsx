@@ -72,9 +72,7 @@ console.log(dashboardData);
 
     const checkSession = async () => {
       try {
-        const res = await api.get("/seller/coockie-test", {
-          withCredentials: true,
-        });
+        const res = await api.get("/seller/coockie-test");
 
         if (res.data.success == true) {
           dispatch(setSeller(res.data.seller));
