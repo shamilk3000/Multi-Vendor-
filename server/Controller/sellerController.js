@@ -34,6 +34,8 @@ const getSellerDashboard = async (req, res) => {
   try {
     const seller = await req.seller;
     const data = await sellerService.getSellerDashboard(seller);
+    console.log(data);
+    
     return res.status(200).json(data);
   } catch (error) {
     console.error("getSellerDashboard Controller Error:", error);
