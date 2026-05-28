@@ -14,10 +14,11 @@ const PORT = process.env.PORT || 3000;
 
 // ✅ Built-in JSON parser
 // app.use("/webhook",express.raw({ type: "application/json" }));
+app.use("/api/webhook", webhookRoutes);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/webhook", webhookRoutes);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 
