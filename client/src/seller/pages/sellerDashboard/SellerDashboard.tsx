@@ -293,23 +293,23 @@ console.log(dashboardData);
 
   const categories = dashboardData?.categories;
 
-  const chartData = {
-    labels: dashboardData?.chartData?.labels,
+  // const chartData = {
+  //   labels: dashboardData?.chartData?.labels,
 
-    datasets: [
-      {
-        data: dashboardData?.chartData?.datasets,
-        borderColor: "black",
-        backgroundColor: "rgba(1,6,148,0.15)",
-        tension: 0.4,
-        fill: true,
-        pointBackgroundColor: "gray",
-        pointBorderColor: "black",
-        pointBorderWidth: 3,
-        pointRadius: 5,
-      },
-    ],
-  };
+  //   datasets: [
+  //     {
+  //       data: dashboardData?.chartData?.datasets,
+  //       borderColor: "black",
+  //       backgroundColor: "rgba(1,6,148,0.15)",
+  //       tension: 0.4,
+  //       fill: true,
+  //       pointBackgroundColor: "gray",
+  //       pointBorderColor: "black",
+  //       pointBorderWidth: 3,
+  //       pointRadius: 5,
+  //     },
+  //   ],
+  // };
 
   const webURL =
   BASE_URL &&
@@ -395,9 +395,9 @@ console.log(dashboardData);
         </div>
 
         {/* Chart */}
-        <div className="h-64">
+        {/* <div className="h-64">
           <Line data={chartData} options={chartOptions} />
-        </div>
+        </div> */}
       </div>
 
       {/* GRID */}
