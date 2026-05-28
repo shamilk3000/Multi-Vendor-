@@ -7,7 +7,6 @@ server/.env
 node_modules
 
 # build
-dist
 build
 
 # uploads (ignore files but keep folder)
