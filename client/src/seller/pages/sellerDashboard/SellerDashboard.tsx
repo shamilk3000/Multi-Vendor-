@@ -327,7 +327,7 @@ const SellerDashboard = () => {
 
       {/* ✅ PERFECT ICON ALIGNMENT */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-        {stats.map((item, index) => (
+        {stats?.map((item, index) => (
           <Tooltip
             key={index}
             arrow
@@ -441,7 +441,7 @@ const SellerDashboard = () => {
 
           <div className="space-y-4 h-64 overflow-y-auto pr-2">
             {categories?.length > 0 ? (
-              categories.map((cat: any, index: number) => (
+              categories?.map((cat: any, index: number) => (
                 <div key={index} className="border-b pb-3">
                   <div className="flex justify-between mb-1">
                     <span className="font-medium">{cat.name}</span>
@@ -459,7 +459,7 @@ const SellerDashboard = () => {
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    {cat.children.map((child: any, i: number) => (
+                    {cat.children?.map((child: any, i: number) => (
                       <span
                         key={i}
                         className="text-xs bg-gray-200 hover:bg-black hover:text-white px-2 py-1 rounded-full"
