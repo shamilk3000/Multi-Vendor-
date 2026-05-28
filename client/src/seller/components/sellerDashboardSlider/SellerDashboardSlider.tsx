@@ -85,7 +85,7 @@ const sellerDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      const promise = api.post("/api/seller/logout");
+      const promise = api.post("/seller/logout");
 
       await toast.promise(
         promise,
