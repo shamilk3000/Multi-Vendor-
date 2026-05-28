@@ -216,7 +216,7 @@ const SellerFullProfile = () => {
               label="Account Holder"
               value={seller.bankingDetails.accountHolderName}
             />
-            <Row
+            {/* <Row
               icon={<FaCreditCard />}
               label="Account Number"
               value={seller.bankingDetails.accountNumber}
@@ -225,7 +225,7 @@ const SellerFullProfile = () => {
               icon={<FaUniversity />}
               label="Bank Name"
               value={seller.bankingDetails.bankName}
-            />
+            /> */}
             <Row
               icon={<FaCreditCard />}
               label="IBAN"

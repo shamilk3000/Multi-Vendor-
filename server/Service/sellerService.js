@@ -98,14 +98,14 @@ const createSellerDetails = async (req, res) => {
       sellerData.businessDetails.facebook;
     existingSeller.businessDetails.businessAddress = bussinessAddress._id;
 
-    existingSeller.bankingDetails.accountNumber =
-      sellerData.bankingDetails.accountNumber;
+    // existingSeller.bankingDetails.accountNumber =
+    //   sellerData.bankingDetails.accountNumber;
     existingSeller.bankingDetails.accountHolderName =
       sellerData.bankingDetails.accountHolder;
     existingSeller.bankingDetails.IBANnumber = sellerData.bankingDetails.iban;
     // existingSeller.bankingDetails.SWIFTcode =
     //   sellerData.bankingDetails.SWIFTcode;
-    existingSeller.bankingDetails.bankName = sellerData.bankingDetails.bankName;
+    // existingSeller.bankingDetails.bankName = sellerData.bankingDetails.bankName;
 
     existingSeller.isComplete = true;
 

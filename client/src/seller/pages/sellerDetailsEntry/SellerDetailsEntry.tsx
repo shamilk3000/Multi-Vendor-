@@ -263,8 +263,8 @@ const SellerDetailsPage = () => {
       //   return "Invalid Stripe Account ID";
 
       // ✅ Account number validation
-      if (!/^[0-9]{9,18}$/.test(b.accountNumber))
-        return "Invalid account number";
+      // if (!/^[0-9]{9,18}$/.test(b.accountNumber))
+      //   return "Invalid account number";
 
       // ✅ IBAN validation (real one)
       if (!IBAN.isValid(b.iban)) return "Invalid IBAN";
@@ -774,7 +774,7 @@ const SellerDetailsPage = () => {
                 onChange={(e: any) =>
                   handleNested("businessDetails", "instagram", e.target.value)
                 }
-                placeholder="Instagram Profile Link"
+                placeholder="Instagram profile link. If it’s not available, use instagram.com"
               />
 
               {/* Facebook Profile */}
@@ -784,7 +784,7 @@ const SellerDetailsPage = () => {
                 onChange={(e: any) =>
                   handleNested("businessDetails", "facebook", e.target.value)
                 }
-                placeholder="Facebook Profile Link"
+                placeholder="Facebook Profile Link. If it’s not available, use facebook.com"
               />
 
               <Field
@@ -906,7 +906,7 @@ const SellerDetailsPage = () => {
                 placeholder="Account Holder"
               />
 
-              <Field
+              {/* <Field
                 icon={<FaRegCreditCard />}
                 value={form.bankingDetails.accountNumber}
                 onChange={(e: any) =>
@@ -917,15 +917,15 @@ const SellerDetailsPage = () => {
                   )
                 }
                 placeholder="Account Number"
-              />
-              <Field
+              /> */}
+              {/* <Field
                 icon={<FaUniversity />}
                 value={form.bankingDetails.bankName}
                 onChange={(e: any) =>
                   handleNested("bankingDetails", "bankName", e.target.value)
                 }
                 placeholder="Bank Name"
-              />
+              /> */}
               <Field
                 icon={<FaBuilding />}
                 value={form.bankingDetails.iban}

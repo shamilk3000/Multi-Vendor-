@@ -17,7 +17,7 @@ const Navbar = () => {
             transition={{ type: "spring", stiffness: 300 }}
             className="text-2xl font-bold cursor-pointer mt-2"
           >
-            MyShop
+            Bazario
           </motion.div>
 
           {/* Menu Items */}

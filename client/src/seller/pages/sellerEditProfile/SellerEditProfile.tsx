@@ -494,24 +494,24 @@ const SellerEditPage = () => {
             //   handleChange(["bankingDetails", "accountHolder"], e.target.value)
             // }
           />
-          <Input
+          {/* <Input
             label="Account Number"
             icon={<FaCreditCard />}
             value={form.bankingDetails.accountNumber}
             readOnly
-            // onChange={(e: any) =>
-            //   handleChange(["bankingDetails", "accountNumber"], e.target.value)
-            // }
-          />
-          <Input
+            onChange={(e: any) =>
+              handleChange(["bankingDetails", "accountNumber"], e.target.value)
+            }
+          /> */}
+          {/* <Input
             label="Bank Name"
             icon={<FaUniversity />}
             value={form.bankingDetails.bankName}
             readOnly
-            // onChange={(e: any) =>
-            //   handleChange(["bankingDetails", "bankName"], e.target.value)
-            // }
-          />
+            onChange={(e: any) =>
+              handleChange(["bankingDetails", "bankName"], e.target.value)
+            }
+          /> */}
           <Input
             label="IBAN"
             icon={<FaCreditCard />}
