@@ -31,7 +31,7 @@ import { Line } from "react-chartjs-2";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import api from "../../../features/axios";
+import axios from "axios";
 import { logout, setSeller } from "@/redux/authSlice";
 import { useDispatch } from "react-redux";
 import QRCode from "react-qr-code";
@@ -72,7 +72,9 @@ console.log(dashboardData);
 
     const checkSession = async () => {
       try {
-        const res = await api.get("/seller/coockie-test");
+        const res = await axios.get("/api/seller/coockie-test", {
+          withCredentials: true,
+        });
 
         if (res.data.success == true) {
           dispatch(setSeller(res.data.seller));

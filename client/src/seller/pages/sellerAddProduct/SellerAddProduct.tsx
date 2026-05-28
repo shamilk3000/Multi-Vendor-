@@ -100,8 +100,8 @@ const AddProduct = () => {
         )
       : 0;
 
-  const descriptionArray = formData.description
-    .split("\n")
+  const descriptionArray = formData?.description
+    ?.split("\n")
     .map((p) => p.trim())
     .filter(Boolean); // cleaner 😏
 
@@ -361,7 +361,7 @@ const AddProduct = () => {
                   className={`${inputStyle} peer cursor-pointer`}
                 >
                   <option value="">Select Category</option>
-                  {categories.map((cat: Category, i: Key) => (
+                  {categories?.map((cat: Category, i: Key) => (
                     <option key={i} value={cat._id}>
                       {cat.name}
                     </option>
@@ -387,7 +387,7 @@ const AddProduct = () => {
                   className={`${inputStyle} peer cursor-pointer`}
                 >
                   <option value="">Sub Category</option>
-                  {subCategories.map((sub, i) => (
+                  {subCategories?.map((sub, i) => (
                     <option key={i} value={sub._id}>
                       {sub.name}
                     </option>
@@ -527,7 +527,7 @@ const AddProduct = () => {
             </p>
 
             <div className="flex gap-2 md:gap-3 flex-wrap">
-              {image.map((img, index) => (
+              {image?.map((img, index) => (
                 <div
                   key={index}
                   className="relative w-18 h-18 md:w-20 md:h-20 rounded-lg overflow-hidden group  cursor-pointer"
