@@ -23,7 +23,7 @@ app.use(cookieParser());
 app.use("/api/seller", sellerRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api", userRoutes);
-app.use("api/webhook",webhookRoutes);
+app.use("/api/webhook",webhookRoutes);
 
 app.use(cors({
   origin: process.env.CORS_ORIGIN,

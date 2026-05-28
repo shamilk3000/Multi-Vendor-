@@ -11,7 +11,7 @@ const Product = require("../Models/productModel");
 const Category = require("../Models/categoryModel");
 
 router.post(
-  "/endpoint",
+  "/",
   express.raw({ type: "application/json" }),
   async (req, res) => {
     console.log("✅ Webhook called");
