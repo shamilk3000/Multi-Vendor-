@@ -14,6 +14,7 @@ import {
   FaWhatsapp,
   FaFacebook,
   FaInstagram,
+  FaClock,
 } from "react-icons/fa";
 import { useSellerProfile } from "../../../hooks/seller/profile/useProfile";
 import SellerProfileSkeleton from "@/seller/components/skeletons/profileSkeleton";
@@ -64,6 +65,22 @@ const SellerFullProfile = () => {
               value={seller.phone}
             />
             <Row icon={<FaEnvelope />} label="Email" value={seller.email} />
+            <Row
+              icon={<FaClock />}
+              label="Expires"
+              value={
+                seller.subscriptionExpiry
+                  ? new Date(seller.subscriptionExpiry).toLocaleDateString(
+                      "en-GB",
+                      {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      },
+                    )
+                  : "N/A"
+              }
+            />
           </div>
 
           {/* ADDRESS */}
