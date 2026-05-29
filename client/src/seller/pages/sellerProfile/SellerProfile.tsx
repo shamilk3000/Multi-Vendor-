@@ -231,11 +231,11 @@ const SellerFullProfile = () => {
               label="IBAN"
               value={seller.bankingDetails.IBANnumber}
             />
-            <Row
+            {/* <Row
               icon={<FaRegCreditCard />}
               label="Stripe ID"
               value={seller.bankingDetails.stripeAccountId}
-            />
+            /> */}
           </div>
 
           {/* FILES (dummy placeholders) */}

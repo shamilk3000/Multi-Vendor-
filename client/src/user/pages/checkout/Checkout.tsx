@@ -28,14 +28,14 @@ import api from "../../../features/axios";
 const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const user = useSelector((state: any) => state.auth.user);
-  if (!user) {
-    navigate("/");
-  }
   const [searchParams] = useSearchParams();
   const productId = searchParams.get("productId");
   const quantity = Number(searchParams.get("quantity"));
-
+  
   const { sellerId, shopName } = useParams();
+  if (!user) {
+    navigate(`/${sellerId}/${shopName}/login`);
+  }
   const isBuyNow = !!productId && !!quantity;
 
   const { data: product, isLoading: productLoading } = useProductByIdForUser(

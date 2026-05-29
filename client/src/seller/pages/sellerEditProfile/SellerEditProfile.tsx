@@ -521,15 +521,15 @@ const SellerEditPage = () => {
             //   handleChange(["bankingDetails", "iban"], e.target.value)
             // }
           />{" "}
-          <Input
+          {/* <Input
             label="Strip AccountId"
             icon={<FaRegCreditCard />}
             value={form.bankingDetails.stripeAccountId}
             readOnly
-            // onChange={(e: any) =>
-            //   handleChange(["bankingDetails", "iban"], e.target.value)
-            // }
-          />
+            onChange={(e: any) =>
+              handleChange(["bankingDetails", "iban"], e.target.value)
+            }
+          /> */}
         </div>
 
         {/* SAVE */}
