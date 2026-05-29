@@ -262,13 +262,21 @@ const updateOrderStatus = async (orderId, newStatus) => {
     if (newStatus === "Cancelled") {
       const payment = await Payment.findById(order.paymentId);
       const seller = await Seller.findById(order.sellerId);
-      seller.wallet.creditedAmount -= payment.creditedAmount;
-      seller.wallet.stripeFee -= payment.stripeFee;
-      seller.wallet.total -= payment.totalAmount;
+      seller.wallet.creditedAmount = Number(
+        (seller.wallet.creditedAmount - payment.creditedAmount).toFixed(2),
+      );
+
+      seller.wallet.stripeFee = Number(
+        (seller.wallet.stripeFee - payment.stripeFee).toFixed(2),
+      );
+
+      seller.wallet.total = Number(
+        (seller.wallet.total - payment.totalAmount).toFixed(2),
+      );
       payment.paymentStatus = "cancelled";
       await seller.save();
       await payment.save();
-      
+
       for (const item of order.orderItems) {
         const category = await Category.findById(item.product.category);
         const subCategory = await Category.findById(item.product.subCategory);

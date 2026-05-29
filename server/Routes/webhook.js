@@ -132,9 +132,17 @@ router.post(
             );
             await cart.save();
           }
-          seller.wallet.creditedAmount += creditedAmount;
-          seller.wallet.stripeFee += stripeFee;
-          seller.wallet.total += totalAmount;
+          seller.wallet.creditedAmount = Number(
+            (seller.wallet.creditedAmount + creditedAmount).toFixed(2),
+          );
+
+          seller.wallet.stripeFee = Number(
+            (seller.wallet.stripeFee + stripeFee).toFixed(2),
+          );
+
+          seller.wallet.total = Number(
+            (seller.wallet.total + totalAmount).toFixed(2),
+          );
           await seller.save();
           order.stripeFee = stripeFee;
           order.creditedAmount = creditedAmount;
