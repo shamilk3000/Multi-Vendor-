@@ -19,7 +19,7 @@ app.use("/api/webhook", webhookRoutes);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "Public")));
 app.use(cookieParser());
 // app.use(cors({
 //   origin: process.env.CORS_ORIGIN,
