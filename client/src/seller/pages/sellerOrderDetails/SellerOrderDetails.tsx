@@ -614,7 +614,11 @@ const OrderDetails: React.FC = () => {
           }}
         >
           <span>Total</span>
-          <span> {orderdetails.totalSellingPrice} - {orderdetails.stripeFee} = ${orderdetails.creditedAmount} </span>
+          <span>
+            {" "}
+            {orderdetails.totalSellingPrice} - {orderdetails.stripeFee} = $
+            {orderdetails.creditedAmount}{" "}
+          </span>
         </div>
       </motion.div>
 

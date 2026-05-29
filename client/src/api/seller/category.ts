@@ -8,8 +8,7 @@ export const getCategories = async (params?: { onlyActive?: boolean }) => {
   return res.data;
 };
 
-export const createCategory = async (data: Partial<Category>) => {console.log(data);
-
+export const createCategory = async (data: Partial<Category>) => {
   const res = await api.post("/seller/create-category", data);
   return res.data;
 };

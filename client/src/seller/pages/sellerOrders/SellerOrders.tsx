@@ -358,7 +358,8 @@ const SellerOrders: React.FC = () => {
                     </span>
 
                     <span className="font-semibold text-black">
-                      Total: {order.totalSellingPrice} - {order.stripeFee} = ${order.creditedAmount}
+                      Total: {order.totalSellingPrice} - {order.stripeFee} = $
+                      {order.creditedAmount}
                     </span>
                   </div>
                 </motion.div>

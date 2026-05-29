@@ -31,7 +31,7 @@ const Checkout: React.FC = () => {
   const [searchParams] = useSearchParams();
   const productId = searchParams.get("productId");
   const quantity = Number(searchParams.get("quantity"));
-  
+
   const { sellerId, shopName } = useParams();
   if (!user) {
     navigate(`/${sellerId}/${shopName}/login`);
@@ -45,32 +45,31 @@ const Checkout: React.FC = () => {
   const { data: cartdata, isLoading: cartLoading } = useCart();
 
   const [existing, setExisting] = useState<any>(null);
-useEffect(() => {
-  // wait until loading finished
-  if (productLoading || cartLoading) return;
+  useEffect(() => {
+    // wait until loading finished
+    if (productLoading || cartLoading) return;
 
-  // if no cart data AND no valid buy now params
-  if (
-    (!cartdata || cartdata.items?.length === 0) &&
-    (!productId || !quantity)
-  ) {
-    navigate(`/${sellerId}/${shopName}`, { replace: true });
-  }
-}, [
-  cartdata,
-  productId,
-  quantity,
-  productLoading,
-  cartLoading,
-  navigate,
-  sellerId,
-  shopName,
-]);
+    // if no cart data AND no valid buy now params
+    if (
+      (!cartdata || cartdata.items?.length === 0) &&
+      (!productId || !quantity)
+    ) {
+      navigate(`/${sellerId}/${shopName}`, { replace: true });
+    }
+  }, [
+    cartdata,
+    productId,
+    quantity,
+    productLoading,
+    cartLoading,
+    navigate,
+    sellerId,
+    shopName,
+  ]);
 
   useEffect(() => {
     const getAddress = async () => {
       try {
-      
         const res = await api.get("/get-user-address");
 
         setExisting(res.data.address);
@@ -116,10 +115,10 @@ useEffect(() => {
   }
 
   useEffect(() => {
-  if (cart && cart.items.length === 0 && !isBuyNow) {
-    navigate(`/${sellerId}/${shopName}/shop`);
-  }
-}, [cart, isBuyNow, navigate, sellerId, shopName]);
+    if (cart && cart.items.length === 0 && !isBuyNow) {
+      navigate(`/${sellerId}/${shopName}/shop`);
+    }
+  }, [cart, isBuyNow, navigate, sellerId, shopName]);
 
   const [formData, setFormData] = useState({
     name: user?.name,
@@ -258,8 +257,7 @@ useEffect(() => {
         },
       );
       const order = res.data.order;
-      
-      
+
       let filteredItems = order.orderItems.filter(
         (item: any) =>
           !(
@@ -268,12 +266,12 @@ useEffect(() => {
           ),
       );
       const shouldCreatePayment = filteredItems.length === 0;
-      
+
       if (shouldCreatePayment) {
         try {
           const res = await toast.promise(
             api.post("/create-checkout-session", {
-              orderId :order._id,
+              orderId: order._id,
             }),
             {
               loading: "Redirecting to payment...",
@@ -294,12 +292,10 @@ useEffect(() => {
           console.log("Payment retry error:", err);
         }
       } else {
-        navigate(
-        `/${sellerId}/${shopName}/customize-product/${order._id}`,
-        { replace: true },
-      );
+        navigate(`/${sellerId}/${shopName}/customize-product/${order._id}`, {
+          replace: true,
+        });
       }
-      
     } catch (error: any) {
       console.log("ORDER PLACING ERROR 👉", error);
     }
@@ -597,7 +593,7 @@ useEffect(() => {
         {/* TOASTER */}
         {/* <Toaster position="top-right" containerStyle={{ top: 75 }} /> */}
       </div>
-       <Footer  sellerId={sellerId!} />
+      <Footer sellerId={sellerId!} />
     </div>
   );
 };

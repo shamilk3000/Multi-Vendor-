@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateOrderStatus } from "../../../api/seller/order";
+import { updateAmount } from "../../../api/admin/profile";
 
-const useInvalidateOrder = () => {
+const useInvalidateAdmin = () => {
   const queryClient = useQueryClient();
 
   return () => {
@@ -36,11 +36,11 @@ const useInvalidateOrder = () => {
   };
 };
 
-export const ultrateUpdateOrderStatus = () => {
-  const invalidate = useInvalidateOrder();
+export const ultrateAmount = () => {
+  const invalidate = useInvalidateAdmin();
 
   return useMutation({
-    mutationFn: updateOrderStatus,
+    mutationFn: updateAmount,
     onSuccess: invalidate,
   });
 };

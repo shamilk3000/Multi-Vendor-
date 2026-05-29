@@ -1,10 +1,13 @@
 const express = require("express");
 const router = express.Router();
-// const sellerController = require("../Controller/sellerController");
+const adminController = require("../Controller/adminController");
 // const adminController = require("../Controller/adminController");
 // const userController = require("../Controller/userController");
 // const productController = require("../Controller/productController");
 
+router.post("/admin-login", adminController.login);
+router.get("/get-admin-profiles/:email", adminController.getSellers);
+router.put("/update-amount/:email/:sellerId", adminController.updateAmount);
 // router.get("/get-all-sellers", sellerController.getAllSellers);
 // router.get("/get-seller-profile-id/:id", sellerController.getSellerProfileById);
 // router.patch("/update-seller-status/:id/:status", sellerController.updateSellerStatus);

@@ -81,9 +81,9 @@ const sellerSchema = new mongoose.Schema(
       },
     },
     bankingDetails: {
-      accountNumber: {
-        type: String,
-      },
+      // accountNumber: {
+      //   type: String,
+      // },
       accountHolderName: {
         type: String,
       },
@@ -96,9 +96,9 @@ const sellerSchema = new mongoose.Schema(
       bankName: {
         type: String,
       },
-      stripeAccountId: {
-        type: String,
-      },
+      // stripeAccountId: {
+      //   type: String,
+      // },
     },
     role: {
       type: String,

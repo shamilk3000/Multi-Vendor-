@@ -105,7 +105,7 @@ const createSellerDetails = async (req, res) => {
     existingSeller.bankingDetails.IBANnumber = sellerData.bankingDetails.iban;
     // existingSeller.bankingDetails.SWIFTcode =
     //   sellerData.bankingDetails.SWIFTcode;
-    // existingSeller.bankingDetails.bankName = sellerData.bankingDetails.bankName;
+    existingSeller.bankingDetails.bankName = sellerData.bankingDetails.bankName;
 
     existingSeller.isComplete = true;
     await existingSeller.save();
@@ -116,7 +116,6 @@ const createSellerDetails = async (req, res) => {
     //     type: "express",
     //   });
     //   existingSeller.bankingDetails.stripeAccountId = account.id;
-
 
     //   const accountLink = await stripe.accountLinks.create({
     //     account: account.id,

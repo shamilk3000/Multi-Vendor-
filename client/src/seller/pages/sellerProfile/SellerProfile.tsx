@@ -220,12 +220,12 @@ const SellerFullProfile = () => {
               icon={<FaCreditCard />}
               label="Account Number"
               value={seller.bankingDetails.accountNumber}
-            />
+            /> */}
             <Row
               icon={<FaUniversity />}
               label="Bank Name"
               value={seller.bankingDetails.bankName}
-            /> */}
+            />
             <Row
               icon={<FaCreditCard />}
               label="IBAN"

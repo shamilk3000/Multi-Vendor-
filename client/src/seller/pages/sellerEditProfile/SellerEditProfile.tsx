@@ -321,10 +321,11 @@ const SellerEditPage = () => {
           <Input
             label="Business Name"
             icon={<FaStore />}
+            readOnly
             value={form.businessDetails.bussinessName}
-            onChange={(e: any) =>
-              handleChange(["businessDetails", "bussinessName"], e.target.value)
-            }
+            // onChange={(e: any) =>
+            //   handleChange(["businessDetails", "bussinessName"], e.target.value)
+            // }
           />
 
           <Input
@@ -503,15 +504,15 @@ const SellerEditPage = () => {
               handleChange(["bankingDetails", "accountNumber"], e.target.value)
             }
           /> */}
-          {/* <Input
+          <Input
             label="Bank Name"
             icon={<FaUniversity />}
             value={form.bankingDetails.bankName}
             readOnly
-            onChange={(e: any) =>
-              handleChange(["bankingDetails", "bankName"], e.target.value)
-            }
-          /> */}
+            // onChange={(e: any) =>
+            //   handleChange(["bankingDetails", "bankName"], e.target.value)
+            // }
+          />
           <Input
             label="IBAN"
             icon={<FaCreditCard />}

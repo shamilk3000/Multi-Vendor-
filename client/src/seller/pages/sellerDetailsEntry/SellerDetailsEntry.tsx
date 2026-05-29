@@ -132,9 +132,9 @@ const SellerDetailsPage = () => {
     },
     bankingDetails: {
       accountHolder: "",
-      // accountNumber: "",
-      // bankName: "",
+      bankName: "",
       iban: "",
+      // accountNumber: "",
       // stripeAccountId: "",
     },
     personalImage: null as File | null,
@@ -918,14 +918,14 @@ const SellerDetailsPage = () => {
                 }
                 placeholder="Account Number"
               /> */}
-              {/* <Field
+              <Field
                 icon={<FaUniversity />}
                 value={form.bankingDetails.bankName}
                 onChange={(e: any) =>
                   handleNested("bankingDetails", "bankName", e.target.value)
                 }
                 placeholder="Bank Name"
-              /> */}
+              />
               <Field
                 icon={<FaBuilding />}
                 value={form.bankingDetails.iban}
