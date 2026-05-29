@@ -5,9 +5,8 @@ export const useReviewForUser = (productId?: string) => {
   return useQuery({
     queryKey: ["reviews", "user", productId],
     queryFn: () => getReviewForUser({ productId: productId! }),
-     refetchInterval: 5000,
+    refetchInterval: 1000,
     staleTime: 0,
     enabled: !!productId,
   });
 };
-

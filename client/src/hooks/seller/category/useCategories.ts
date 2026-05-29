@@ -6,7 +6,7 @@ export const useCategories = (params?: { onlyActive?: boolean }) => {
   return useQuery({
     queryKey: ["categories", params], // important for filtering
     queryFn: () => getCategories(params),
-     refetchInterval: 3000,
+     refetchInterval: 1000,
   staleTime: 0,
   });
 };
