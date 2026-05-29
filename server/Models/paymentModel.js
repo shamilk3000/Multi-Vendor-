@@ -11,9 +11,14 @@ const paymentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Seller",
     },
-    amount: {
+    totalAmount: {
       type: Number,
-      required: true,
+    },
+    stripeFee: {
+      type: Number,
+    },
+    creditedAmount: {
+      type: Number,
     },
     paymentStatus: {
       type: String,

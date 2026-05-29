@@ -108,26 +108,26 @@ const createSellerDetails = async (req, res) => {
     // existingSeller.bankingDetails.bankName = sellerData.bankingDetails.bankName;
 
     existingSeller.isComplete = true;
+    await existingSeller.save();
 
-    let stripeOnboardingUrl = null;
-    if (!existingSeller.stripeAccountId) {
-      const account = await stripe.accounts.create({
-        type: "express",
-      });
-      existingSeller.bankingDetails.stripeAccountId = account.id;
+    // let stripeOnboardingUrl = null;
+    // if (!existingSeller.stripeAccountId) {
+    //   const account = await stripe.accounts.create({
+    //     type: "express",
+    //   });
+    //   existingSeller.bankingDetails.stripeAccountId = account.id;
 
-      await existingSeller.save();
 
-      const accountLink = await stripe.accountLinks.create({
-        account: account.id,
-        refresh_url: process.env.REFRESH_URL,
-        return_url: process.env.RETURN_URL,
-        type: "account_onboarding",
-      });
+    //   const accountLink = await stripe.accountLinks.create({
+    //     account: account.id,
+    //     refresh_url: process.env.REFRESH_URL,
+    //     return_url: process.env.RETURN_URL,
+    //     type: "account_onboarding",
+    //   });
 
-      // you can return this later if needed
-      stripeOnboardingUrl = accountLink.url;
-    }
+    //   // you can return this later if needed
+    //   stripeOnboardingUrl = accountLink.url;
+    // }
 
     const token = createJwt({
       id: existingSeller._id,
@@ -143,7 +143,7 @@ const createSellerDetails = async (req, res) => {
     req.seller = existingSeller;
     return {
       seller: existingSeller,
-      onboardingUrl: stripeOnboardingUrl,
+      // onboardingUrl: stripeOnboardingUrl,
     };
   } catch (error) {
     console.error("createSellerDetails Service Error:", error);
@@ -320,7 +320,7 @@ const getSellerDashboard = async (seller) => {
           },
 
           totalAmount: {
-            $sum: "$amount",
+            $sum: "$creditedAmount",
           },
         },
       },
@@ -379,8 +379,16 @@ const getSellerDashboard = async (seller) => {
         $group: {
           _id: null,
 
-          totalRevenue: {
-            $sum: "$amount",
+          creditedAmount: {
+            $sum: "$creditedAmount",
+          },
+
+          totalAmount: {
+            $sum: "$totalAmount",
+          },
+
+          stripeFee: {
+            $sum: "$stripeFee",
           },
         },
       },
@@ -388,12 +396,19 @@ const getSellerDashboard = async (seller) => {
       {
         $project: {
           _id: 0,
-          totalRevenue: 1,
+
+          creditedAmount: 1,
+          totalAmount: 1,
+          stripeFee: 1,
         },
       },
     ]);
 
-    const revenue = totalRevenue[0]?.totalRevenue || 0;
+    const revenue = totalRevenue[0] || {
+      creditedAmount: 0,
+      totalAmount: 0,
+      stripeFee: 0,
+    };
 
     const ordersStats = await Order.aggregate([
       {
@@ -909,10 +924,20 @@ const handleSellerSubscription = async (priceId, sellerId, sellerEmail) => {
       success_url: process.env.SUBSCRIPTION_SUCCESS_URL,
       cancel_url: process.env.SUBSCRIPTION_CANCEL_URL,
 
+      // checkout session metadata
       metadata: {
         type: "SELLER_SUBSCRIPTION",
         sellerId,
         sellerEmail,
+      },
+
+      // subscription metadata
+      subscription_data: {
+        metadata: {
+          type: "SELLER_SUBSCRIPTION",
+          sellerId,
+          sellerEmail,
+        },
       },
     });
     console.log("✅ No subscription OR canceled → create new subscription");

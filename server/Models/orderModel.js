@@ -46,6 +46,12 @@ const orderSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
+    stripeFee: {
+      type: Number,
+    },
+    creditedAmount: {
+      type: Number,
+    },
     totalDiscount: {
       type: Number,
       required: true,

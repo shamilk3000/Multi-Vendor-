@@ -13,7 +13,7 @@ const paymentHandler = async (req, res) => {
     if (!seller) {
       return res.status(404).json({ message: "Seller not found" });
     }
-    const sellerStripeAccountId = seller.bankingDetails.stripeAccountId;
+    // const sellerStripeAccountId = seller.bankingDetails.stripeAccountId;
 
     const { orderId } = req.body;
     const order = await orderService.getOrderById(orderId);
@@ -60,9 +60,9 @@ const paymentHandler = async (req, res) => {
       ],
 
       payment_intent_data: {
-        transfer_data: {
-          destination: sellerStripeAccountId,
-        },
+        // transfer_data: {
+        //   destination: sellerStripeAccountId,
+        // },
 
         metadata: {
           type: "ORDER_PAYMENT",

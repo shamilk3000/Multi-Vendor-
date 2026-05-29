@@ -37,9 +37,9 @@ router.post(
         case "ORDER_PAYMENT":
           // order logic
           const orderId = session.metadata.orderId;
-
+          const sellerId1 = session.metadata.sellerId;
           // 🔥 get real order details
-
+          const seller = await Seller.findById(sellerId1);
           const order = await Order.findById(orderId)
             .populate("userId")
             .populate("sellerId")
@@ -57,11 +57,64 @@ router.post(
             session.payment_intent,
           );
 
+          let totalAmount = 0;
+          let stripeFee = 0;
+          let creditedAmount = 0;
+
+          while (true) {
+            try {
+              console.log("⏳ Waiting for Stripe balance transaction...");
+
+              // wait 10 seconds
+              // await new Promise((resolve) =>
+              //   setTimeout(resolve, 10000)
+              // );
+
+              const charge = await stripe.charges.retrieve(
+                paymentIntent.latest_charge,
+              );
+
+              // if still not ready continue loop
+              if (!charge.balance_transaction) {
+                console.log("⚠️ balance_transaction still null. Retrying...");
+
+                continue;
+              }
+
+              const balanceTransaction =
+                await stripe.balanceTransactions.retrieve(
+                  charge.balance_transaction,
+                );
+
+              totalAmount = balanceTransaction.amount / 100;
+
+              stripeFee = balanceTransaction.fee / 100;
+
+              creditedAmount = balanceTransaction.net / 100;
+
+              // console.log({
+              //   totalAmount,
+              //   stripeFee,
+              //   creditedAmount,
+              // });
+
+              // stop loop after success
+              break;
+            } catch (error) {
+              console.log(
+                "⚠️ Error fetching Stripe fee. Retrying...",
+                error.message,
+              );
+            }
+          }
+
           const payment = new Payment({
             userId: order.userId._id,
             sellerId: order.sellerId._id,
             orderId: order._id,
-            amount: order.totalSellingPrice,
+            totalAmount,
+            stripeFee,
+            creditedAmount,
             paymentStatus: "success",
             paymentMethod: paymentIntent.payment_method_types[0],
             paymentIntentId: session.payment_intent,
@@ -79,6 +132,12 @@ router.post(
             );
             await cart.save();
           }
+          seller.wallet.creditedAmount += creditedAmount;
+          seller.wallet.stripeFee += stripeFee;
+          seller.wallet.total += totalAmount;
+          await seller.save();
+          order.stripeFee = stripeFee;
+          order.creditedAmount = creditedAmount;
           await order.save();
 
           for (const item of order.orderItems) {

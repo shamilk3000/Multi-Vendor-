@@ -1,3 +1,4 @@
+const Seller = require("../Models/sellerModel");
 const Address = require("../Models/addressModel");
 const Cart = require("../Models/cartModel");
 const CartItem = require("../Models/cartItemModel");
@@ -260,9 +261,14 @@ const updateOrderStatus = async (orderId, newStatus) => {
       });
     if (newStatus === "Cancelled") {
       const payment = await Payment.findById(order.paymentId);
+      const seller = await Seller.findById(order.sellerId);
+      seller.wallet.creditedAmount -= payment.creditedAmount;
+      seller.wallet.stripeFee -= payment.stripeFee;
+      seller.wallet.total -= payment.totalAmount;
       payment.paymentStatus = "cancelled";
+      await seller.save();
       await payment.save();
-
+      
       for (const item of order.orderItems) {
         const category = await Category.findById(item.product.category);
         const subCategory = await Category.findById(item.product.subCategory);

@@ -11,8 +11,8 @@ router.post("/google-auth", sellerController.googleAuthController);             
 router.post("/start-seller-signup", sellerController.startSellerSignup);                                           //using
 router.post("/verify-seller-signup-otp", sellerController.verifySellerSignupOtp);                                   //using
 router.post("/create-seller-details", sellerController.createSellerDetails);                                       //using
-router.post("/stripe-check", sellerController.checkStripeSellerStatus );                                       //using
-router.post("/stripe-retry-onboarding", sellerController.retryStripeOnboarding);                                       //using
+// router.post("/stripe-check", sellerController.checkStripeSellerStatus );                                       //using
+// router.post("/stripe-retry-onboarding", sellerController.retryStripeOnboarding);                                       //using
 router.post("/seller-login", sellerController.sellerLogin);                                                         //using
 router.post("/logout", sellerAuth, sellerController.logout);                                                        //using
 

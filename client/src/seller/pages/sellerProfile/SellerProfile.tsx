@@ -40,12 +40,12 @@ const SellerFullProfile = () => {
           {/* Header */}
           <div className="text-center mb-4">
             <div className="w-20 h-20 bg-black text-white rounded-full flex items-center justify-center text-2xl mx-auto">
-              {seller.name.charAt(0)}
+              {seller?.name?.charAt(0)}
             </div>
 
             <h1 className="text-2xl font-bold mt-3 flex items-center justify-center gap-2">
               <FaUserTie />
-              {seller.name}
+              {seller?.name}
             </h1>
 
             <p className="text-gray-500 text-sm">

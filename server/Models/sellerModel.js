@@ -24,6 +24,23 @@ const sellerSchema = new mongoose.Schema(
     personalImage: {
       type: String,
     },
+    wallet: {
+      total: {
+        type: Number,
+        required: true,
+        default: 0,
+      },
+      stripeFee: {
+        type: Number,
+        required: true,
+        default: 0,
+      },
+      creditedAmount: {
+        type: Number,
+        required: true,
+        default: 0,
+      },
+    },
     subscriptionId: {
       type: String,
     },

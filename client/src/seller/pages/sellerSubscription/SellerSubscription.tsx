@@ -57,31 +57,31 @@ const SubscriptionPage: React.FC = () => {
       }
     };
     checkSession();
-    check();
+    // check();
   }, []);
   useEffect(() => {
     const statusSub = searchParams.get("statusSub");
-    const statusStripe = searchParams.get("statusStripe");
+    // const statusStripe = searchParams.get("statusStripe");
 
     if (!statusSub) return;
-    if (!statusStripe) return;
-    if (statusStripe == "false") {
-      toast.dismiss();
-      toast.error("Stripe onboarding failed", {
-        icon: <FaExclamationTriangle className="text-red-500" />,
-        style: {
-          borderRadius: "12px",
-          background: "#111",
-          color: "#fff",
-          border: "1px solid #333",
-          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
-        },
-        duration: 3500,
-      });
-      retryOnboard();
-    } else if (statusStripe == "true") {
-      check();
-    }
+    // if (!statusStripe) return;
+    // if (statusStripe == "false") {
+    //   toast.dismiss();
+    //   toast.error("Stripe onboarding failed", {
+    //     icon: <FaExclamationTriangle className="text-red-500" />,
+    //     style: {
+    //       borderRadius: "12px",
+    //       background: "#111",
+    //       color: "#fff",
+    //       border: "1px solid #333",
+    //       boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+    //     },
+    //     duration: 3500,
+    //   });
+    //   retryOnboard();
+    // } else if (statusStripe == "true") {
+    //   check();
+    // }
 
     if (statusSub === "false" && sellerSubStatus == true) {
       toast.dismiss();
@@ -99,41 +99,41 @@ const SubscriptionPage: React.FC = () => {
       navigate("/seller/subscription", { replace: true });
     }
   }, [searchParams, sellerSubStatus]);
-  const check = async () => {
-    try {
-      const res = await axios.post("/api/seller/stripe-check/", {
-        sellerId: seller._id,
-      });
-      const { isReady } = res.data;
-      if (!isReady) {
-        toast.dismiss();
-        toast.error("Retry onboarding", {
-          icon: <FaExclamationTriangle className="text-red-500" />,
-          style: {
-            borderRadius: "12px",
-            background: "#111",
-            color: "#fff",
-            border: "1px solid #333",
-            boxShadow: "0 0 10px rgba(255,255,255,0.1)",
-          },
-          duration: 3500,
-        });
-        retryOnboard();
-      }
-    } catch (err: any) {
-      console.log(err?.response?.data);
-    }
-  };
-  const retryOnboard = async () => {
-    try {
-      const res = await axios.post("/api/seller/stripe-retry-onboarding", {
-        sellerId: seller._id,
-      });
-      window.location.href = res.data.onboardingUrl;
-    } catch (err: any) {
-      console.log(err?.response?.data);
-    }
-  };
+  // const check = async () => {
+  //   try {
+  //     const res = await axios.post("/api/seller/stripe-check/", {
+  //       sellerId: seller._id,
+  //     });
+  //     const { isReady } = res.data;
+  //     if (!isReady) {
+  //       toast.dismiss();
+  //       toast.error("Retry onboarding", {
+  //         icon: <FaExclamationTriangle className="text-red-500" />,
+  //         style: {
+  //           borderRadius: "12px",
+  //           background: "#111",
+  //           color: "#fff",
+  //           border: "1px solid #333",
+  //           boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+  //         },
+  //         duration: 3500,
+  //       });
+  //       retryOnboard();
+  //     }
+  //   } catch (err: any) {
+  //     console.log(err?.response?.data);
+  //   }
+  // };
+  // const retryOnboard = async () => {
+  //   try {
+  //     const res = await axios.post("/api/seller/stripe-retry-onboarding", {
+  //       sellerId: seller._id,
+  //     });
+  //     window.location.href = res.data.onboardingUrl;
+  //   } catch (err: any) {
+  //     console.log(err?.response?.data);
+  //   }
+  // };
 
   const handleSubscribe = async () => {
     if (!seller) return;

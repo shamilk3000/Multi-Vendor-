@@ -2,7 +2,6 @@
 import {
   FaBox,
   FaShoppingCart,
-  FaRupeeSign,
   FaUsers,
   FaTags,
   FaClock,
@@ -14,6 +13,9 @@ import {
   FaDownload,
   FaLink,
   FaQrcode,
+  FaWallet,
+  FaArrowDown,
+  FaPercent,
 } from "react-icons/fa";
 
 import {
@@ -254,9 +256,9 @@ console.log(dashboardData);
   const stats = [
     {
       title: "Total Revenue",
-      value: dashboardData?.revenue,
-      icon: <FaRupeeSign />,
-      tooltip: "Total earnings generated from all orders",
+      value: dashboardData?.revenue?.creditedAmount,
+      icon: <FaWallet />,
+      tooltip: `Total credited: ${dashboardData?.revenue?.totalAmount}, Stripe fee: ${dashboardData?.revenue?.stripeFee}, Available balance: ${dashboardData?.revenue?.creditedAmount}`,
     },
     {
       title: "Total Orders",
@@ -486,41 +488,93 @@ console.log(dashboardData);
         </div>
       </div>
 
-      <div className="border rounded-xl p-5 mb-5 bg-white hover:shadow-2xl transition mt-6">
-        {/* HEADER */}
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
-            <FaLink className="text-black" />
-            Website URL
-          </h2>
+     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6 items-center ">
+  {/* WALLET CARD */}
+  <div className="border rounded-xl p-4 bg-white hover:shadow-2xl transition">
+    <h2 className="font-semibold text-lg mb-5 flex items-center gap-2">
+      <FaWallet className="text-black" />
+      Wallet
+    </h2>
 
-          <button
-            onClick={handleCopy}
-            className="cursor-pointer px-3 py-2 rounded-lg bg-black text-white hover:bg-white hover:text-black border border-black transition flex items-center gap-2"
-          >
-            {copied ? <FaCheck /> : <FaRegCopy />}
-            <span className="text-sm">{copied ? "Copied" : "Copy"}</span>
-          </button>
+    <div className="space-y-1">
+      
+
+      <div className="flex justify-between items-center border rounded-lg p-2 bg-gray-50">
+        <div>
+          <p className="text-xs text-gray-500">Amount To Credited </p>
+          <p className="font-semibold text-lg text-green-600">
+            {dashboardData?.seller?.wallet?.creditedAmount || 0}
+          </p>
         </div>
 
-        {/* URL BOX */}
-        <div className="border rounded-xl md:p-4 p-2 bg-gray-50 flex items-start gap-3">
-          <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center shrink-0">
-            <FaLink />
-          </div>
-
-          <div className="overflow-hidden">
-            <p className="text-xs text-gray-500 mb-1">Online Store Link</p>
-
-            <p
-              onClick={() => window.open(webURL, "_blank")}
-              className="font-medium text-sm break-all text-black cursor-pointer hover:underline hover:text-blue-600 transition"
-            >
-              {webURL}
-            </p>
-          </div>
-        </div>
+        <FaArrowDown className="text-xl text-green-600" />
       </div>
+
+      <div className="flex justify-between items-center border rounded-lg p-2 bg-gray-50">
+        <div>
+          <p className="text-xs text-gray-500">Stripe Fee</p>
+          <p className="font-semibold text-lg text-red-500">
+             {dashboardData?.seller?.wallet?.stripeFee || 0}
+          </p>
+        </div>
+
+        <FaPercent className="text-xl text-red-500" />
+      </div>
+
+<div className="flex justify-between items-center border rounded-lg p-2 bg-gray-50">
+        <div>
+          <p className="text-xs text-gray-500">Total Amount</p>
+          <p className="font-semibold text-lg">
+             {dashboardData?.seller?.wallet?.total || 0}
+          </p>
+        </div>
+
+        <FaWallet className="text-xl text-black" />
+      </div>
+
+    </div>
+  </div>
+
+  {/* WEBSITE URL CARD */}
+<div className="border rounded-xl p-5 bg-white hover:shadow-2xl transition lg:col-span-2 ">
+      {/* HEADER */}
+    <div className="flex items-center justify-between mb-3">
+      <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
+        <FaLink className="text-black" />
+        Website URL
+      </h2>
+
+      <button
+        onClick={handleCopy}
+        className="cursor-pointer px-3 py-2 rounded-lg bg-black text-white hover:bg-white hover:text-black border border-black transition flex items-center gap-2"
+      >
+        {copied ? <FaCheck /> : <FaRegCopy />}
+        <span className="text-sm">
+          {copied ? "Copied" : "Copy"}
+        </span>
+      </button>
+    </div>
+
+    {/* URL BOX */}
+    <div className="border rounded-xl md:p-4 p-2 bg-gray-50 flex items-start gap-3">
+      <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center shrink-0">
+        <FaLink />
+      </div>
+
+<div className="overflow-hidden w-full">
+          <p className="text-xs text-gray-500 mb-1">
+          Online Store Link
+        </p>
+
+        <p
+          onClick={() => window.open(webURL, "_blank")}
+className="font-medium text-sm truncate text-black cursor-pointer hover:underline hover:text-blue-600 transition"        >
+          {webURL}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
 
       {/* QR CODE SECTION */}
       <div className="mt-6 bg-white rounded-2xl p-5 shadow-sm hover:shadow-xl transition hover:scale-[1.01] flex flex-col items-center">

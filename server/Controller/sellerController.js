@@ -69,8 +69,7 @@ const createSellerDetails = (req, res) => {
       const result = await sellerService.createSellerDetails(req, res);
       return res.status(201).json({
         seller: result.seller,
-        onboardingUrl: result.onboardingUrl,
-        message: "Seller profile completed. Please choose a plan",
+        message: "Seller profile completed. Please subscribe your plan",
       });
     } catch (error) {
       console.error("createSellerDetails Controller Error:", error);
@@ -79,88 +78,88 @@ const createSellerDetails = (req, res) => {
   });
 };
 
-const checkStripeSellerStatus = async (req, res) => {
-  try {
-    const { sellerId } = req.body;
-    const seller = await Seller.findById(sellerId);
+// const checkStripeSellerStatus = async (req, res) => {
+//   try {
+//     const { sellerId } = req.body;
+//     const seller = await Seller.findById(sellerId);
 
-    if (!seller) {
-      return res.status(400).json({
-        message: "Seller not found",
-      });
-    }
-    if (!seller.bankingDetails.stripeAccountId) {
-      return res.status(200).json({
-        isReady: false,
-      });
-    }
-    const account = await stripe.accounts.retrieve(
-      seller.bankingDetails.stripeAccountId,
-    );
+//     if (!seller) {
+//       return res.status(400).json({
+//         message: "Seller not found",
+//       });
+//     }
+//     if (!seller.bankingDetails.stripeAccountId) {
+//       return res.status(200).json({
+//         isReady: false,
+//       });
+//     }
+//     const account = await stripe.accounts.retrieve(
+//       seller.bankingDetails.stripeAccountId,
+//     );
 
-    const isReady =
-      account.details_submitted &&
-      account.charges_enabled &&
-      account.payouts_enabled;
+//     const isReady =
+//       account.details_submitted &&
+//       account.charges_enabled &&
+//       account.payouts_enabled;
 
-    return res.status(200).json({
-      isReady,
-      status: {
-        details_submitted: account.details_submitted,
-        charges_enabled: account.charges_enabled,
-        payouts_enabled: account.payouts_enabled,
-      },
-      requirements: {
-        currently_due: account.requirements?.currently_due || [],
-        past_due: account.requirements?.past_due || [],
-      },
-    });
-  } catch (error) {
-    console.error("createSellerDetails Controller Error:", error);
-    return res.status(500).json({ message: error.message });
-  }
-};
+//     return res.status(200).json({
+//       isReady,
+//       status: {
+//         details_submitted: account.details_submitted,
+//         charges_enabled: account.charges_enabled,
+//         payouts_enabled: account.payouts_enabled,
+//       },
+//       requirements: {
+//         currently_due: account.requirements?.currently_due || [],
+//         past_due: account.requirements?.past_due || [],
+//       },
+//     });
+//   } catch (error) {
+//     console.error("createSellerDetails Controller Error:", error);
+//     return res.status(500).json({ message: error.message });
+//   }
+// };
 
-const retryStripeOnboarding = async (req, res) => {
-  try {
-    const { sellerId } = req.body;
-    const seller = await Seller.findById(sellerId);
-    if (!seller) {
-      return res.status(400).json({
-        message: "Seller not found",
-      });
-    }
-    if (!seller.bankingDetails.stripeAccountId) {
-      const account = await stripe.accounts.create({
-        type: "express",
-      });
-      seller.bankingDetails.stripeAccountId = account.id;
+// const retryStripeOnboarding = async (req, res) => {
+//   try {
+//     const { sellerId } = req.body;
+//     const seller = await Seller.findById(sellerId);
+//     if (!seller) {
+//       return res.status(400).json({
+//         message: "Seller not found",
+//       });
+//     }
+//     if (!seller.bankingDetails.stripeAccountId) {
+//       const account = await stripe.accounts.create({
+//         type: "express",
+//       });
+//       seller.bankingDetails.stripeAccountId = account.id;
 
-      await seller.save();
+//       await seller.save();
 
-      const accountLink = await stripe.accountLinks.create({
-        account: account.id,
-        refresh_url: process.env.REFRESH_URL,
-        return_url: process.env.RETURN_URL,
-        type: "account_onboarding",
-      });
+//       const accountLink = await stripe.accountLinks.create({
+//         account: account.id,
+//         refresh_url: process.env.REFRESH_URL,
+//         return_url: process.env.RETURN_URL,
+//         type: "account_onboarding",
+//       });
 
-      // you can return this later if needed
-      return res.json({ onboardingUrl: accountLink.url });
-    }
+//       // you can return this later if needed
+//       return res.json({ onboardingUrl: accountLink.url });
+//     }
 
-    const accountLink = await stripe.accountLinks.create({
-      account: seller.bankingDetails.stripeAccountId,
-      refresh_url: process.env.REFRESH_URL,
-      return_url: process.env.RETURN_URL,
-      type: "account_onboarding",
-    });
+//     const accountLink = await stripe.accountLinks.create({
+//       account: seller.bankingDetails.stripeAccountId,
+//       refresh_url: process.env.REFRESH_URL,
+//       return_url: process.env.RETURN_URL,
+//       type: "account_onboarding",
+//     });
 
-    return res.json({ onboardingUrl: accountLink.url });
-  } catch (err) {
-    return res.status(500).json({ message: err.message });
-  }
-};
+//     return res.json({ onboardingUrl: accountLink.url });
+//   } catch (err) {
+//     return res.status(500).json({ message: err.message });
+//   }
+// };
 
 // const updateSeller = async (req, res) => {
 //   try {
@@ -398,8 +397,8 @@ module.exports = {
   getSellerDashboard,
   getSellerProfileById,
   createSellerDetails,
-  checkStripeSellerStatus,
-  retryStripeOnboarding,
+  // checkStripeSellerStatus,
+  // retryStripeOnboarding,
   updateSeller,
   // deleteSeller,
   updateSellerStatus,

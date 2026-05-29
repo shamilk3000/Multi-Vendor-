@@ -132,8 +132,8 @@ const SellerDetailsPage = () => {
     },
     bankingDetails: {
       accountHolder: "",
-      accountNumber: "",
-      bankName: "",
+      // accountNumber: "",
+      // bankName: "",
       iban: "",
       // stripeAccountId: "",
     },
@@ -256,7 +256,7 @@ const SellerDetailsPage = () => {
     if (step === 4) {
       const b = form.bankingDetails;
 
-      // if (Object.values(b).some((v) => !v)) return "Fill all banking fields";
+      if (Object.values(b).some((v) => !v)) return "Fill all banking fields";
 
       // ✅ Stripe validation
       // if (!/^acct_[a-zA-Z0-9]+$/.test(b.stripeAccountId))
@@ -344,10 +344,10 @@ const SellerDetailsPage = () => {
     );
 
     dispatch(setSeller(res.data.seller));
-    if (res.data.onboardingUrl) {
-      window.location.href = res.data.onboardingUrl;
-      return;
-    }
+    // if (res.data.onboardingUrl) {
+    //   window.location.href = res.data.onboardingUrl;
+    //   return;
+    // }
     navigate("/seller/subscription");
   };
 

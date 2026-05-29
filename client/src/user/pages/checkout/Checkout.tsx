@@ -26,13 +26,16 @@ import CheckOutSkeleton from "@/user/components/skeletons/checkOut";
 import api from "../../../features/axios";
 
 const Checkout: React.FC = () => {
+  const navigate = useNavigate();
   const user = useSelector((state: any) => state.auth.user);
+  if (!user) {
+    navigate("/");
+  }
   const [searchParams] = useSearchParams();
   const productId = searchParams.get("productId");
   const quantity = Number(searchParams.get("quantity"));
 
   const { sellerId, shopName } = useParams();
-  const navigate = useNavigate();
   const isBuyNow = !!productId && !!quantity;
 
   const { data: product, isLoading: productLoading } = useProductByIdForUser(
@@ -119,9 +122,9 @@ useEffect(() => {
 }, [cart, isBuyNow, navigate, sellerId, shopName]);
 
   const [formData, setFormData] = useState({
-    name: user.name,
+    name: user?.name,
     phone: "",
-    email: user.email,
+    email: user?.email,
     flatNoOrVillaNo: "",
     street: "",
     area: "",

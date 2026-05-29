@@ -300,11 +300,12 @@ const createCategory = async (categoryData, seller) => {
     }
     let category = await Category.create({
       name: categoryData.name,
-      // description: categoryData.description,
       parentCategory: categoryData.parentCategory || null,
       sellerId: seller._id,
     });
 
+    seller.categories.push(category._id);
+    await seller.save();
     return category;
   } catch (error) {
     console.error("Error creating or getting category:", error);
