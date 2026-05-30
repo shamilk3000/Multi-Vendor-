@@ -61,6 +61,7 @@ const createOrder = async (user, cart, shippingAddress, isBuyNow) => {
       let orderItem = new OrderItem({
         product: item.product._id,
         quantity: item.quantity,
+        perItem: item.product.mrpPrice,
         totalMrp: item.product.mrpPrice * item.quantity,
         totalSellingPrice: item.product.sellingPrice * item.quantity,
         totalDiscount:

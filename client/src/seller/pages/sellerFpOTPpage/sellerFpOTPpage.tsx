@@ -176,7 +176,7 @@ const OTPVerification: React.FC = () => {
     <div className=" flex flex-col bg-gray-50 p-0">
       <Navbar />
 
-      <div className="py-18 flex justify-center items-center  bg-gray-100 px-4 overflow-hidden">
+      <div className="py-18 flex justify-center items-center  bg-gray-100 px-4 overflow-hidden   min-h-[calc(100vh-300px)] md:min-h-[calc(100vh-250px)]">
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}

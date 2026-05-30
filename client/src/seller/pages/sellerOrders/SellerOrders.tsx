@@ -331,7 +331,7 @@ const SellerOrders: React.FC = () => {
                               {product.product.name}
                             </p>
                             <p className="font-medium text-green-500 text-xs">
-                              {product.product.sellingPrice}
+                              {product.perItem}
                             </p>
                             <p className="text-xs text-gray-500">
                               Qty: {product.quantity}

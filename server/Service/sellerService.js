@@ -396,18 +396,32 @@ const getSellerDashboard = async (seller) => {
         $project: {
           _id: 0,
 
-          creditedAmount: 1,
-          totalAmount: 1,
-          stripeFee: 1,
+          creditedAmount: {
+            $round: ["$creditedAmount", 2],
+          },
+
+          totalAmount: {
+            $round: ["$totalAmount", 2],
+          },
+
+          stripeFee: {
+            $round: ["$stripeFee", 2],
+          },
         },
       },
     ]);
 
-    const revenue = totalRevenue[0] || {
-      creditedAmount: 0,
-      totalAmount: 0,
-      stripeFee: 0,
-    };
+    const revenue = totalRevenue[0]
+      ? {
+          creditedAmount: Number(totalRevenue[0].creditedAmount.toFixed(2)),
+          totalAmount: Number(totalRevenue[0].totalAmount.toFixed(2)),
+          stripeFee: Number(totalRevenue[0].stripeFee.toFixed(2)),
+        }
+      : {
+          creditedAmount: 0,
+          totalAmount: 0,
+          stripeFee: 0,
+        };
 
     const ordersStats = await Order.aggregate([
       {

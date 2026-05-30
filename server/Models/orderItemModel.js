@@ -12,6 +12,11 @@ const orderItemSchema = new mongoose.Schema(
       required: true,
       default: 1,
     },
+    perItem: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
     totalMrp: {
       type: Number,
       required: true,
@@ -31,12 +36,12 @@ const orderItemSchema = new mongoose.Schema(
       type: String,
     },
     customImages: [
-     {
+      {
         type: String,
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const OrderItem = mongoose.model("OrderItem", orderItemSchema);

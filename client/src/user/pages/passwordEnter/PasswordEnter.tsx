@@ -18,8 +18,8 @@ import { useSelector } from "react-redux";
 import api from "../../../features/axios";
 
 const ChangePassword: React.FC = () => {
-     const sellerId = useSelector((state: any) => state.auth.sellerId);
-      const shopName = useSelector((state: any) => state.auth.shopName);
+  const sellerId = useSelector((state: any) => state.auth.sellerId);
+  const shopName = useSelector((state: any) => state.auth.shopName);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPass, setShowNewPass] = useState(false);
@@ -122,7 +122,7 @@ const ChangePassword: React.FC = () => {
           duration: 3500,
         },
       );
-  
+
       navigate(`/${sellerId}/${shopName}/login`);
     } catch (error: any) {
       console.log("PASSWORD CHANGING ERROR 👉", error?.response?.data);
@@ -133,12 +133,12 @@ const ChangePassword: React.FC = () => {
     "w-full border rounded-lg p-2.5 pl-9 text-sm transition-all duration-300 focus:ring-2 focus:ring-black focus:scale-[1.02] hover:border-black hover:scale-[1.01]";
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col bg-gray-50">
       {/* ✅ NAVBAR */}
-      <Navbar shopName={shopName!}  sellerId={sellerId!}/>
+      <Navbar shopName={shopName!} sellerId={sellerId!} />
 
       {/* ✅ MAIN CONTENT */}
-      <div className="flex flex-1 items-center justify-center px-2 md:px-4 py-10 bg-gray-100">
+      <div className="flex flex-1 items-center justify-center px-2 md:px-4 py-10 bg-gray-100   min-h-[calc(100vh-300px)] md:min-h-[calc(100vh-250px)]">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -255,7 +255,7 @@ const ChangePassword: React.FC = () => {
       </div>
 
       {/* ✅ FOOTER */}
-     <Footer  sellerId={sellerId!} />
+      <Footer sellerId={sellerId!} />
       {/* <Toaster containerStyle={{ top: 75 }} position="top-right" /> */}
 
       {/* 🎯 WAVE ANIMATION */}

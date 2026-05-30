@@ -17,7 +17,7 @@ import { useSelector } from "react-redux";
 import api from "../../../features/axios";
 
 const OTPVerification: React.FC = () => {
-      const sellerId = useSelector((state: any) => state.auth.sellerId);
+  const sellerId = useSelector((state: any) => state.auth.sellerId);
   const shopName = useSelector((state: any) => state.auth.shopName);
   const OTP_TIME = 300; // 5 minutes
   const location = useLocation();
@@ -126,8 +126,8 @@ const OTPVerification: React.FC = () => {
           },
           duration: 3500,
         },
-    );
-    if (!res.data.otpVerified) {
+      );
+      if (!res.data.otpVerified) {
         toast.error("OTP verification failed", {
           icon: <FaExclamationTriangle className="text-red-500" />,
           style: {
@@ -141,10 +141,9 @@ const OTPVerification: React.FC = () => {
         });
       } else {
         navigate(`/${sellerId}/${shopName}/forgot-password`, {
-        state: { FpData: userFpData },
-      });
+          state: { FpData: userFpData },
+        });
       }
-    
     } catch (error: any) {
       console.log("OTP VERIFY ERROR 👉", error?.response?.data);
     }
@@ -155,7 +154,7 @@ const OTPVerification: React.FC = () => {
     if (!userFpData) return;
 
     try {
-    const promise = api.post(
+      const promise = api.post(
         `/${sellerId}/${shopName}/user-forget-password-otp-send`,
         {
           email: userFpData,
@@ -192,9 +191,9 @@ const OTPVerification: React.FC = () => {
 
   return (
     <div className=" flex flex-col bg-gray-50 p-0">
-    <Navbar shopName={shopName!}  sellerId={sellerId!}/>
+      <Navbar shopName={shopName!} sellerId={sellerId!} />
 
-      <div className="py-18 flex justify-center items-center  bg-gray-100 px-4 overflow-hidden">
+      <div className="py-18 flex justify-center items-center  bg-gray-100 px-4 overflow-hidden   min-h-[calc(100vh-300px)] md:min-h-[calc(100vh-250px)]">
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
@@ -308,7 +307,7 @@ const OTPVerification: React.FC = () => {
       </div>
       {/* <Toaster containerStyle={{ top: 75 }} position="top-right" /> */}
 
-     <Footer  sellerId={sellerId!} />
+      <Footer sellerId={sellerId!} />
     </div>
   );
 };

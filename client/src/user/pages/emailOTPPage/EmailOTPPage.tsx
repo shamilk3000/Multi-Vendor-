@@ -16,9 +16,9 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const EmailOTPPage: React.FC = () => {
-    const sellerId = useSelector((state: any) => state.auth.sellerId);
+  const sellerId = useSelector((state: any) => state.auth.sellerId);
   const shopName = useSelector((state: any) => state.auth.shopName);
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   // const [otpSent, setOtpSent] = useState(false);
   const [errors, setErrors] = useState<{ email?: string }>({});
@@ -53,17 +53,17 @@ const EmailOTPPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateEmail(email)) {
-       toast.error("Enter a valid email", {
-              icon: <FaExclamationTriangle className="text-red-500" />,
-              style: {
-                borderRadius: "12px",
-                background: "#111",
-                color: "#fff",
-                border: "1px solid #333",
-                boxShadow: "0 0 10px rgba(255,255,255,0.1)",
-              },
-              duration: 3500,
-            });
+      toast.error("Enter a valid email", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
       setErrors({ email: "Enter a valid email" });
       setVisibleWarnings({ email: true });
       return;
@@ -101,9 +101,7 @@ const EmailOTPPage: React.FC = () => {
     } catch (error: any) {
       console.log("OTP SENDING ERROR 👉", error?.response?.data);
     }
-   
   };
-
 
   const inputStyle = `
   w-full border rounded-lg p-2.5 pl-9 text-sm 
@@ -114,9 +112,9 @@ const EmailOTPPage: React.FC = () => {
 
   return (
     <div className=" flex flex-col bg-gray-50">
-      <Navbar shopName={shopName!}  sellerId={sellerId!}/>
+      <Navbar shopName={shopName!} sellerId={sellerId!} />
 
-      <div className="min-h-[calc(100vh-350px)] md:min-h-[calc(100vh-250px)] flex justify-center items-center bg-gray-100 px-4">
+      <div className="   min-h-[calc(100vh-300px)] md:min-h-[calc(100vh-230px)] flex justify-center items-center bg-gray-100 px-4">
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
@@ -181,7 +179,7 @@ const EmailOTPPage: React.FC = () => {
         </motion.div>
       </div>
 
-       <Footer  sellerId={sellerId!} />
+      <Footer sellerId={sellerId!} />
     </div>
   );
 };

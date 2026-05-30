@@ -136,6 +136,8 @@ const Orders: React.FC = () => {
               <p className="text-sm text-gray-700 ">
                 Discover amazing products and place your first order today!
               </p>
+              <p className="text-sm text-gray-700 ">OR</p>
+              <p className="text-sm text-gray-700">Try changing search</p>
             </div>
           </>
         ) : (
@@ -247,7 +249,7 @@ const Orders: React.FC = () => {
                               className="font-medium text-green-500 text-xs group-hover:animate-[wave_0.5s_ease-in-out]"
                               style={{ animationDelay: `${i * 160}ms` }}
                             >
-                              {product.product.sellingPrice}
+                              {product.perItem}
                             </p>
 
                             <p

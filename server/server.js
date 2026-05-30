@@ -21,10 +21,12 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, "Public")));
 app.use(cookieParser());
+
 // app.use(cors({
 //   origin: process.env.CORS_ORIGIN,
 //   credentials: true
 // }));
+
 // ✅ Routes
 app.use("/api/seller", sellerRoutes);
 app.use("/api/admin", adminRoutes);

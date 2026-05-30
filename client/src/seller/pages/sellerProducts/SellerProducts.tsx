@@ -376,7 +376,7 @@ const SellerProducts = () => {
       </div>
 
       {/* EMPTY */}
-      {products.length === 0 && (
+      {paginatedProducts.length === 0 && (
         <div className="flex flex-col items-center justify-center border border-dashed border-gray-400 rounded-xl p-8 bg-white text-center">
           {/* ICON */}
           <div className="bg-gray-100 p-4 rounded-full mb-4">
@@ -387,8 +387,14 @@ const SellerProducts = () => {
           <h2 className="text-lg font-semibold mb-1">No Products Found</h2>
 
           {/* SUBTEXT */}
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-gray-500 mb-0">
             Looks like you haven’t added any products yet.
+          </p>
+
+          <p className="text-sm text-gray-500 mb-0">OR</p>
+
+          <p className="text-sm text-gray-500  mb-4">
+            Try changing filters or search
           </p>
 
           {/* BUTTON */}

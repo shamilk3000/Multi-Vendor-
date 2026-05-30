@@ -169,8 +169,14 @@ const CategoryList = () => {
               </h2>
 
               {/* SUBTEXT */}
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-gray-500 mb-0">
                 Looks like you haven’t added any categories yet.
+              </p>
+
+              <p className="text-sm text-gray-500 mb-0">OR</p>
+
+              <p className="text-sm text-gray-500  mb-4">
+                Try changing filters or search
               </p>
 
               {/* BUTTON */}

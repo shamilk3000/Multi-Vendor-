@@ -258,7 +258,9 @@ const InvoicePDF = ({ order }: { order: any }) => {
 
           <Text style={styles.text}>{order.shippingAddress.phone}</Text>
 
-          <Text style={styles.text}>{order.shippingAddress.flatNoOrVillaNo}</Text>
+          <Text style={styles.text}>
+            {order.shippingAddress.flatNoOrVillaNo}
+          </Text>
 
           <Text style={styles.text}>{order.shippingAddress.street}</Text>
 
@@ -294,9 +296,7 @@ const InvoicePDF = ({ order }: { order: any }) => {
               <View style={styles.tableRow} key={p._id}>
                 <Text style={styles.col1}>{p.product.name}</Text>
                 <Text style={styles.col2}>{p.quantity}</Text>
-                <Text style={styles.col3}>
-                  {Number(p.product.sellingPrice).toFixed(0)}
-                </Text>
+                <Text style={styles.col3}>{Number(p.perItem).toFixed(0)}</Text>
                 <Text style={styles.col4}>
                   {p.totalSellingPrice.toFixed(0)}
                 </Text>

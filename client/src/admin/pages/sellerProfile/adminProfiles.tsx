@@ -1,4 +1,4 @@
-import Navbar from "../../../seller/pages/sellerNavbar/SellerNavbar";
+import Navbar from "../navbar/adminNavbar";
 import Footer from "../../../seller/pages/sellerFooter/SellerFooter";
 import { useAdminProfile } from "../../../hooks/admin/profile/useProfile";
 import { ultrateAmount } from "../../../hooks/admin/profile/ultrateProfile";

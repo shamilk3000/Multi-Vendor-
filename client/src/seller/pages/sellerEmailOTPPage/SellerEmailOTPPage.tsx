@@ -11,43 +11,51 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { logout, setSeller } from "@/redux/authSlice";
-import { useDispatch } from "react-redux";
+// import { logout, setSeller } from "@/redux/authSlice";
+// import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const EmailOTPPage: React.FC = () => {
   const [email, setEmail] = useState("");
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const [errors, setErrors] = useState<{ email?: string }>({});
   const [visibleWarnings, setVisibleWarnings] = useState<{ email: boolean }>({
     email: false,
   });
+  const seller = useSelector((state: any) => state.auth.seller);
   const navigate = useNavigate();
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const res = await axios.get("/api/seller/coockie-test", {
-          withCredentials: true,
-        });
+  //   useEffect(() => {
+  //     const checkSession = async () => {
+  //       try {
+  //         const res = await axios.get("/api/seller/coockie-test", {
+  //           withCredentials: true,
+  //         });
+  // console.log(res.data);
 
-        if (res.data.success == true) {
-          dispatch(setSeller(res.data.seller));
-          navigate("/seller");
-        } else {
-          if (res.data?.status == "PENDING_PAYMENT") {
-            dispatch(setSeller(res.data.seller));
-            navigate("/seller/subscription");
-          } else {
-            dispatch(logout());
-            navigate("/");
-          }
-        }
-      } catch (err) {
-        dispatch(logout());
-        navigate("/");
-      }
-    };
-    checkSession();
-  }, []);
+  //         if (res.data.success == true) {
+  //           dispatch(setSeller(res.data.seller));
+  //           navigate("/seller");
+  //         } else {
+  //           if (res.data?.status == "PENDING_PAYMENT") {
+  //             dispatch(setSeller(res.data.seller));
+  //             navigate("/seller/subscription");
+  //           } else {
+  //             dispatch(logout());
+  //             navigate("/");
+  //           }
+  //         }
+  //       } catch (err) {
+  //         dispatch(logout());
+  //         navigate("/");
+  //       }
+  //     };
+  //     checkSession();
+  //   }, []);
+  useEffect(() => {
+    if (seller) {
+      navigate("/seller");
+    }
+  }, [seller, navigate]);
   const validateEmail = (value: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(value);
@@ -126,7 +134,7 @@ const EmailOTPPage: React.FC = () => {
     <div className=" flex flex-col bg-gray-50">
       <Navbar />
 
-      <div className="min-h-[calc(100vh-350px)] md:min-h-[calc(100vh-250px)] flex justify-center items-center bg-gray-100 px-4">
+      <div className="    min-h-[calc(100vh-300px)] md:min-h-[calc(100vh-230px)] flex justify-center items-center bg-gray-100 px-4">
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}

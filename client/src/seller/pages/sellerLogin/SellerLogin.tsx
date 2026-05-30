@@ -345,7 +345,7 @@ const Login = () => {
     <div className=" flex flex-col bg-gray-50 p-0">
       <Navbar />
 
-      <div className="md:py-5 flex items-center justify-center bg-gray-50 relative overflow-hidden">
+      <div className="md:py-5 flex items-center justify-center bg-gray-50 relative overflow-hidden  min-h-[calc(100vh-300px)] md:min-h-[calc(100vh-250px)]">
         <motion.div
           animate={{ x: [0, 80, 0], y: [0, -60, 0] }}
           transition={{ duration: 12, repeat: Infinity }}
