@@ -42,7 +42,7 @@ const paymentHandler = async (req, res) => {
       billing_address_collection: "auto",
 
       // payment_method_collection: "always",
-      customer_email: seller.email,
+      customer_email: user.email,
       line_items: [
         {
           price_data: {
