@@ -25,7 +25,7 @@ import {
   FaSearch,
   FaPlus,
 } from "react-icons/fa";
-import { Pagination } from "@mui/material";
+// import { Pagination } from "@mui/material";
 
 const SellerProducts = () => {
   const [search, setSearch] = useState("");
@@ -39,10 +39,10 @@ const SellerProducts = () => {
   const [advancedFilters, setAdvancedFilters] = useState<ProductFilters | null>(
     null,
   );
-  const [page, setPage] = useState(1);
-  useEffect(() => {
-    setPage(1);
-  }, [search, filter, advancedFilters]);
+  // const [page, setPage] = useState(1);
+  // useEffect(() => {
+  //   setPage(1);
+  // }, [search, filter, advancedFilters]);
 
   // 🔥 delete (SOFT DELETE)
   const handleDelete = async (id: string) => {
@@ -176,14 +176,14 @@ const SellerProducts = () => {
 
   // ✅ PAGINATION LOGIC
 
-  const itemsPerPage = 12;
+  // const itemsPerPage = 12;
 
-  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage) || 1;
+  // const totalPages = Math.ceil(sortedProducts.length / itemsPerPage) || 1;
 
-  const paginatedProducts = sortedProducts.slice(
-    (page - 1) * itemsPerPage,
-    page * itemsPerPage,
-  );
+  // const paginatedProducts = sortedProducts.slice(
+  //   (page - 1) * itemsPerPage,
+  //   page * itemsPerPage,
+  // );
 
   if (isLoading) return <ProductListSkeleton />;
   return (
@@ -245,7 +245,7 @@ const SellerProducts = () => {
 
       {/* GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {paginatedProducts.map((product) => {
+        {sortedProducts.map((product) => {
           const discount = Math.round(
             ((product.mrpPrice - product.sellingPrice) / product.mrpPrice) *
               100,
@@ -365,18 +365,18 @@ const SellerProducts = () => {
           {
             /* ✅ PAGINATION UI */
           }
-          <div className="flex justify-center mt-7">
-            <Pagination
-              page={page}
-              count={totalPages}
-              onChange={(_, value) => setPage(value)}
-            />
-          </div>;
+          // <div className="flex justify-center mt-7">
+          //   <Pagination
+          //     page={page}
+          //     count={totalPages}
+          //     onChange={(_, value) => setPage(value)}
+          //   />
+          // </div>;
         })}
       </div>
 
       {/* EMPTY */}
-      {paginatedProducts.length === 0 && (
+      {sortedProducts.length === 0 && (
         <div className="flex flex-col items-center justify-center border border-dashed border-gray-400 rounded-xl p-8 bg-white text-center">
           {/* ICON */}
           <div className="bg-gray-100 p-4 rounded-full mb-4">
