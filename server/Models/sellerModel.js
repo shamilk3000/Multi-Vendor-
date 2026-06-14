@@ -79,6 +79,12 @@ const sellerSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "Address",
       },
+      workingDays: {
+        type: String,
+      },
+      openingHours: {
+        type: String,
+      },
       businessLocation: {
         latitude: {
           type: String,

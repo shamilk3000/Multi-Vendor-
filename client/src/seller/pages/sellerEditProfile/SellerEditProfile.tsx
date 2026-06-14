@@ -17,6 +17,8 @@ import {
   FaFacebook,
   FaInstagram,
   FaWhatsapp,
+  FaCalendarAlt,
+  FaClock,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import SellerEditProfileSkeleton from "@/seller/components/skeletons/editProfileSkeleton";
@@ -151,7 +153,14 @@ const LocationMarker = ({ position, setPosition, setForm }: any) => {
   );
 };
 
-const Input = ({ label, value, onChange, icon, readOnly }: any) => (
+const Input = ({
+  label,
+  value,
+  onChange,
+  icon,
+  readOnly,
+  placeholder,
+}: any) => (
   <div className="mb-3">
     <p className="text-xs text-gray-400 mb-1 flex items-center gap-1">
       {icon} {label}
@@ -164,6 +173,7 @@ const Input = ({ label, value, onChange, icon, readOnly }: any) => (
       className={`w-full border text-sm p-2 rounded-lg transition-all duration-300 focus:scale-[1.01] focus:ring-2 focus:ring-black hover:border hover:border-black ${
         readOnly ? "bg-gray-100 cursor-not-allowed" : ""
       }`}
+      placeholder={placeholder}
     />
   </div>
 );
@@ -195,6 +205,8 @@ const SellerEditPage = () => {
             "https://wa.me/",
             "",
           ),
+          openingHours: seller.businessDetails?.openingHours || "",
+          workingDays: seller.businessDetails?.workingDays || "",
         },
       });
     }
@@ -298,6 +310,7 @@ const SellerEditPage = () => {
     // BUSINESS
     const b = form.businessDetails;
     const a = b.businessAddress;
+    const l = b.businessLocation;
 
     if (
       !b.bussinessName ||
@@ -309,6 +322,10 @@ const SellerEditPage = () => {
     ) {
       return "Fill all business basic fields";
     }
+    if (!b.openingHours || !b.workingDays)
+      return "Fill opening hours and working days";
+    if (!l.latitude || !l.longitude)
+      return "Please pin your shop location on the map";
 
     if (!isEmail(b.businessEmail)) return "Invalid business email";
     if (!isPhone(b.bussinessPhone)) return "Invalid business phone";
@@ -569,6 +586,26 @@ const SellerEditPage = () => {
             }
           />
 
+          <Input
+            label="Opening Hours"
+            icon={<FaClock />}
+            value={form.businessDetails.openingHours}
+            onChange={(e: any) =>
+              handleChange(["businessDetails", "openingHours"], e.target.value)
+            }
+            placeholder="Opening Hours (e.g. 9:00 AM - 9:00 PM)"
+          />
+
+          <Input
+            label="Working Days"
+            icon={<FaCalendarAlt />}
+            value={form.businessDetails.workingDays}
+            onChange={(e: any) =>
+              handleChange(["businessDetails", "workingDays"], e.target.value)
+            }
+            placeholder="Working Days (e.g. Mon - Sat)"
+          />
+
           <h3 className="mt-4 mb-2 font-medium text-sm text-gray-500">
             Business Address
           </h3>
@@ -668,12 +705,15 @@ const SellerEditPage = () => {
 
           <div className="mt-5 relative z-0">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="font-medium">Shop Location</h3>
+              <div className=" px-4 py-3 font-medium flex items-center gap-2">
+                <FaMapMarkerAlt />
+                Shop Location
+              </div>
 
               <button
                 type="button"
                 onClick={getCurrentLocation}
-                className="px-3 py-2 bg-black text-white rounded-lg text-sm"
+                className="px-3 py-2 bg-black text-white border hover:bg-white hover:text-black hover:border-black cursor-pointer rounded-lg text-sm"
               >
                 Use Current Location
               </button>

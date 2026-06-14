@@ -13,6 +13,8 @@ import {
   FaPhoneAlt,
   FaEnvelope,
   FaMapMarkerAlt,
+  FaCalendarAlt,
+  FaClock,
 } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 
@@ -196,6 +198,22 @@ const AboutUs = () => {
                   title: "Facebook",
                   value: footerData.footerData.bussinessFacebook,
                   link: footerData.footerData.bussinessFacebook,
+                },
+                {
+                  icon: <FaClock />,
+                  title: "Opening Hours",
+                  value: footerData.footerData?.openingHours
+                    ? footerData.footerData.openingHours
+                    : "--",
+                  link: null,
+                },
+                {
+                  icon: <FaCalendarAlt />,
+                  title: "Working Days",
+                  value: footerData.footerData?.workingDays
+                    ? footerData.footerData.workingDays
+                    : "--",
+                  link: null,
                 },
                 {
                   icon: <FaMapMarkerAlt />,

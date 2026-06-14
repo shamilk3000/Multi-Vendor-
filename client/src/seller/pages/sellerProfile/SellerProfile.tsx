@@ -15,6 +15,7 @@ import {
   FaFacebook,
   FaInstagram,
   FaClock,
+  FaCalendarAlt,
 } from "react-icons/fa";
 import { useSellerProfile } from "../../../hooks/seller/profile/useProfile";
 import SellerProfileSkeleton from "@/seller/components/skeletons/profileSkeleton";
@@ -181,6 +182,18 @@ const SellerFullProfile = () => {
                   Chat on WhatsApp
                 </a>
               }
+            />
+
+            <Row
+              icon={<FaClock />}
+              label="Opening Hours"
+              value={seller.businessDetails?.openingHours || "Not set"}
+            />
+
+            <Row
+              icon={<FaCalendarAlt />}
+              label="Working Days"
+              value={seller.businessDetails?.workingDays || "Not set"}
             />
 
             <div className="mt-4 border-t pt-3">

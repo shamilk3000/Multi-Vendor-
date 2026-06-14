@@ -96,6 +96,10 @@ const createSellerDetails = async (req, res) => {
       sellerData.businessDetails.instagram;
     existingSeller.businessDetails.bussinessFacebook =
       sellerData.businessDetails.facebook;
+    existingSeller.businessDetails.workingDays =
+      sellerData.businessDetails.workingDays;
+    existingSeller.businessDetails.openingHours =
+      sellerData.businessDetails.openingHours;
     existingSeller.businessDetails.businessLocation.latitude =
       sellerData.businessDetails.businessLocation.latitude;
     existingSeller.businessDetails.businessLocation.longitude =
@@ -686,6 +690,10 @@ const updateSeller = async (existingSeller, sellerData) => {
       sellerData.businessDetails.bussinessWhatsapp;
     existingSeller.businessDetails.bussinessFacebook =
       sellerData.businessDetails.bussinessFacebook;
+    existingSeller.businessDetails.workingDays =
+      sellerData.businessDetails.workingDays;
+    existingSeller.businessDetails.openingHours =
+      sellerData.businessDetails.openingHours;
     existingSeller.businessDetails.bussinessInstagram =
       sellerData.businessDetails.bussinessInstagram;
     existingSeller.businessDetails.businessLocation.latitude =

@@ -39,6 +39,8 @@ import {
   FaWhatsapp,
   FaInstagram,
   FaFacebook,
+  FaCalendarAlt,
+  FaClock,
 } from "react-icons/fa";
 import axios from "axios";
 import {
@@ -241,6 +243,8 @@ const SellerDetailsPage = () => {
       whatsapp: "",
       instagram: "",
       facebook: "",
+      openingHours: "",
+      workingDays: "",
       businessLocation: {
         latitude: "",
         longitude: "",
@@ -410,7 +414,8 @@ const SellerDetailsPage = () => {
         !a.postalCode
       )
         return "Fill all business fields";
-
+      if (!b.openingHours || !b.workingDays)
+        return "Fill opening hours and working days";
       if (!l.latitude || !l.longitude)
         return "Please pin your shop location on the map";
 
@@ -968,6 +973,30 @@ const SellerDetailsPage = () => {
                 placeholder="Facebook Profile Link. If it’s not available, use facebook.com"
               />
 
+              {/* Opening Hours */}
+              <Field
+                icon={<FaClock />}
+                value={form.businessDetails.openingHours}
+                onChange={(e: any) =>
+                  handleNested(
+                    "businessDetails",
+                    "openingHours",
+                    e.target.value,
+                  )
+                }
+                placeholder="Opening Hours (e.g. 9:00 AM - 9:00 PM)"
+              />
+
+              {/* Working Days */}
+              <Field
+                icon={<FaCalendarAlt />}
+                value={form.businessDetails.workingDays}
+                onChange={(e: any) =>
+                  handleNested("businessDetails", "workingDays", e.target.value)
+                }
+                placeholder="Working Days (e.g. Mon - Sat)"
+              />
+
               <Field
                 icon={<FaBuilding />}
                 value={form.businessDetails.businessAddress.flatNoOrVillaNo}
@@ -1024,12 +1053,15 @@ const SellerDetailsPage = () => {
 
               <div className="border rounded-xl overflow-hidden">
                 <div className="flex justify-between items-center mb-3">
-                  <h3 className="font-medium">Select Shop Location</h3>
+                  <div className=" px-4 py-3 font-medium flex items-center gap-2">
+                    <FaMapMarkerAlt />
+                    Shop Location
+                  </div>
 
                   <button
                     type="button"
                     onClick={getCurrentLocation}
-                    className="px-3 py-2 bg-black text-white rounded-lg text-sm"
+                    className="px-3 py-2 bg-black text-white border hover:bg-white hover:text-black hover:border-black cursor-pointer rounded-lg text-sm"
                   >
                     Use Current Location
                   </button>
