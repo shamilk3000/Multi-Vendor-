@@ -191,21 +191,59 @@ const ProductCardsWithPagination: React.FC<{
 
   return (
     <>
-      {/* SEARCH (UNCHANGED) */}
+       {/* ✅ YOUR ORIGINAL SEARCH */}
       {!hideSearch && (
         <div className="ms-auto max-w-12/12 md:max-w-6/12 px-4 md:px-6 lg:px-12 mb-6">
           <div className="md:hidden">
             <div
               onClick={() => navigate(`/${sellerId}/${shopName}/shop?focus=1`)}
-              className="flex items-center bg-white border shadow-xl border-gray-400 rounded-xl px-4 py-3 cursor-pointer"
+              className="hover:border-black flex items-center bg-white border shadow-xl border-gray-400 rounded-xl px-4 py-3 cursor-pointer"
             >
               <FaSearch className="text-black mr-2" />
               <input
-                readOnly
+                type="text"
                 placeholder="Search products..."
+                onFocus={() =>
+                  navigate(`/${sellerId}/${shopName}/shop?focus=1`)
+                }
+                readOnly
                 className="w-full outline-none text-sm bg-transparent cursor-pointer"
               />
             </div>
+          </div>
+
+          <div className="hidden md:flex justify-end">
+            {!openSearch && (
+              <button
+                onClick={() =>
+                  navigate(`/${sellerId}/${shopName}/shop?focus=1`)
+                }
+                className="cursor-pointer p-3 rounded-full border border-gray-400 text-white bg-black"
+              >
+                <FaSearch />
+              </button>
+            )}
+
+            {openSearch && (
+              <div className="hover:border-black flex items-center bg-white border border-gray-400 rounded-xl px-4 py-3 ml-2 w-72">
+                <FaSearch className="text-black mr-2" />
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  readOnly
+                  onClick={() =>
+                    navigate(`/${sellerId}/${shopName}/shop?focus=1`)
+                  }
+                  className="w-full outline-none text-sm bg-transparent cursor-pointer"
+                />
+                <button
+                  onClick={() => setOpenSearch(false)}
+                  className="cursor-pointer ml-2 text-gray-500"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
