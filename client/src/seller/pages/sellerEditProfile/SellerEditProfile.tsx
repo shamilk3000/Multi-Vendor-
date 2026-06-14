@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import * as IBAN from "iban";
 import { useSellerProfile } from "../../../hooks/seller/profile/useProfile";
@@ -21,7 +21,18 @@ import {
 import { useNavigate } from "react-router-dom";
 import SellerEditProfileSkeleton from "@/seller/components/skeletons/editProfileSkeleton";
 import { ultrateUpdateProfile } from "../../../hooks/seller/profile/ultrateProfile";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
 
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import "leaflet-control-geocoder";
+import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 const emirates = [
   "Dubai",
   "Abu Dhabi",
@@ -31,6 +42,114 @@ const emirates = [
   "Fujairah",
   "Umm Al Quwain",
 ];
+
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+});
+
+const SearchControl = ({ setPosition, setForm }: any) => {
+  const map = useMap();
+
+  useEffect(() => {
+    const geocoder = (L.Control as any)
+      .geocoder({
+        defaultMarkGeocode: false,
+        geocoder: new (L.Control as any).Geocoder.Nominatim({
+          geocodingQueryParams: {
+            "accept-language": "en",
+          },
+        }),
+      })
+      .on("markgeocode", (e: any) => {
+        const { lat, lng } = e.geocode.center;
+
+        map.setView([lat, lng], 18);
+
+        setPosition([lat, lng]); // add this
+
+        setForm((prev: any) => ({
+          ...prev,
+          businessDetails: {
+            ...prev.businessDetails,
+            businessLocation: {
+              latitude: lat,
+              longitude: lng,
+            },
+          },
+        }));
+      })
+      .addTo(map);
+
+    return () => {
+      map.removeControl(geocoder);
+    };
+  }, [map]);
+
+  return null;
+};
+
+const ChangeView = ({ center }: any) => {
+  const map = useMap();
+
+  useEffect(() => {
+    map.setView(center, 18);
+  }, [center, map]);
+
+  return null;
+};
+
+const LocationMarker = ({ position, setPosition, setForm }: any) => {
+  useMapEvents({
+    click(e: any) {
+      const { lat, lng } = e.latlng;
+
+      // Move marker
+      setPosition([lat, lng]);
+
+      // Update form
+      setForm((prev: any) => ({
+        ...prev,
+        businessDetails: {
+          ...prev.businessDetails,
+          businessLocation: {
+            latitude: lat,
+            longitude: lng,
+          },
+        },
+      }));
+    },
+  });
+
+  return (
+    <Marker
+      position={position}
+      draggable
+      eventHandlers={{
+        dragend: (e: any) => {
+          const { lat, lng } = e.target.getLatLng();
+
+          setPosition([lat, lng]);
+
+          setForm((prev: any) => ({
+            ...prev,
+            businessDetails: {
+              ...prev.businessDetails,
+              businessLocation: {
+                latitude: lat,
+                longitude: lng,
+              },
+            },
+          }));
+        },
+      }}
+    />
+  );
+};
 
 const Input = ({ label, value, onChange, icon, readOnly }: any) => (
   <div className="mb-3">
@@ -55,18 +174,83 @@ const isPhone = (v: string) => /^(?:\+971|971|0)?5[0-9]{8}$/.test(v);
 const SellerEditPage = () => {
   const { data: seller, isLoading } = useSellerProfile();
   const { mutateAsync: updateProfile } = ultrateUpdateProfile();
-
+  const [position, setPosition] = useState<[number, number]>([
+    25.2048, 55.2708,
+  ]);
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    ...seller,
-    businessDetails: {
-      ...seller.businessDetails,
-      bussinessWhatsapp: seller.businessDetails.bussinessWhatsapp.replace(
-        "https://wa.me/",
-        "",
-      ),
-    },
-  });
+  const [form, setForm] = useState<any>(null);
+  useEffect(() => {
+    if (seller?.businessDetails?.businessLocation) {
+      setPosition([
+        seller.businessDetails.businessLocation.latitude,
+        seller.businessDetails.businessLocation.longitude,
+      ]);
+    }
+    if (seller) {
+      setForm({
+        ...seller,
+        businessDetails: {
+          ...seller.businessDetails,
+          bussinessWhatsapp: seller.businessDetails.bussinessWhatsapp.replace(
+            "https://wa.me/",
+            "",
+          ),
+        },
+      });
+    }
+  }, [seller]);
+
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (positionData) => {
+        const lat = positionData.coords.latitude;
+        const lng = positionData.coords.longitude;
+
+        // Move marker
+        setPosition([lat, lng]);
+
+        // Update form
+        setForm((prev: any) => ({
+          ...prev,
+          businessDetails: {
+            ...prev.businessDetails,
+            businessLocation: {
+              latitude: lat,
+              longitude: lng,
+            },
+          },
+        }));
+      },
+      () => {
+        toast.error("Unable to get current location", {
+          icon: <FaExclamationTriangle className="text-red-500" />,
+          style: {
+            borderRadius: "12px",
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+            boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+          },
+          duration: 3500,
+        });
+      },
+    );
+  };
 
   const handleChange = (path: string[], value: string) => {
     setForm((prev: any) => {
@@ -197,7 +381,7 @@ const SellerEditPage = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !form) {
     return <SellerEditProfileSkeleton />;
   }
 
@@ -481,6 +665,47 @@ const SellerEditPage = () => {
               )
             }
           />
+
+          <div className="mt-5 relative z-0">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="font-medium">Shop Location</h3>
+
+              <button
+                type="button"
+                onClick={getCurrentLocation}
+                className="px-3 py-2 bg-black text-white rounded-lg text-sm"
+              >
+                Use Current Location
+              </button>
+            </div>
+
+            <MapContainer
+              center={position}
+              zoom={18}
+              style={{ height: "400px", width: "100%" }}
+            >
+              <ChangeView center={position} />
+
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution="&copy; OpenStreetMap contributors"
+              />
+
+              <SearchControl setForm={setForm} setPosition={setPosition} />
+
+              <LocationMarker
+                position={position}
+                setPosition={setPosition}
+                setForm={setForm}
+              />
+            </MapContainer>
+
+            <div className="mt-3 text-sm text-gray-500">
+              Latitude: {form.businessDetails.businessLocation.latitude}
+              <br />
+              Longitude: {form.businessDetails.businessLocation.longitude}
+            </div>
+          </div>
         </div>
 
         {/* BANK */}

@@ -79,6 +79,11 @@ const SellerDashboard = () => {
         });
 
         if (res.data.success == true) {
+          if (res.data.seller.isComplete == false) {
+            navigate("/seller/details-entry", {
+              state: { sellerEmail: res.data.seller.email },
+            });
+          }
           dispatch(setSeller(res.data.seller));
           setSellerSubStatus(true);
         } else {

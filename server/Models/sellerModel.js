@@ -79,6 +79,14 @@ const sellerSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "Address",
       },
+      businessLocation: {
+        latitude: {
+          type: String,
+        },
+        longitude: {
+          type: String,
+        },
+      },
     },
     bankingDetails: {
       // accountNumber: {

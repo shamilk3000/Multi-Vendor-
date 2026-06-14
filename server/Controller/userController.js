@@ -152,10 +152,14 @@ const getUserFooter = async (req, res) => {
   try {
     const sellerId = req.params.sellerId;
     const seller = await Seller.findById(sellerId);
+    const address = await Address.findById(seller.businessDetails.businessAddress)
     if (!seller) {
       return res.status(404).json({ message: "Seller not found" });
     }
     const footerData = {
+      address:address,
+      location:seller.businessDetails.businessLocation,
+      bussinessName:seller.businessDetails.bussinessName,
       bussinessInstagram:
         seller.businessDetails?.bussinessInstagram || "instagram.com",
       businessPhone: seller.businessDetails?.bussinessPhone || "",
@@ -163,6 +167,8 @@ const getUserFooter = async (req, res) => {
         seller.businessDetails?.bussinessWhatsapp || "whatsapp.com",
       bussinessFacebook:
         seller.businessDetails?.bussinessFacebook || "facebook.com",
+        businessEmail:
+        seller.businessDetails?.businessEmail
     };
     return res.status(200).json({ footerData });
   } catch (error) {

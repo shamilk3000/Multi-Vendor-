@@ -96,6 +96,10 @@ const createSellerDetails = async (req, res) => {
       sellerData.businessDetails.instagram;
     existingSeller.businessDetails.bussinessFacebook =
       sellerData.businessDetails.facebook;
+    existingSeller.businessDetails.businessLocation.latitude =
+      sellerData.businessDetails.businessLocation.latitude;
+    existingSeller.businessDetails.businessLocation.longitude =
+      sellerData.businessDetails.businessLocation.longitude;
     existingSeller.businessDetails.businessAddress = bussinessAddress._id;
 
     // existingSeller.bankingDetails.accountNumber =
@@ -684,7 +688,10 @@ const updateSeller = async (existingSeller, sellerData) => {
       sellerData.businessDetails.bussinessFacebook;
     existingSeller.businessDetails.bussinessInstagram =
       sellerData.businessDetails.bussinessInstagram;
-
+    existingSeller.businessDetails.businessLocation.latitude =
+      sellerData.businessDetails.businessLocation.latitude;
+    existingSeller.businessDetails.businessLocation.longitude =
+      sellerData.businessDetails.businessLocation.longitude;
     await existingSeller.save();
 
     return existingSeller;

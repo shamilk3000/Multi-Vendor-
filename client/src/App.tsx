@@ -50,6 +50,7 @@ import SellerEditProfile from "./seller/pages/sellerEditProfile/SellerEditProfil
 
 import Admin from "./admin/pages/sellerProfile/adminProfiles";
 import AdminLogin from "./admin/pages/login/adminLogin";
+import AboutUs from "./user/pages/about/About";
 
 function App() {
   const nav = useNavigate();
@@ -115,6 +116,7 @@ function App() {
         <Route path="/:sellerId/:shopName/cart" element={<Cart />} />
         <Route path="/:sellerId/:shopName" element={<Home />} />
         <Route path="/:sellerId/:shopName/shop" element={<ShopPage />} />
+        <Route path="/:sellerId/:shopName/about" element={<AboutUs />} />
 
         {/* <CustomizeProduct/> */}
         {/* <OTPVerification/> */}

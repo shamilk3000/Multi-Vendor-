@@ -222,6 +222,20 @@ const SellerFullProfile = () => {
                 value={seller.businessDetails.businessAddress.postalCode}
               />
             </div>
+            <div className="mt-4 border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition">
+              <div className="bg-gray-100 px-4 py-3 font-medium flex items-center gap-2">
+                <FaMapMarkerAlt />
+                Shop Location
+              </div>
+
+              <iframe
+                title="Shop Location"
+                className="w-full h-80"
+                loading="lazy"
+                allowFullScreen
+                src={`https://maps.google.com/maps?q=${seller.businessDetails.businessLocation.latitude},${seller.businessDetails.businessLocation.longitude}&z=16&output=embed`}
+              />
+            </div>
           </div>
 
           {/* BANKING */}
