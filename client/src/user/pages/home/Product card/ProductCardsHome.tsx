@@ -191,9 +191,9 @@ const ProductCardsWithPagination: React.FC<{
 
   return (
     <>
-       {/* ✅ YOUR ORIGINAL SEARCH */}
+      {/* ✅ YOUR ORIGINAL SEARCH */}
       {!hideSearch && (
-        <div className="ms-auto max-w-12/12 md:max-w-6/12 px-4 md:px-6 lg:px-12 mb-6">
+        <div className="ms-auto max-w-12/12 md:max-w-6/12 px-4 md:px-6 lg:px-12 mb-6 ">
           <div className="md:hidden">
             <div
               onClick={() => navigate(`/${sellerId}/${shopName}/shop?focus=1`)}
@@ -259,22 +259,31 @@ const ProductCardsWithPagination: React.FC<{
         <>
           {/* ================= CATEGORY SECTIONS ================= */}
           {Object.entries(groupedProducts).map(([id, group]: any) => (
-            <div key={id} className="mb-12 mx-5  bg-gray-300 rounded-xl py-5">
+            <div
+              key={id}
+              className="mb-8 mx-5  bg-gray-250 rounded-3xl py-5 border border-gray-300 shadow-xl transition-all duration-500 hover:shadow-2xl "
+            >
               {/* CATEGORY TITLE */}
               <div className="mb-4 group ">
-                <div className="flex items-center gap-2 ps-10 pb-5 ">
+                <div className="flex items-center gap-2 ps-10 pb-5 justify-between ">
                   {/* ICON BADGE */}
-                  <div className="p-2 rounded-full bg-black group-hover:bg-black transition-all duration-300">
-                    <FaLayerGroup className="text-white group-hover:text-white text-lg transition-all duration-300" />
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-full bg-black group-hover:bg-black transition-all duration-300">
+                      <FaLayerGroup className="text-white group-hover:text-white text-lg transition-all duration-300" />
+                    </div>
+
+                    {/* TITLE */}
+                    <h2 className="text-2xl font-bold text-black group-hover:text-black transition-all duration-300 relative">
+                      {group.name}
+
+                      {/* underline animation */}
+                      {/* <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-black group-hover:w-full transition-all duration-300"></span> */}
+                    </h2>
                   </div>
-
-                  {/* TITLE */}
-                  <h2 className="text-2xl font-bold text-black group-hover:text-black transition-all duration-300 relative">
-                    {group.name}
-
-                    {/* underline animation */}
-                    {/* <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-black group-hover:w-full transition-all duration-300"></span> */}
-                  </h2>
+                  {/* PRODUCT COUNT */}
+                  <div className="rounded-full bg-black px-5 py-2 me-5 text-sm font-semibold text-white shadow-md">
+                    {group.items.length} Products
+                  </div>
                 </div>
               </div>
 
