@@ -22,7 +22,7 @@ const ProductGrid: React.FC<{
   const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
 
   const intervalsRef = useRef<Record<string, number>>({});
-   const timeoutsRef = useRef<number[]>([]);
+  const timeoutsRef = useRef<number[]>([]);
   const pausedRef = useRef<string[]>([]);
 
   // ================== KEEP PAUSED IDS ==================
@@ -127,13 +127,12 @@ const ProductGrid: React.FC<{
 
             {/* CONTENT */}
             <div className="p-3 bg-white/80 backdrop-blur-md">
-              
               {/* Title */}
               <p className="font-semibold text-sm truncate text-gray-800 group-hover:text-black transition">
                 {product.name}
               </p>
-              
-{/* Category */}
+
+              {/* Category */}
               <p className="text-xs text-gray-600 mb-1 flex items-center gap-1">
                 <FaLayerGroup className="text-gray-500 text-[10px]" />
                 {product.category?.name}/{product.subCategory?.name}
@@ -142,10 +141,12 @@ const ProductGrid: React.FC<{
               {/* Price */}
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-lg font-bold text-green-600">
-                  ₹{product.sellingPrice}
+                  &#1583;&#46;&#1573; {product.sellingPrice}
                 </span>
 
-                <del className=" text-red-600 text-sm">₹{product.mrpPrice}</del>
+                <del className=" text-red-600 text-sm">
+                  &#1583;&#46;&#1573; {product.mrpPrice}
+                </del>
               </div>
 
               {/* Bottom animation line */}
@@ -173,12 +174,11 @@ const ProductCardsWithPagination: React.FC<{
     sellerId ?? "",
     shopName ?? "",
   );
-useEffect(() => {
-
-  if (sellerId && shopName) {
-    dispatch(setSellerId({ sellerId, shopName }));
-  }
-}, [sellerId, shopName, dispatch]);
+  useEffect(() => {
+    if (sellerId && shopName) {
+      dispatch(setSellerId({ sellerId, shopName }));
+    }
+  }, [sellerId, shopName, dispatch]);
   const location = useLocation();
   const navigate = useNavigate();
   const [openSearch, setOpenSearch] = useState(false);

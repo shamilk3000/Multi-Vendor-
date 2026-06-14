@@ -17,11 +17,11 @@ const ProductGrid: React.FC<{
   data: Product[];
   sellerId?: string;
   shopName?: string;
-}> = ({ currentPage, itemsPerPage, data ,shopName,sellerId}) => {
+}> = ({ currentPage, itemsPerPage, data, shopName, sellerId }) => {
   const [imageIndex, setImageIndex] = useState<Record<string, number>>(
     data.reduce((acc, p) => ({ ...acc, [p._id]: 0 }), {}),
   );
-   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedProducts = data.slice(startIndex, startIndex + itemsPerPage);
@@ -29,7 +29,7 @@ const ProductGrid: React.FC<{
   const [pausedIds, setPausedIds] = useState<string[]>([]);
   const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
 
- const intervalsRef = useRef<Record<string, number>>({});
+  const intervalsRef = useRef<Record<string, number>>({});
   const timeoutsRef = useRef<number[]>([]);
   const pausedRef = useRef<string[]>([]);
 
@@ -78,72 +78,73 @@ const ProductGrid: React.FC<{
 
   return (
     <section className="md:min-h-[300px] min-h-[400px] ">
-    <div className="mx-auto max-w-7xl px-4 lg:px-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-3">
-      {paginatedProducts.map((product) => {
-        const index = imageIndex[product._id] ?? 0;
+      <div className="mx-auto max-w-7xl px-4 lg:px-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-3">
+        {paginatedProducts.map((product) => {
+          const index = imageIndex[product._id] ?? 0;
 
-        return (
-          <div
-          onClick={() => navigate(`/${sellerId}/${shopName}/products/${product._id}`)}
-            key={product._id}
-            onMouseEnter={() =>
-              setPausedIds((prev) =>
-                prev.includes(product._id) ? prev : [...prev, product._id],
-              )
-            }
-            onMouseLeave={() =>
-              setPausedIds((prev) => prev.filter((id) => id !== product._id))
-            }
-            className="group cursor-pointer w-full rounded-2xl overflow-hidden bg-linear-to-br from-white via-gray-50 to-gray-100 border border-gray-400 shadow-lg hover:shadow-3xl hover:shadow-blue-200/40 transition-all duration-500 hover:scale-[1.04]"
-          >
-            {/* IMAGE */}
-            <div className="relative h-48 sm:h-60 lg:h-72 overflow-hidden">
-              {/* <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent opacity-70 z-10" /> */}
+          return (
+            <div
+              onClick={() =>
+                navigate(`/${sellerId}/${shopName}/products/${product._id}`)
+              }
+              key={product._id}
+              onMouseEnter={() =>
+                setPausedIds((prev) =>
+                  prev.includes(product._id) ? prev : [...prev, product._id],
+                )
+              }
+              onMouseLeave={() =>
+                setPausedIds((prev) => prev.filter((id) => id !== product._id))
+              }
+              className="group cursor-pointer w-full rounded-2xl overflow-hidden bg-linear-to-br from-white via-gray-50 to-gray-100 border border-gray-400 shadow-lg hover:shadow-3xl hover:shadow-blue-200/40 transition-all duration-500 hover:scale-[1.04]"
+            >
+              {/* IMAGE */}
+              <div className="relative h-48 sm:h-60 lg:h-72 overflow-hidden">
+                {/* <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent opacity-70 z-10" /> */}
 
-              {product.discountPercentage > 0 && (
-                <span className="absolute top-2 left-2 z-20 bg-red-500/90 backdrop-blur text-white text-xs px-2 py-1 rounded-md shadow">
-                  {product.discountPercentage}% OFF
-                </span>
-              )}
+                {product.discountPercentage > 0 && (
+                  <span className="absolute top-2 left-2 z-20 bg-red-500/90 backdrop-blur text-white text-xs px-2 py-1 rounded-md shadow">
+                    {product.discountPercentage}% OFF
+                  </span>
+                )}
 
-              {product.image.map((img, i) => (
-                <img
-                  key={i}
-                  src={getImageUrl(img)}
-                  alt={product.name}
-                  className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out ${
-                    i === index
-                      ? "opacity-100 scale-100"
-                      : "opacity-0 scale-110"
-                  } group-hover:scale-110`}
-                />
-              ))}
+                {product.image.map((img, i) => (
+                  <img
+                    key={i}
+                    src={getImageUrl(img)}
+                    alt={product.name}
+                    className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out ${
+                      i === index
+                        ? "opacity-100 scale-100"
+                        : "opacity-0 scale-110"
+                    } group-hover:scale-110`}
+                  />
+                ))}
 
-              {/* <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition duration-500 z-10" /> */}
-            </div>
-
-            {/* CONTENT */}
-            <div className="p-3 bg-white/80 backdrop-blur-md">
-            <p className="font-semibold text-sm truncate">{product.name}</p>
-              <p className="text-xs text-gray-600 mb-1 flex items-center gap-1">
-  <FaLayerGroup className="text-gray-500 text-[10px]" />
-  {product.category?.name}/{product.subCategory?.name}
-</p>
-
-              
-
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-lg font-bold text-green-600">
-                  ₹{product.sellingPrice}
-                </span>
-
-                <del className=" text-red-600 text-sm">₹{product.mrpPrice}</del>
+                {/* <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition duration-500 z-10" /> */}
               </div>
 
-<div className="h-[2px] w-0 mt-1 bg-linear-to-r from-gray-200 via-gray-500 to-gray-900 group-hover:w-full transition-all duration-500" />            </div>
-          </div>
-        );
-      })}
+              {/* CONTENT */}
+              <div className="p-3 bg-white/80 backdrop-blur-md">
+                <p className="font-semibold text-sm truncate">{product.name}</p>
+                <p className="text-xs text-gray-600 mb-1 flex items-center gap-1">
+                  <FaLayerGroup className="text-gray-500 text-[10px]" />
+                  {product.category?.name}/{product.subCategory?.name}
+                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-lg font-bold text-green-600">
+                    &#1583;&#46;&#1573; {product.sellingPrice}
+                  </span>
+
+                  <del className=" text-red-600 text-sm">
+                    &#1583;&#46;&#1573; {product.mrpPrice}
+                  </del>
+                </div>
+                <div className="h-[2px] w-0 mt-1 bg-linear-to-r from-gray-200 via-gray-500 to-gray-900 group-hover:w-full transition-all duration-500" />{" "}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </section>
   );
@@ -157,7 +158,7 @@ const ProductCardsWithPagination: React.FC<{
   sellerId?: string;
   shopName?: string;
   filters?: ProductFilters | null; // ✅ NEW
-}> = ({  search, sellerId, shopName, filters }) => {
+}> = ({ search, sellerId, shopName, filters }) => {
   const { data: products = [], isLoading } = useProductsForUser(
     sellerId ?? "",
     shopName ?? "",
@@ -243,8 +244,8 @@ const ProductCardsWithPagination: React.FC<{
       ) : (
         <>
           <ProductGrid
-          sellerId={sellerId}
-  shopName={shopName}
+            sellerId={sellerId}
+            shopName={shopName}
             currentPage={page}
             itemsPerPage={itemsPerPage}
             data={sortedProducts}

@@ -553,7 +553,8 @@ const Checkout: React.FC = () => {
                     {item.product.name} x {item.quantity}
                   </span>
                   <span className="transition-transform duration-300 hover:scale-103 hover:text-gray-800">
-                    ${(item.product.sellingPrice * item.quantity).toFixed(2)}
+                    &#1583;&#46;&#1573;{" "}
+                    {(item.product.sellingPrice * item.quantity).toFixed(2)}
                   </span>
                 </div>
               ))}
@@ -561,7 +562,9 @@ const Checkout: React.FC = () => {
 
             <div className="flex justify-between mb-3 transition-transform duration-300 hover:scale-103 hover:text-gray-800">
               <span>Subtotal</span>
-              <span>${cart.totalSellingPrice.toFixed(2)}</span>
+              <span>
+                &#1583;&#46;&#1573; {cart.totalSellingPrice.toFixed(2)}
+              </span>
             </div>
 
             <div className="flex justify-between mb-3 transition-transform duration-300 hover:scale-103 hover:text-gray-800">
@@ -571,7 +574,9 @@ const Checkout: React.FC = () => {
 
             <div className="border-t pt-4 flex justify-between font-bold text-lg transition-transform duration-300 hover:scale-103 hover:text-gray-900">
               <span>Total</span>
-              <span>${cart.totalSellingPrice.toFixed(2)}</span>
+              <span>
+                &#1583;&#46;&#1573; {cart.totalSellingPrice.toFixed(2)}
+              </span>
             </div>
 
             <motion.button

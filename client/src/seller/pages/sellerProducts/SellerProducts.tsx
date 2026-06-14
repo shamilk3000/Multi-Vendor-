@@ -17,7 +17,6 @@ import {
   FaTrash,
   FaBoxOpen,
   FaEdit,
-  FaRupeeSign,
   FaLayerGroup,
   FaStar,
   FaChartLine,
@@ -287,10 +286,10 @@ const SellerProducts = () => {
               <div className="flex justify-between">
                 <div className="flex items-center gap-2 mb-0">
                   <span className="font-bold text-lg flex items-center gap-1 transition-all duration-300 hover:scale-[1.07]">
-                    <FaRupeeSign /> {product.sellingPrice}
+                    &#1583;&#46;&#1573; {product.sellingPrice}
                   </span>
                   <span className="line-through text-green-600 text-sm transition-all duration-300 hover:scale-[1.07]">
-                    {product.mrpPrice}
+                    &#1583;&#46;&#1573; {product.mrpPrice}
                   </span>
                   <span className="text-red-600 text-sm transition-all duration-300 hover:scale-[1.07]">
                     {discount}% OFF

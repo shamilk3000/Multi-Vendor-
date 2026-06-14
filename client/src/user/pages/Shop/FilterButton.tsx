@@ -42,10 +42,7 @@ const INITIAL_FILTERS: ProductFilters = {
 
 /* ================= MAIN ================= */
 
-const FilterButton: React.FC<ProductListProps> = ({
-  sellerId,
-  onApply,
-}) => {
+const FilterButton: React.FC<ProductListProps> = ({ sellerId, onApply }) => {
   const { data: categories = [] } = useCategoriesForUser(sellerId);
 
   const [open, setOpen] = useState(false);
@@ -64,14 +61,14 @@ const FilterButton: React.FC<ProductListProps> = ({
   };
 
   const handleSortClick = (value: ProductSort) => {
-  const updated = {
-    ...filters,
-    sort: filters.sort === value ? undefined : value,
-  };
+    const updated = {
+      ...filters,
+      sort: filters.sort === value ? undefined : value,
+    };
 
-  setFilters(updated);
-  updateFilters(updated); // 🔥 THIS is what actually triggers parent
-};
+    setFilters(updated);
+    updateFilters(updated); // 🔥 THIS is what actually triggers parent
+  };
 
   return (
     <div className="relative">
@@ -93,69 +90,68 @@ const FilterButton: React.FC<ProductListProps> = ({
             className="absolute border-black right-0 mt-2 w-[360px] rounded-xl bg-white border shadow-xl p-4 z-50"
           >
             {/* CATEGORY */}
-<h4 className="font-semibold mb-2">Category</h4>
-<div className="flex flex-wrap gap-2 mb-4">
-  {categories.map((cat: Category) => (
-    <Badge
-      key={cat._id}
-      variant={
-        filters.category === cat._id ? "default" : "outline"
-      }
-      onClick={() => {
-        const updated = {
-          ...filters,
-          category:
-            filters.category === cat._id ? undefined : cat._id,
-          subCategory: undefined,
-        };
-        updateFilters(updated);
-      }}
-      className="cursor-pointer"
-    >
-      {cat.name}
-    </Badge>
-  ))}
-</div>
+            <h4 className="font-semibold mb-2">Category</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {categories.map((cat: Category) => (
+                <Badge
+                  key={cat._id}
+                  variant={filters.category === cat._id ? "default" : "outline"}
+                  onClick={() => {
+                    const updated = {
+                      ...filters,
+                      category:
+                        filters.category === cat._id ? undefined : cat._id,
+                      subCategory: undefined,
+                    };
+                    updateFilters(updated);
+                  }}
+                  className="cursor-pointer"
+                >
+                  {cat.name}
+                </Badge>
+              ))}
+            </div>
 
-{/* SUB CATEGORY */}
-{filters.category && (
-  <>
-    <h4 className="font-semibold mb-2">Sub category</h4>
-    <div className="flex flex-wrap gap-2 mb-4">
-      {categories
-        .find((c: Category) => c._id === filters.category)
-        ?.children?.map((sub: any) => (
-          <Badge
-            key={sub._id}
-            variant={
-              filters.subCategory === sub._id
-                ? "default"
-                : "outline"
-            }
-            onClick={() => {
-              const updated = {
-                ...filters,
-                subCategory:
-                  filters.subCategory === sub._id
-                    ? undefined
-                    : sub._id,
-              };
-              updateFilters(updated);
-            }}
-            className="cursor-pointer"
-          >
-            {sub.name}
-          </Badge>
-        ))}
-    </div>
-  </>
-)}
+            {/* SUB CATEGORY */}
+            {filters.category && (
+              <>
+                <h4 className="font-semibold mb-2">Sub category</h4>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {categories
+                    .find((c: Category) => c._id === filters.category)
+                    ?.children?.map((sub: any) => (
+                      <Badge
+                        key={sub._id}
+                        variant={
+                          filters.subCategory === sub._id
+                            ? "default"
+                            : "outline"
+                        }
+                        onClick={() => {
+                          const updated = {
+                            ...filters,
+                            subCategory:
+                              filters.subCategory === sub._id
+                                ? undefined
+                                : sub._id,
+                          };
+                          updateFilters(updated);
+                        }}
+                        className="cursor-pointer"
+                      >
+                        {sub.name}
+                      </Badge>
+                    ))}
+                </div>
+              </>
+            )}
 
             {/* PRICE */}
             <h4 className="font-semibold mb-2">Price</h4>
             <div className="flex items-center gap-3 mb-4">
               <Badge variant="secondary">
-                ₹{filters.price[0]} - ₹{filters.price[1]}
+                &#1583;&#46;&#1573; {filters.price[1]} - &#1583;&#46;&#1573;{" "}
+                {filters.price[0]}
               </Badge>
 
               <Slider

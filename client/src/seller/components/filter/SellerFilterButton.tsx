@@ -1,11 +1,10 @@
-import { useState, } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { SlidersHorizontal } from "lucide-react";
 import { useCategories } from "../../../hooks/seller/category/useCategories";
-
 
 export type ProductSort =
   | "price_low_high"
@@ -73,24 +72,24 @@ const SellerFilterButton: React.FC<Props> = ({ onApply }) => {
             {/* CATEGORY */}
             <h4 className="font-semibold mb-2">Category</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              
               {categories.map((cat: { _id: string; name: string }) => (
-    <Badge
-      key={cat._id}
-      variant={filters.category === cat._id ? "default" : "outline"}
-      onClick={() => {
-        const updated = {
-          ...filters,
-          category: filters.category === cat._id ? undefined : cat._id,
-          subCategory: undefined,
-        };
-        updateFilters(updated);
-      }}
-      className="cursor-pointer"
-    >
-      {cat.name}
-    </Badge>
-  ))}
+                <Badge
+                  key={cat._id}
+                  variant={filters.category === cat._id ? "default" : "outline"}
+                  onClick={() => {
+                    const updated = {
+                      ...filters,
+                      category:
+                        filters.category === cat._id ? undefined : cat._id,
+                      subCategory: undefined,
+                    };
+                    updateFilters(updated);
+                  }}
+                  className="cursor-pointer"
+                >
+                  {cat.name}
+                </Badge>
+              ))}
             </div>
 
             {/* SUB CATEGORY */}
@@ -98,28 +97,34 @@ const SellerFilterButton: React.FC<Props> = ({ onApply }) => {
               <>
                 <h4 className="font-semibold mb-2">Sub category</h4>
                 <div className="flex flex-wrap gap-2 mb-4">
-                 
-                   {categories.find((cat: { _id: string; name: string }) => cat._id === filters.category)?.children?.map(
-        (sub: { _id: string; name: string }) => (
-          <Badge
-            key={sub._id}
-            variant={
-              filters.subCategory === sub._id ? "default" : "outline"
-            }
-            onClick={() => {
-              const updated = {
-                ...filters,
-                subCategory:
-                  filters.subCategory === sub._id ? undefined : sub._id,
-              };
-              updateFilters(updated);
-            }}
-            className="cursor-pointer"
-          >
-            {sub.name}
-          </Badge>
-        )
-      )}
+                  {categories
+                    .find(
+                      (cat: { _id: string; name: string }) =>
+                        cat._id === filters.category,
+                    )
+                    ?.children?.map((sub: { _id: string; name: string }) => (
+                      <Badge
+                        key={sub._id}
+                        variant={
+                          filters.subCategory === sub._id
+                            ? "default"
+                            : "outline"
+                        }
+                        onClick={() => {
+                          const updated = {
+                            ...filters,
+                            subCategory:
+                              filters.subCategory === sub._id
+                                ? undefined
+                                : sub._id,
+                          };
+                          updateFilters(updated);
+                        }}
+                        className="cursor-pointer"
+                      >
+                        {sub.name}
+                      </Badge>
+                    ))}
                 </div>
               </>
             )}
@@ -168,7 +173,8 @@ const SellerFilterButton: React.FC<Props> = ({ onApply }) => {
             <h4 className="font-semibold mb-2">Price range</h4>
             <div className="flex items-center gap-3 mb-4">
               <Badge variant="secondary">
-                ₹{filters.price[0]} - ₹{filters.price[1]}
+                &#1583;&#46;&#1573; {filters.price[1]} - &#1583;&#46;&#1573;{" "}
+                {filters.price[0]}
               </Badge>
               <Slider
                 min={1}

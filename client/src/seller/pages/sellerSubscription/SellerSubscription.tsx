@@ -16,13 +16,13 @@ import { logout, setSeller } from "@/redux/authSlice";
 
 const plan = {
   id: "yearly",
-  price: "₹4999/year",
+  price: "4999/year",
   features: [
     "Unlimited product listings",
     "Advanced analytics dashboard",
     "Priority customer support",
     "Featured product visibility",
-    "Access to all premium tools",
+    "Full access to seller growth tools",
   ],
 };
 
@@ -189,7 +189,7 @@ const SubscriptionPage: React.FC = () => {
             {/* Plan */}
             <div className="text-center mb-5">
               <p className="text-4xl font-bold mt-2 tracking-wide">
-                {plan.price}
+                &#1583;&#46;&#1573; {plan.price}
               </p>
 
               <p className="text-xs text-gray-400 mt-1">Billed yearly</p>

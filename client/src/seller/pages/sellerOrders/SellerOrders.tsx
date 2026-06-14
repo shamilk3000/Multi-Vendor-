@@ -331,7 +331,7 @@ const SellerOrders: React.FC = () => {
                               {product.product.name}
                             </p>
                             <p className="font-medium text-green-500 text-xs">
-                              {product.perItem}
+                              &#1583;&#46;&#1573; {product.perItem}
                             </p>
                             <p className="text-xs text-gray-500">
                               Qty: {product.quantity}
@@ -340,7 +340,7 @@ const SellerOrders: React.FC = () => {
                         </div>
 
                         <div className="font-semibold text-gray-900 text-sm">
-                          ${product.totalSellingPrice}
+                          &#1583;&#46;&#1573; {product.totalSellingPrice}
                         </div>
                       </div>
                     ))}
@@ -358,8 +358,8 @@ const SellerOrders: React.FC = () => {
                     </span>
 
                     <span className="font-semibold text-black">
-                      Total: {order.totalSellingPrice} - {order.stripeFee} = $
-                      {order.creditedAmount}
+                      Total: {order.totalSellingPrice} - {order.stripeFee} =
+                      &#1583;&#46;&#1573; {order.creditedAmount}
                     </span>
                   </div>
                 </motion.div>

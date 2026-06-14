@@ -26,7 +26,7 @@ const Cart: React.FC = () => {
   const { data: cart = [], isLoading } = useCart();
   const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_SERVER_IMAGE_TARGET;
-// console.log(cart);
+  // console.log(cart);
 
   const increaseQty = async (id: string) => {
     try {
@@ -176,11 +176,11 @@ const Cart: React.FC = () => {
                         </h2>
 
                         <p className="text-green-700 text-sm">
-                          ${item.product.sellingPrice}
+                          &#1583;&#46;&#1573; {item.product.sellingPrice}
                         </p>
 
                         <p className="text-sm font-medium text-gray-800">
-                          Total: $
+                          Total: &#1583;&#46;&#1573;{" "}
                           {(item.product.sellingPrice * item.quantity).toFixed(
                             2,
                           )}
@@ -261,7 +261,8 @@ const Cart: React.FC = () => {
                   </span>
 
                   <span>
-                    ${(item.product.sellingPrice * item.quantity).toFixed(2)}
+                    &#1583;&#46;&#1573;{" "}
+                    {(item.product.sellingPrice * item.quantity).toFixed(2)}
                   </span>
                 </div>
               ))}
@@ -269,7 +270,9 @@ const Cart: React.FC = () => {
 
             <div className="flex justify-between mb-3 transition-transform duration-300 hover:scale-[1.03] hover:text-gray-800">
               <span>Subtotal</span>
-              <span>${cart.totalSellingPrice.toFixed(2)}</span>
+              <span>
+                &#1583;&#46;&#1573; {cart.totalSellingPrice.toFixed(2)}
+              </span>
             </div>
 
             <div className="flex justify-between mb-3 transition-transform duration-300 hover:scale-[1.03] hover:text-gray-800">
@@ -279,7 +282,9 @@ const Cart: React.FC = () => {
 
             <div className="border-t pt-4 flex justify-between font-bold text-lg transition-transform duration-300 hover:scale-[1.03] hover:text-gray-900">
               <span>Total</span>
-              <span>${cart.totalSellingPrice.toFixed(2)}</span>
+              <span>
+                &#1583;&#46;&#1573; {cart.totalSellingPrice.toFixed(2)}
+              </span>
             </div>
             <motion.button
               disabled={cart.items.length === 0}
@@ -308,7 +313,7 @@ const Cart: React.FC = () => {
           </motion.div>
         </div>
       </div>
-      <Footer  sellerId={sellerId!} />
+      <Footer sellerId={sellerId!} />
     </div>
   );
 };

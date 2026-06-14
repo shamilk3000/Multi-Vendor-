@@ -181,9 +181,11 @@ const SuggestedProducts: React.FC<CategoryIdProps> = ({
               </p>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-sm font-bold text-green-400">
-                  ${product.sellingPrice}
+                  &#1583;&#46;&#1573; {product.sellingPrice}
                 </span>
-                <del className="text-xs text-red-400">${product.mrpPrice}</del>
+                <del className="text-xs text-red-400">
+                  &#1583;&#46;&#1573; {product.mrpPrice}
+                </del>
               </div>
             </div>
           </div>

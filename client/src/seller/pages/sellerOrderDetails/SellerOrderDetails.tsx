@@ -567,7 +567,7 @@ const OrderDetails: React.FC = () => {
                       className="text-xs text-green-500 group-hover:animate-[wave_0.5s_ease-in-out]"
                       style={{ animationDelay: `${i * 80 + 140}ms` }}
                     >
-                      ${item?.perItem}
+                      &#1583;&#46;&#1573; {item?.perItem}
                     </p>
                     <p
                       className="text-xs text-gray-500 group-hover:animate-[wave_0.5s_ease-in-out]"
@@ -599,7 +599,7 @@ const OrderDetails: React.FC = () => {
                     className="font-semibold group-hover:animate-[wave_0.5s_ease-in-out]"
                     style={{ animationDelay: `${i * 80 + 260}ms` }}
                   >
-                    ${item?.totalSellingPrice}
+                    &#1583;&#46;&#1573; {item?.totalSellingPrice}
                   </p>
                 </div>
               </motion.div>
@@ -616,8 +616,8 @@ const OrderDetails: React.FC = () => {
           <span>Total</span>
           <span>
             {" "}
-            {orderdetails.totalSellingPrice} - {orderdetails.stripeFee} = $
-            {orderdetails.creditedAmount}{" "}
+            {orderdetails.totalSellingPrice} - {orderdetails.stripeFee} =
+            &#1583;&#46;&#1573; {orderdetails.creditedAmount}{" "}
           </span>
         </div>
       </motion.div>

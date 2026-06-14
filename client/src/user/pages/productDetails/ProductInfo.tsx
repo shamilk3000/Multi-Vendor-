@@ -75,11 +75,11 @@ const ProductInfo = ({ product, shopName, sellerId }: ProductListProps) => {
                        after:blur-xl after:opacity-20
                        after:animate-pulse"
           >
-            £{product.sellingPrice}
+            &#1583;&#46;&#1573; {product.sellingPrice}
           </span>
 
           <span className="text-sm text-gray-400 line-through">
-            £{product.mrpPrice}
+            &#1583;&#46;&#1573; {product.mrpPrice}
           </span>
 
           {product.discountPercentage > 0 && (

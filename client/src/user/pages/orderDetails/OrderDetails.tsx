@@ -413,7 +413,7 @@ const OrderDetails: React.FC = () => {
               group-hover:animate-[wave_0.5s_ease-in-out]"
                       style={{ animationDelay: `${i * 160}ms` }}
                     >
-                      ${item?.perItem}
+                      &#1583;&#46;&#1573; {item?.perItem}
                     </p>
                     <p
                       className="text-xs text-gray-500
@@ -447,7 +447,7 @@ const OrderDetails: React.FC = () => {
             group-hover:animate-[wave_0.5s_ease-in-out]"
                     style={{ animationDelay: `${i * 200}ms` }}
                   >
-                    ${item?.totalSellingPrice}
+                    &#1583;&#46;&#1573; {item?.totalSellingPrice}
                   </p>
                 </div>
               </motion.div>
@@ -467,7 +467,7 @@ const OrderDetails: React.FC = () => {
             className="group-hover:animate-[wave_0.5s_ease-in-out]"
             style={{ animationDelay: "160ms" }}
           >
-            ${orderdetails?.totalSellingPrice}
+            &#1583;&#46;&#1573; {orderdetails?.totalSellingPrice}
           </span>
         </div>
       </motion.div>
