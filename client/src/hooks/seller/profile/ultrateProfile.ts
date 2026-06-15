@@ -1,5 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateProfile } from "../../../api/seller/profile";
+import {
+  updateProfile,
+  deleteBanner,
+  updateBanner,
+} from "../../../api/seller/profile";
 
 // 🧠 shared invalidate logic
 const useInvalidateProfiles = () => {
@@ -43,6 +47,23 @@ export const ultrateUpdateProfile = () => {
 
   return useMutation({
     mutationFn: updateProfile,
+    onSuccess: invalidate,
+  });
+};
+
+export const ultrateUpdateBanner = () => {
+  const invalidate = useInvalidateProfiles();
+
+  return useMutation({
+    mutationFn: updateBanner,
+    onSuccess: invalidate,
+  });
+};
+export const ultrateDeleteBanner = () => {
+  const invalidate = useInvalidateProfiles();
+
+  return useMutation({
+    mutationFn: deleteBanner,
     onSuccess: invalidate,
   });
 };

@@ -56,6 +56,10 @@ const sellerSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Address",
     },
+    banner: {
+      type: String,
+      default: "",
+    },
     businessDetails: {
       bussinessName: {
         type: String,

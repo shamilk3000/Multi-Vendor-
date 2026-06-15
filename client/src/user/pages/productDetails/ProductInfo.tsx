@@ -42,6 +42,7 @@ const ProductInfo = ({ product, shopName, sellerId }: ProductListProps) => {
             color: "#fff",
             border: "1px solid #333",
           },
+          duration: 3500,
         },
       );
       setLoading(false);

@@ -66,6 +66,7 @@ const WriteReview: React.FC<ReviewFormProps> = ({ productId }) => {
             color: "#fff",
             border: "1px solid #333",
           },
+          duration: 3500,
         },
       );
       // Reset only on success

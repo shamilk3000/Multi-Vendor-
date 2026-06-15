@@ -48,4 +48,8 @@ router.get("/get-order-by-id/:orderId", sellerAuth, orderController.getOrderById
 router.put("/update-order-status/:orderId/:status", sellerAuth, orderController.updateOrderStatus);                          //using
 
 
+router.put("/update-banner", sellerAuth, sellerController.updateBanner);                                                     //using
+router.put("/delete-banner", sellerAuth, sellerController.deleteBanner);                                                     //using
+
+
 module.exports = router; 

@@ -231,7 +231,17 @@ const Signup = () => {
 
     onSuccess: async (credentialResponse) => {
       if (!sellerId || !shopName) {
-        toast.error("Invalid shop context");
+        toast.error("Invalid shop context", {
+          icon: <FaExclamationTriangle className="text-red-500" />,
+          style: {
+            borderRadius: "12px",
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+            boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+          },
+          duration: 3500,
+        });
         return;
       }
 
@@ -328,7 +338,7 @@ const Signup = () => {
 
   return (
     <div className=" flex flex-col bg-gray-50 p-0">
-      <Navbar shopName={shopName!}  sellerId={sellerId!}/>
+      <Navbar shopName={shopName!} sellerId={sellerId!} />
 
       <div className="md:py-5 flex items-center justify-center bg-gray-50 relative overflow-hidden">
         {/* BACKGROUND BLOBS */}
@@ -569,7 +579,7 @@ const Signup = () => {
           </p>
         </motion.div>
       </div>
-      <Footer  sellerId={sellerId!} />
+      <Footer sellerId={sellerId!} />
     </div>
   );
 };

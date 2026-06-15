@@ -65,11 +65,15 @@ const OrderDetails: React.FC = () => {
       // 🚫 Prevent changing cancelled orders
       if (orderdetails?.orderStatus === "Cancelled") {
         toast.error("Cancelled orders cannot be updated ❌", {
+          icon: <FaExclamationTriangle className="text-red-500" />,
           style: {
+            borderRadius: "12px",
             background: "#111",
             color: "#fff",
             border: "1px solid #333",
+            boxShadow: "0 0 10px rgba(255,255,255,0.1)",
           },
+          duration: 3500,
         });
 
         return;
@@ -77,11 +81,15 @@ const OrderDetails: React.FC = () => {
 
       if (orderdetails?.orderStatus === "Delivered") {
         toast.error("Delivered orders cannot be updated ❌", {
+          icon: <FaExclamationTriangle className="text-red-500" />,
           style: {
+            borderRadius: "12px",
             background: "#111",
             color: "#fff",
             border: "1px solid #333",
+            boxShadow: "0 0 10px rgba(255,255,255,0.1)",
           },
+          duration: 3500,
         });
 
         return;
@@ -111,17 +119,22 @@ const OrderDetails: React.FC = () => {
             color: "#fff",
             border: "1px solid #333",
           },
+          duration: 3500,
         },
       );
     } catch (error) {
       console.error("Status update error:", error);
 
       toast.error("Something went wrong ❌", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
         style: {
+          borderRadius: "12px",
           background: "#111",
           color: "#fff",
           border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
         },
+        duration: 3500,
       });
     }
   };
@@ -146,17 +159,22 @@ const OrderDetails: React.FC = () => {
             color: "#fff",
             border: "1px solid #333",
           },
+          duration: 3500,
         },
       );
     } catch (error) {
       console.error(error);
 
       toast.error("Something went wrong ❌", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
         style: {
+          borderRadius: "12px",
           background: "#111",
           color: "#fff",
           border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
         },
+        duration: 3500,
       });
     }
   };

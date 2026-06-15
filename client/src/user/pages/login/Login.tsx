@@ -24,14 +24,13 @@ import { setSellerId, setUser } from "../../../redux/authSlice";
 import { useParams } from "react-router-dom";
 
 const Login = () => {
-  
   const { sellerId, shopName } = useParams();
   const dispatch = useDispatch();
-   useEffect(() => {
-  if (sellerId && shopName) {
-    dispatch(setSellerId({ sellerId, shopName }));
-  }
-}, [sellerId, shopName, dispatch]);
+  useEffect(() => {
+    if (sellerId && shopName) {
+      dispatch(setSellerId({ sellerId, shopName }));
+    }
+  }, [sellerId, shopName, dispatch]);
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -207,7 +206,17 @@ const Login = () => {
 
     onSuccess: async (credentialResponse) => {
       if (!sellerId || !shopName) {
-        toast.error("Invalid shop context");
+        toast.error("Invalid shop context", {
+          icon: <FaExclamationTriangle className="text-red-500" />,
+          style: {
+            borderRadius: "12px",
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+            boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+          },
+          duration: 3500,
+        });
         return;
       }
 
@@ -302,7 +311,7 @@ const Login = () => {
 
   return (
     <div className=" flex flex-col bg-gray-50 p-0">
-     <Navbar shopName={shopName!}  sellerId={sellerId!}/>
+      <Navbar shopName={shopName!} sellerId={sellerId!} />
 
       <div className="md:py-5 flex items-center justify-center bg-gray-50 relative overflow-hidden">
         <motion.div
@@ -428,8 +437,10 @@ const Login = () => {
           </div>
 
           <div className="text-right mt-3 mb-3">
-            <span  onClick={() => navigate(`/${sellerId}/${shopName}/email-otp`)}
-             className="text-sm text-gray-600 relative cursor-pointer group">
+            <span
+              onClick={() => navigate(`/${sellerId}/${shopName}/email-otp`)}
+              className="text-sm text-gray-600 relative cursor-pointer group"
+            >
               Forgot Password?
               <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-black transition-all duration-300 group-hover:w-full"></span>
             </span>
@@ -480,7 +491,7 @@ const Login = () => {
           </p>
         </motion.div>
       </div>
-       <Footer  sellerId={sellerId!} />
+      <Footer sellerId={sellerId!} />
     </div>
   );
 };

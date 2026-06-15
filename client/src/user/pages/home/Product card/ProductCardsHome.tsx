@@ -265,7 +265,7 @@ const ProductCardsWithPagination: React.FC<{
             >
               {/* CATEGORY TITLE */}
               <div className="mb-4 group ">
-                <div className="flex items-center gap-2 ps-10 pb-5 justify-between ">
+                <div className="flex items-center gap-2 ps-2 md:ps-10 md:pb-5 justify-between ">
                   {/* ICON BADGE */}
                   <div className="flex items-center gap-2">
                     <div className="p-2 rounded-full bg-black group-hover:bg-black transition-all duration-300">
@@ -281,7 +281,7 @@ const ProductCardsWithPagination: React.FC<{
                     </h2>
                   </div>
                   {/* PRODUCT COUNT */}
-                  <div className="rounded-full bg-black px-5 py-2 me-5 text-sm font-semibold text-white shadow-md">
+                  <div className="rounded-full bg-black px-5 py-2 md:me-5 me-2 text-sm font-semibold text-white shadow-md">
                     {group.items.length} Products
                   </div>
                 </div>

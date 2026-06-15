@@ -389,6 +389,7 @@ const SellerEditPage = () => {
             color: "#fff",
             border: "1px solid #333",
           },
+          duration: 3500,
         },
       );
 

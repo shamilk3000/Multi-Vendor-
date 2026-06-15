@@ -14,6 +14,7 @@ import {
   FaTimesCircle,
   FaTruck,
   FaBoxOpen,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 import Navbar from "../navbar/Navbar";
 import Footer from "../footer/Footer";
@@ -206,31 +207,43 @@ const Checkout: React.FC = () => {
 
     if (emptyField) {
       return toast.error("All fields are required", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
         style: {
+          borderRadius: "12px",
           background: "#111",
           color: "#fff",
           border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
         },
+        duration: 3500,
       });
     }
 
     if (!emailValid) {
       return toast.error("Invalid email", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
         style: {
+          borderRadius: "12px",
           background: "#111",
           color: "#fff",
           border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
         },
+        duration: 3500,
       });
     }
 
     if (!phoneValid) {
       return toast.error("Invalid phone number", {
+        icon: <FaExclamationTriangle className="text-red-500" />,
         style: {
+          borderRadius: "12px",
           background: "#111",
           color: "#fff",
           border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
         },
+        duration: 3500,
       });
     }
     try {

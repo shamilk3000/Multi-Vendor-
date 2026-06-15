@@ -9,20 +9,27 @@ function createMulterUpload(folderName) {
       // choose folder based on fieldname
       let dynamicFolder = folderName;
       if (file.fieldname === "idProof") {
+        if (typeof req.body.updatedForm === "string") {
+          req.body.updatedForm = JSON.parse(req.body.updatedForm);
+        }
         dynamicFolder = `${dynamicFolder}/IdProofs/${req.body.updatedForm.email}`;
       } else if (file.fieldname === "personalImage") {
+        if (typeof req.body.updatedForm === "string") {
+          req.body.updatedForm = JSON.parse(req.body.updatedForm);
+        }
         dynamicFolder = `${dynamicFolder}/PersonalImages/${req.body.updatedForm.email}`;
       } else if (file.fieldname === "productImages") {
         dynamicFolder = `${dynamicFolder}/${req.seller.email}`;
+      } else if (file.fieldname === "banner") {
+        dynamicFolder = `${dynamicFolder}/Banner/${req.seller.email}`;
       } else if (file.fieldname.startsWith("images_")) {
         dynamicFolder = `${dynamicFolder}/${req.user.email}-${req.user._id}`;
       }
 
-
       const uploadPath = path.join(
         __dirname,
         "../Public/Uploads",
-        dynamicFolder
+        dynamicFolder,
       );
 
       if (!fs.existsSync(uploadPath)) {
@@ -41,8 +48,8 @@ function createMulterUpload(folderName) {
       cb(
         null,
         `${file.fieldname}-${originalName}-${uniqueSuffix}${path.extname(
-          file.originalname
-        )}`
+          file.originalname,
+        )}`,
       );
     },
   });

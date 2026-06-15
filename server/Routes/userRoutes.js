@@ -19,6 +19,7 @@ router.post("/user-reset-password-slider",userAuth, userController.userResetPass
 
 router.get("/get-user-profile", userAuth, userController.getUserProfile);                                                      //using
 router.get("/get-user-footer/:sellerId", userController.getUserFooter);                                                         //using
+router.get("/get-banner/:sellerId", userController.getBanner);                                                                  //using
 
 router.get("/:sellerId/:shopName/get-all-products-for-customer", productController.getAllProductsForCustomer);                   //using
 router.get("/get-products-in-category/:categoryId", productController.getProductsInCategory);                                   //using

@@ -180,6 +180,22 @@ const getUserFooter = async (req, res) => {
   }
 };
 
+const getBanner = async (req, res) => {
+  try {
+    const sellerId = req.params.sellerId;
+    const seller = await Seller.findById(sellerId);
+
+    if (!seller) {
+      return res.status(404).json({ message: "Seller not found" });
+    }
+    const banner = seller.banner;
+    return res.status(200).json(banner);
+  } catch (error) {
+    console.error("getBanner Controller Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 const getUserProfileById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -272,5 +288,6 @@ module.exports = {
   updateUserStatus,
   getUserAddress,
   getUserFooter,
+  getBanner,
   logout,
 };

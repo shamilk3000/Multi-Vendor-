@@ -16,6 +16,9 @@ import {
   FaWallet,
   FaArrowDown,
   FaPercent,
+  FaImage,
+  FaTrash,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 
 import {
@@ -42,6 +45,8 @@ import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import { useSellerDashboard } from "../../../hooks/seller/profile/useProfile";
 import SellerDashboardSkeleton from "@/seller/components/skeletons/dashboardSkeleton";
+import { ultrateUpdateBanner } from "../../../hooks/seller/profile/ultrateProfile";
+import { ultrateDeleteBanner } from "../../../hooks/seller/profile/ultrateProfile";
 
 // import api from "../../../features/axios";
 
@@ -57,18 +62,25 @@ ChartJS.register(
 
 const SellerDashboard = () => {
   const { data: dashboardData, isLoading } = useSellerDashboard();
+  const { mutateAsync: updateBanner } = ultrateUpdateBanner();
+  const { mutateAsync: deleteBanner } = ultrateDeleteBanner();
   const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
+  const [banner, setBanner] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [sellerSubStatus, setSellerSubStatus] = useState(false);
   const navigate = useNavigate();
   const [openTooltip, setOpenTooltip] = useState<number | null>(null);
   const BASE_URL = import.meta.env.VITE_SERVER_DAGHBOARD;
-  console.log(dashboardData);
+  const BASE_URL_IMG = import.meta.env.VITE_SERVER_IMAGE_TARGET;
 
   const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
   const qrRef = useRef<HTMLDivElement>(null);
-
+  useEffect(() => {
+    if (dashboardData?.seller?.banner) {
+      setBanner(dashboardData.seller.banner);
+    }
+  }, [dashboardData]);
   useEffect(() => {
     const statusSub = searchParams.get("statusSub");
 
@@ -122,6 +134,89 @@ const SellerDashboard = () => {
     }
   }, [searchParams, sellerSubStatus]);
 
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = e.target.files?.[0];
+
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("banner", file);
+
+      const res = await toast.promise(
+        updateBanner(formData),
+        {
+          loading: "Uploading banner...",
+          success: "Banner updated successfully",
+          error: "Failed to update banner",
+        },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+          duration: 3500,
+        },
+      );
+
+      if (res.success) {
+        setBanner(res.banner);
+      }
+    } catch (error) {
+      console.error("Banner upload error:", error);
+      toast.error(`Banner upload error: ${error}`, {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
+    }
+  };
+
+  const handleBannerDelete = async () => {
+    try {
+      const res = await toast.promise(
+        deleteBanner(banner),
+        {
+          loading: "Deleting banner...",
+          success: "Banner deleted successfully",
+          error: "Failed to delete banner",
+        },
+        {
+          style: {
+            background: "#111",
+            color: "#fff",
+            border: "1px solid #333",
+          },
+          duration: 3500,
+        },
+      );
+
+      if (res.success) {
+        setBanner(null);
+      }
+    } catch (error) {
+      console.error("Banner delete error:", error);
+      toast.error(`Banner delete error: ${error}`, {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
+    }
+  };
+
   const handleCopy = async () => {
     try {
       const textToCopy = webURL ?? "";
@@ -146,8 +241,19 @@ const SellerDashboard = () => {
       setCopied(true);
 
       setTimeout(() => setCopied(false), 1500);
-    } catch (err) {
-      console.log("Copy failed:", err);
+    } catch (err: any) {
+      console.error("Copy failed:", err);
+      toast.error(`Copy failed: ${err}`, {
+        icon: <FaExclamationTriangle className="text-red-500" />,
+        style: {
+          borderRadius: "12px",
+          background: "#111",
+          color: "#fff",
+          border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
+        },
+        duration: 3500,
+      });
     }
   };
 
@@ -574,7 +680,69 @@ const SellerDashboard = () => {
           </div>
         </div>
       </div>
+      {/* BANNER */}
+      <div className="mb-6 mt-6">
+        {banner ? (
+          <div className="relative overflow-hidden rounded-3xl shadow-sm hover:shadow-xl transition hover:scale-[1.01]">
+            <img
+              src={`${BASE_URL_IMG}${banner}`}
+              alt="Banner"
+              className="w-full h-[100px] md:h-[300px] object-cover"
+            />
 
+            <button
+              onClick={handleBannerDelete}
+              className="
+          absolute top-2 left-2
+          bg-black text-white font-semibold
+          px-4 py-2 rounded-xl text-sm
+          flex items-center gap-2 border border-black
+          hover:bg-white hover:text-black transition
+        "
+            >
+              <FaTrash />
+              Delete Banner
+            </button>
+          </div>
+        ) : (
+          <label
+            className="
+    cursor-pointer
+    bg-white
+    border-2 border-dashed border-gray-500
+    rounded-3xl
+    h-[100px] md:h-[300px]
+    flex flex-col items-center justify-center
+    hover:border-black
+    hover:shadow-xl
+    transition text-gray-700 hover:text-black
+  "
+          >
+            <FaImage className="text-5xl mb-4" />
+
+            <h2 className="font-bold text-xl text-black">
+              Click To Add Banner
+            </h2>
+
+            <p className="text-gray-800 hover:text-black text-sm mt-2">
+              Maximum 1 image
+            </p>
+
+            <p className="text-gray-800 hover:text-black text-xs mt-1 text-center px-4">
+              Recommended size:{" "}
+              <span className="font-medium">1920 × 300 px</span>. Use a
+              high-quality wide image for the best display across all devices.
+            </p>
+
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={handleBannerUpload}
+            />
+          </label>
+        )}
+      </div>
       {/* QR CODE SECTION */}
       <div className="mt-6 bg-white rounded-2xl p-5 shadow-sm hover:shadow-xl transition hover:scale-[1.01] flex flex-col items-center">
         <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">

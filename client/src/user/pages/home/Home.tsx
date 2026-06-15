@@ -7,22 +7,22 @@ import Footer from "../footer/Footer";
 import Navbar from "../navbar/Navbar";
 
 function Home() {
-    const { sellerId, shopName } = useParams();
+  const { sellerId, shopName } = useParams();
 
   return (
     <div>
       <section>
-       <Navbar shopName={shopName!}  sellerId={sellerId!}/>
-        <Banner shopName={shopName!}/>
+        <Navbar shopName={shopName!} sellerId={sellerId!} />
+        <Banner shopName={shopName!} sellerId={sellerId!} />
       </section>
       {/* <section>
         <Categories/>
       </section> */}
       <section>
-        <ProductList  sellerId={sellerId!}  shopName={shopName!}/>
+        <ProductList sellerId={sellerId!} shopName={shopName!} />
       </section>
       <section>
-        <Footer  sellerId={sellerId!} />
+        <Footer sellerId={sellerId!} />
       </section>
     </div>
   );

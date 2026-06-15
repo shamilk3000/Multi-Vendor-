@@ -46,6 +46,7 @@ const CategoryList = () => {
             color: "#fff",
             border: "1px solid #333",
           },
+          duration: 3500,
         },
       );
     } catch (err) {
@@ -69,6 +70,7 @@ const CategoryList = () => {
             color: "#fff",
             border: "1px solid #333",
           },
+          duration: 3500,
         },
       );
     } catch (err) {
@@ -92,6 +94,7 @@ const CategoryList = () => {
             color: "#fff",
             border: "1px solid #333",
           },
+          duration: 3500,
         },
       );
     } catch (err) {

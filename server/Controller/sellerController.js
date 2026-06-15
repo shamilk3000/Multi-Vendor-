@@ -3,6 +3,7 @@ const { createMulterUpload } = require("../Utils/multerUtil");
 const sellerUpload = createMulterUpload("Seller");
 const { stripe } = require("../Utils/stripe");
 const Seller = require("../Models/sellerModel");
+const { deleteFiles } = require("../Utils/multerUtil");
 require("dotenv").config();
 
 const getAllSellers = async (req, res) => {
@@ -391,6 +392,90 @@ const logout = async (req, res) => {
   }
 };
 
+const updateBanner = (req, res) => {
+  sellerUpload.fields([{ name: "banner", maxCount: 1 }])(
+    req,
+    res,
+    async (err) => {
+      try {
+        if (err) {
+          return res.status(400).json({
+            success: false,
+            message: "File upload failed",
+            error: err.message,
+          });
+        }
+
+        const sellerId = req.seller._id;
+
+        if (!req.files?.banner?.[0]) {
+          return res.status(400).json({
+            success: false,
+            message: "Banner image is required",
+          });
+        }
+
+        const banner = `/Uploads/Seller/Banner/${req.seller.email}/${req.files.banner[0].filename}`;
+
+        const seller = await Seller.findByIdAndUpdate(
+          sellerId,
+          {
+            banner,
+          },
+          { new: true },
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: "Banner updated successfully",
+          banner: seller.banner,
+        });
+      } catch (error) {
+        console.error("Banner upload error:", error);
+
+        return res.status(500).json({
+          success: false,
+          message: "Failed to update banner",
+        });
+      }
+    },
+  );
+};
+
+const deleteBanner = async (req, res) => {
+  try {
+    const sellerId = req.seller._id;
+
+    const seller = await Seller.findById(sellerId);
+
+    if (!seller) {
+      return res.status(404).json({
+        success: false,
+        message: "Seller not found",
+      });
+    }
+
+    // Delete physical file
+    if (seller.banner) {
+      await deleteFiles(seller.banner);
+    }
+
+    // Remove path from DB
+    seller.banner = "";
+    await seller.save();
+
+    res.json({
+      success: true,
+      message: "Banner deleted",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAllSellers,
   getSellerProfile,
@@ -412,4 +497,6 @@ module.exports = {
   sellerResetPasswordDashboard,
   sellerSubscription,
   logout,
+  updateBanner,
+  deleteBanner,
 };

@@ -14,7 +14,6 @@ import {
   FaEdit,
 } from "react-icons/fa";
 
-
 interface Props {
   category: Category;
   setGlobalModalOpen: (val: boolean) => void; // 👈 NEW
@@ -80,6 +79,7 @@ const EditCategoryModal = ({
             color: "#fff",
             border: "1px solid #333",
           },
+          duration: 3500,
         },
       );
       closeModal();
@@ -93,10 +93,13 @@ const EditCategoryModal = ({
       toast.error(error, {
         icon: <FaExclamationTriangle className="text-red-500" />,
         style: {
+          borderRadius: "12px",
           background: "#111",
           color: "#fff",
           border: "1px solid #333",
+          boxShadow: "0 0 10px rgba(255,255,255,0.1)",
         },
+        duration: 3500,
       });
       setError("");
     }

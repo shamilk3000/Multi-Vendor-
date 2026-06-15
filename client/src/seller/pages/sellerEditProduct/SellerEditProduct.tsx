@@ -263,6 +263,7 @@ const EditProduct = () => {
             color: "#fff",
             border: "1px solid #333",
           },
+          duration: 3500,
         },
       );
       if (from == "details") {
