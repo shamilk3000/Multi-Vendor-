@@ -84,6 +84,21 @@ const SellerDashboardSkeleton = () => {
         </div>
       </div>
 
+      {/* Banner Section */}
+      <div className="mb-6">
+        <div className="bg-white rounded-3xl overflow-hidden shadow-sm">
+          {/* Desktop / Tablet */}
+          <div className="hidden md:block">
+            <Skeleton height={300} />
+          </div>
+
+          {/* Mobile */}
+          <div className="block md:hidden">
+            <Skeleton height={150} />
+          </div>
+        </div>
+      </div>
+
       {/* QR Section */}
       <div className="mt-6 bg-white rounded-2xl p-5 shadow-sm flex flex-col items-center">
         <Skeleton width={250} height={28} className="mb-6" />

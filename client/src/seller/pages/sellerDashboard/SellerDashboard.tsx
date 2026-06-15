@@ -1,4 +1,3 @@
-// import React from "react";
 import {
   FaBox,
   FaShoppingCart,
@@ -47,8 +46,6 @@ import { useSellerDashboard } from "../../../hooks/seller/profile/useProfile";
 import SellerDashboardSkeleton from "@/seller/components/skeletons/dashboardSkeleton";
 import { ultrateUpdateBanner } from "../../../hooks/seller/profile/ultrateProfile";
 import { ultrateDeleteBanner } from "../../../hooks/seller/profile/ultrateProfile";
-
-// import api from "../../../features/axios";
 
 ChartJS.register(
   LineElement,
@@ -695,7 +692,7 @@ const SellerDashboard = () => {
               className="
           absolute top-2 left-2
           bg-black text-white font-semibold
-          px-4 py-2 rounded-xl text-sm
+          px-4 py-2 rounded-xl text-xs md:text-sm
           flex items-center gap-2 border border-black
           hover:bg-white hover:text-black transition
         "
@@ -718,17 +715,17 @@ const SellerDashboard = () => {
     transition text-gray-700 hover:text-black
   "
           >
-            <FaImage className="text-5xl mb-4" />
+            <FaImage className="text-5xl mb-0 md:mb-4" />
 
             <h2 className="font-bold text-xl text-black">
               Click To Add Banner
             </h2>
 
-            <p className="text-gray-800 hover:text-black text-sm mt-2">
+            <p className="text-gray-800 hover:text-black text-sm mt-0 md:mt-2">
               Maximum 1 image
             </p>
 
-            <p className="text-gray-800 hover:text-black text-xs mt-1 text-center px-4">
+            <p className="text-gray-800 hover:text-black text-xs mt-0 md:mt-1 text-center px-4">
               Recommended size:{" "}
               <span className="font-medium">1920 × 600 px</span>. Use a
               high-quality wide image for the best display across all devices.
