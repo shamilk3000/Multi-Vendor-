@@ -687,7 +687,7 @@ const SellerDashboard = () => {
             <img
               src={`${BASE_URL_IMG}${banner}`}
               alt="Banner"
-              className="w-full h-[100px] md:h-[300px] object-cover"
+              className="w-full h-[150px] md:h-[300px] object-cover"
             />
 
             <button
@@ -711,7 +711,7 @@ const SellerDashboard = () => {
     bg-white
     border-2 border-dashed border-gray-500
     rounded-3xl
-    h-[100px] md:h-[300px]
+    h-[150px] md:h-[300px]
     flex flex-col items-center justify-center
     hover:border-black
     hover:shadow-xl
@@ -730,7 +730,7 @@ const SellerDashboard = () => {
 
             <p className="text-gray-800 hover:text-black text-xs mt-1 text-center px-4">
               Recommended size:{" "}
-              <span className="font-medium">1920 × 300 px</span>. Use a
+              <span className="font-medium">1920 × 600 px</span>. Use a
               high-quality wide image for the best display across all devices.
             </p>
 

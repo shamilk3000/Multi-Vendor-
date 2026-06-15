@@ -41,7 +41,7 @@ function BannerSkeleton() {
 
       {/* Mobile Banner */}
       <div className="w-full bg-black md:hidden">
-        <Skeleton height={85} baseColor="#1f1f1f" highlightColor="#2d2d2d" />
+        <Skeleton height={135} baseColor="#1f1f1f" highlightColor="#2d2d2d" />
       </div>
 
       {/* Desktop Banner */}
