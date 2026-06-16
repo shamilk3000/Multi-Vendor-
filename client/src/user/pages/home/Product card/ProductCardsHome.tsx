@@ -154,6 +154,7 @@ const ProductCardsWithPagination: React.FC<{
   const { data: products = [], isLoading } = useProductsForUser(
     sellerId ?? "",
     shopName ?? "",
+    "",
   );
 
   useEffect(() => {

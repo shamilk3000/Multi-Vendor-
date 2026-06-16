@@ -158,10 +158,12 @@ const ProductCardsWithPagination: React.FC<{
   sellerId?: string;
   shopName?: string;
   filters?: ProductFilters | null; // ✅ NEW
-}> = ({ search, sellerId, shopName, filters }) => {
+  categoryId?: string;
+}> = ({ search, sellerId, shopName, filters, categoryId }) => {
   const { data: products = [], isLoading } = useProductsForUser(
     sellerId ?? "",
     shopName ?? "",
+    categoryId ?? "",
   );
 
   const location = useLocation();

@@ -246,13 +246,19 @@ const getAllProductsBySeller = async (sellerId) => {
   }
 };
 
-const getAllProductsForCustomer = async (sellerId) => {
+const getAllProductsForCustomer = async (sellerId, categoryId) => {
   try {
-    const products = await Product.find({
+    const query = {
       isActive: true,
       seller: sellerId,
-      stock: { $gt: 0 }, // 👈 this line
-    })
+      stock: { $gt: 0 },
+    };
+
+    if (categoryId) {
+      query.subCategory = categoryId;
+    }
+
+    const products = await Product.find(query)
       .populate("category")
       .populate("subCategory");
 

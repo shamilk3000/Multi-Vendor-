@@ -121,7 +121,12 @@ const getAllProducts = async (req, res) => {
 const getAllProductsForCustomer = async (req, res) => {
   try {
     const { sellerId } = req.params;
-    const products = await productService.getAllProductsForCustomer(sellerId);
+    const { categoryId } = req.query;
+
+    const products = await productService.getAllProductsForCustomer(
+      sellerId,
+      categoryId,
+    );
     return res.status(200).json(products);
   } catch (error) {
     console.error("getAllProductsForCustomer Controller Error:", error);

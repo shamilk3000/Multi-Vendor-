@@ -5,10 +5,14 @@ import {
   getProductsInCategory,
 } from "../../../api/user/product";
 
-export const useProductsForUser = (sellerId: string, shopName: string) => {
+export const useProductsForUser = (
+  sellerId: string,
+  shopName: string,
+  categoryId: string,
+) => {
   return useQuery({
     queryKey: ["products", "allProducts", sellerId],
-    queryFn: () => getProductsForUser({ sellerId, shopName }),
+    queryFn: () => getProductsForUser({ sellerId, shopName, categoryId }),
     refetchInterval: 1000,
     staleTime: 0,
     enabled: !!sellerId && !!shopName,
